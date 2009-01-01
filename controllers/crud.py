@@ -1,29 +1,29 @@
-from sqlalchemy.orm import Session
+class Crud:
 
+    def __init__(self, model, db):
+        self.model = model
+        self.db = db
 
-def get(
-        model,
-        db: Session,
-        skip: int = 0,
-        limit: int = 100
-):
-    return db.query(model).offset(skip).limit(limit).all()
+    def get(self, skip: int = 0, limit: int = 100):
+        return self.db.query(self.model).offset(skip).limit(limit).all()
 
+    def create(self, row):
+        self.db.add(row)
+        self.db.commit()
+        self.db.refresh(row)
+        return row
 
-def create(peternak, db: Session):
-    db.add(peternak)
-    db.commit()
-    db.refresh(peternak)
-    return peternak
+    def get_by_id(self, id: int):
+        return self.db.query(self.model).filter(
+            self.model.id == id
+        ).first()
 
+    def remove(self, row):
+        self.db.delete(row)
+        self.db.commit()
+        return self.get()
 
-def get_by_id(model, id: int, db: Session):
-    return db.query(model).filter(
-        model.id == id
-    ).first()
-
-
-def remove(model, peternak, db: Session):
-    db.delete(peternak)
-    db.commit()
-    return get(model, db)
+    def update(self, row):
+        self.db.commit()
+        self.db.refresh(row)
+        return row

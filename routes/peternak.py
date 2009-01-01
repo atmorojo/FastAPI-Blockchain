@@ -1,11 +1,10 @@
 from fastapi import (
-    Depends, APIRouter, HTTPException, Form, Request
+    APIRouter, HTTPException, Form, Request
 )
-from sqlalchemy.orm import Session
 from fastapi.responses import HTMLResponse, RedirectResponse
 
 from src import models
-from controllers import peternak_ctrl
+from controllers.crud import Crud
 from src.database import SessionLocal, engine
 import templates.peternak as pages
 
@@ -25,19 +24,21 @@ def get_db():
         db.close()
 
 
+peternak_db = Crud(models.Peternak, next(get_db()))
+
+
 @routes.post("/")
 async def create_peternak(
     name: str = Form(...),
     alamat: str = Form(...),
     status_usaha: str = Form(...),
-    db: Session = Depends(get_db)
 ):
     peternak = models.Peternak(
         name=name,
         alamat=alamat,
         status_usaha=status_usaha,
     )
-    peternak_ctrl.create_peternak(db=db, peternak=peternak)
+    peternak_db.create(peternak)
     return RedirectResponse("/peternaks", status_code=302)
 
 
@@ -47,58 +48,49 @@ def new_peternak():
 
 
 @routes.get("/", response_class=HTMLResponse)
-def read_peternaks(
-        skip: int = 0,
-        limit: int = 100,
-        db: Session = Depends(get_db)
-):
-    peternaks = peternak_ctrl.get_peternaks(db, skip=skip, limit=limit)
+def read_peternaks(skip: int = 0, limit: int = 100):
+    peternaks = peternak_db.get(skip=skip, limit=limit)
     return str(pages.peternaks_page(peternaks))
 
 
 @routes.get("/{peternak_id}", response_class=HTMLResponse)
-def read_peternak(peternak_id: int, db: Session = Depends(get_db)):
-    db_peternak = peternak_ctrl.get_peternak(db, peternak_id=peternak_id)
-    if db_peternak is None:
+def read_peternak(peternak_id: int):
+    peternak = peternak_db.get_by_id(peternak_id)
+    if peternak is None:
         raise HTTPException(status_code=404, detail="User not found")
-    return str(pages.peternak_detail(db_peternak, lock=True))
+    return str(pages.peternak_detail(peternak, lock=True))
 
 
 @routes.get("/edit/{peternak_id}", response_class=HTMLResponse)
-def edit_peternak(req: Request, peternak_id: int, db: Session = Depends(get_db)):
-    db_peternak = peternak_ctrl.get_peternak(db, peternak_id=peternak_id)
-    if db_peternak is None:
+def edit_peternak(req: Request, peternak_id: int):
+    peternak = peternak_db.get_by_id(peternak_id)
+    if peternak is None:
         raise HTTPException(status_code=404, detail="User not found")
     if req.headers.get('HX-Request'):
-        return str(pages.peternak_form(db_peternak, lock=False))
+        return str(pages.peternak_form(peternak, lock=False))
     else:
-        return str(pages.peternak_detail(db_peternak, lock=False))
+        return str(pages.peternak_detail(peternak, lock=False))
 
 
 @routes.delete("/{peternak_id}", response_class=HTMLResponse)
-def remove_peternak(
-    peternak_id: int,
-    db: Session = Depends(get_db)
-):
-    db_peternak = peternak_ctrl.get_peternak(db, peternak_id=peternak_id)
-    if db_peternak is None:
+def remove_peternak(peternak_id: int):
+    peternak = peternak_db.get_by_id(peternak_id)
+    if peternak is None:
         raise HTTPException(status_code=404, detail="User not found")
-    peternaks = peternak_ctrl.rm_peternak(db, db_peternak)
+    peternaks = peternak_db.remove(peternak)
     return str(pages.peternaks_table(peternaks))
 
 
 @routes.put("/{peternak_id}", response_class=HTMLResponse)
 async def update_peternak(
     peternak_id: int,
-    db: Session = Depends(get_db),
     name: str = Form(...),
     alamat: str = Form(...),
     status_usaha: str = Form(...),
 ):
-    peternak = peternak_ctrl.get_peternak(db, peternak_id)
+    peternak = peternak_db.get_by_id(peternak_id)
     peternak.name = name
     peternak.alamat = alamat
     peternak.status_usaha = status_usaha
-    db.commit()
-    db.refresh(peternak)
+    peternak = peternak_db.update(peternak)
     return str(pages.peternak_form(peternak, lock=True))

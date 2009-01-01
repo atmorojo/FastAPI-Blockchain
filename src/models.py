@@ -66,3 +66,29 @@ class Ternak(Base):
     peternak = relationship("Peternak", back_populates="ternaks")
     juleha_id = Column(Integer, ForeignKey("julehas.id"))
     juleha = relationship("Juleha", back_populates="ternaks")
+
+
+class Rph(Base):
+    __tablename__ = "rphs"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String, index=True)
+    alamat = Column(String, index=True)
+    telepon = Column(String)
+    status_sertifikasi = Column(String, index=True)
+    file_sertifikasi = Column(String, index=True)
+    waktu_upload = Column(DateTime(timezone=True), server_default=func.now())
+    penyelias = relationship("Penyelia", back_populates="rph")
+
+
+class Penyelia(Base):
+    __tablename__ = "penyelias"
+
+    id = Column(Integer, primary_key=True)
+    nip = Column(String, index=True)
+    name = Column(String, index=True)
+    status = Column(String, index=True)
+    tgl_berlaku = Column(String)
+    file_sk = Column(String, index=True)
+    rph_id = Column(Integer, ForeignKey("rphs.id"))
+    rph = relationship("Rph", back_populates="penyelias")
