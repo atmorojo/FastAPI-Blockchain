@@ -49,6 +49,10 @@ uvicorn main:app --reload
 
 Access the application at http://127.0.0.1:8000/ and the interactive API documentation at http://127.0.0.1:8000/docs.
 
+## Demo
+
+![](images/demo.gif)
+
 ## Contributor
 
 Erik Williams
