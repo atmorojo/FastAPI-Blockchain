@@ -7,8 +7,10 @@ import json as _json
 from sqlitedict import SqliteDict
 
 # Constants
-POW_PREFIX = "0000"
+POW_PREFIX = "00"
 DATABASE_URL = os.getenv('DATABASE_URL')
+if DATABASE_URL == None:
+    DATABASE_URL = './data/production.sqlite'
 
 class Blockchain:
     """A simple implementation of a blockchain."""
@@ -67,7 +69,7 @@ class Blockchain:
         """Check if the proof is valid."""
         guess = f"{proof**2 - previous_proof**2 + index}{data}".encode()
         guess_hash = _hashlib.sha256(guess).hexdigest()
-        return guess_hash[:4] == POW_PREFIX
+        return guess_hash[:2] == POW_PREFIX
 
     def _hash(self, block: dict) -> str:
         """Hash a block."""
