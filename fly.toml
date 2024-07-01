@@ -11,6 +11,7 @@ primary_region = 'sin'
 
 [env]
   PORT = '8080'
+  DATABASE_URL = "/data/production.sqlite"
 
 [http_service]
   internal_port = 8080
