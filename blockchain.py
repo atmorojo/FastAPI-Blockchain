@@ -8,7 +8,7 @@ from sqlitedict import SqliteDict
 
 # Constants
 POW_PREFIX = "0000"
-DATABASE = os.getenv('DATABASE_URL')
+DATABASE_URL = os.getenv('DATABASE_URL')
 
 class Blockchain:
     """A simple implementation of a blockchain."""
