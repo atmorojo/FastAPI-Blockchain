@@ -7,7 +7,7 @@ from sqlitedict import SqliteDict
 
 # Constants
 POW_PREFIX = "0000"
-
+DATABASE = os.getenv('DATABASE_URL')
 class Blockchain:
     """A simple implementation of a blockchain."""
 
@@ -15,7 +15,7 @@ class Blockchain:
         """
         Use sqlitedict to store blockchain data
         """
-        self.chain = SqliteDict("data.sqlite", autocommit=True)
+        self.chain = SqliteDict(DATABASE_URL, autocommit=True)
 
         if len(self.chain) == 0:
             genesis_block = self._create_block(
