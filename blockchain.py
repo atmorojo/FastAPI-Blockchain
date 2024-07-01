@@ -3,27 +3,34 @@
 import datetime as _dt
 import hashlib as _hashlib
 import json as _json
+from sqlitedict import SqliteDict
 
 # Constants
 POW_PREFIX = "0000"
-
 
 class Blockchain:
     """A simple implementation of a blockchain."""
 
     def __init__(self):
-        self.chain = []
-        genesis_block = self._create_block("genesis block", 1, "0", 1)
-        self.chain.append(genesis_block)
+        """
+        Use sqlitedict to store blockchain data
+        """
+        self.chain = SqliteDict("data.sqlite", autocommit=True)
+
+        if len(self.chain) == 0:
+            genesis_block = self._create_block(
+                "genesis block", 1, "0", 1)
+            self.chain[1] = genesis_block
 
     def mine_block(self, data: str) -> dict:
         """Mine and append a block with provided data to the blockchain."""
         previous_block = self.get_previous_block()
         proof = self._proof_of_work(previous_block, data)
+        new_index = len(self.chain) + 1
         block = self._create_block(
-            data, proof, self._hash(previous_block), len(self.chain) + 1
+            data, proof, self._hash(previous_block), new_index
         )
-        self.chain.append(block)
+        self.chain[new_index] = block
         return block
 
     def _create_block(
@@ -40,7 +47,7 @@ class Blockchain:
 
     def get_previous_block(self) -> dict:
         """Retrieve the last block in the blockchain."""
-        return self.chain[-1]
+        return (list(self.chain.items())[-1])[1]
 
     def _proof_of_work(self, previous_block: dict, data: str) -> int:
         """Find a proof that when hashed has a specific prefix."""
@@ -67,8 +74,8 @@ class Blockchain:
 
     def is_chain_valid(self) -> bool:
         """Validate the blockchain's integrity."""
-        previous_block = self.chain[0]
-        for idx in range(1, len(self.chain)):
+        previous_block = self.chain[1]
+        for idx in range(2, len(self.chain)):
             block = self.chain[idx]
             if block["previous_hash"] != self._hash(previous_block):
                 return False
