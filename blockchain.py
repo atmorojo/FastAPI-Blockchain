@@ -1,5 +1,6 @@
 """This is a simple implementation of a blockchain."""
 
+import os
 import datetime as _dt
 import hashlib as _hashlib
 import json as _json
@@ -8,6 +9,7 @@ from sqlitedict import SqliteDict
 # Constants
 POW_PREFIX = "0000"
 DATABASE = os.getenv('DATABASE_URL')
+
 class Blockchain:
     """A simple implementation of a blockchain."""
 
