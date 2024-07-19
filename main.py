@@ -2,31 +2,48 @@
 Main module for handling FastAPI endpoints and dependencies related to the blockchain.
 """
 
-from fastapi import FastAPI, HTTPException, Depends
-from fastapi.middleware.cors import CORSMiddleware
+from typing import Annotated, Union
+
+from fastapi import FastAPI, Depends, Request  # HTTPException (?)
+# from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
 import src.blockchain as _blockchain
+import templates.base_template as temp
 
 app = FastAPI()
+app.mount("/static", StaticFiles(directory="static"), name="static")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-origins = [
-    "http://localhost:5173"
-]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# CORS --
+# origins = [
+#     "http://localhost:5173"
+# ]
+# 
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=origins,
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
 
 
 class BlockData(BaseModel):
     """Model for block data input."""
     name: str
     transaction: str
-    current_hash: str
+    hash: str
+    previous_hash: str
+
+
+class User(BaseModel):
+    username: str
+    email: Union[str, None] = None
+    full_name: Union[str, None] = None
+    disabled: Union[bool, None] = None
 
 
 def get_blockchain():
@@ -38,6 +55,14 @@ def get_blockchain():
 #    if not blockchain.is_chain_valid():
 #        raise HTTPException(status_code=400, detail="The blockchain is invalid")
     return blockchain
+
+
+@app.get("/", response_class=HTMLResponse)
+async def index(
+    request: Request,
+    token: Annotated[str, Depends(oauth2_scheme)]
+):
+    return str(temp.base_page(page_title="APDH App"))
 
 
 @app.post("/mine_block/")
