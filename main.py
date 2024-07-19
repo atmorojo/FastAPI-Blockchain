@@ -39,13 +39,6 @@ class BlockData(BaseModel):
     previous_hash: str
 
 
-class User(BaseModel):
-    username: str
-    email: Union[str, None] = None
-    full_name: Union[str, None] = None
-    disabled: Union[bool, None] = None
-
-
 def get_blockchain():
     """
     Provides an instance of the Blockchain.
@@ -55,6 +48,27 @@ def get_blockchain():
 #    if not blockchain.is_chain_valid():
 #        raise HTTPException(status_code=400, detail="The blockchain is invalid")
     return blockchain
+
+
+class User(BaseModel):
+    username: str
+    email: Union[str, None] = None
+    full_name: Union[str, None] = None
+    disabled: Union[bool, None] = None
+
+
+def fake_decode_token(token):
+    return User(
+        username=token + "fakedecoded",
+        email="john@example.com", full_name="John Doe"
+    )
+
+
+async def get_current_user(
+    token: Annotated[str, Depends(oauth2_scheme)]
+):
+    user = fake_decode_token(token)
+    return user
 
 
 @app.get("/", response_class=HTMLResponse)
