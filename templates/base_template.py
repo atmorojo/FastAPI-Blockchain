@@ -10,7 +10,8 @@ from htpy import (
     a,
     Node,
     Element,
-    style
+    style,
+    script,
 )
 
 
@@ -28,17 +29,10 @@ def base_page(*,
                 content="width=device-width, initial-scale=1"
             ),
             meta(name="color-scheme", content="light dark"),
-            link(
-                rel="stylesheet",
-                href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.sand.min.css"
-            ),
-            style["""
-                  body {
-                  display: flex;
-                  width: inherit;
-                  justify-content: center;
-                  }
-                  """],
+            link(rel="stylesheet", href="/static/pico.sand.min.css"),
+            link(rel="stylesheet", href="/static/style.css"),
+            script(src="/static/script.js"),
+            script(src="/static/htmx.min.js"),
             title[page_title],
             extra_head
         ],

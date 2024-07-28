@@ -1,0 +1,41 @@
+html, body {
+	height: 100%;
+	padding: 0;
+	margin: 0;
+}
+
+#content {
+	display: flex;
+	min-height: 100%;
+	flex-direction: column;
+	margin: auto 2em;
+}
+
+.login {
+	width: 100%;
+}
+
+#navbar {
+	width: inherit;
+}
+
+#navbar [role="group"] {
+	position: fixed;
+	bottom: 0px;
+	left: 0px;
+	margin: 0;
+}
+
+#navbar [role="group"] [role="button"] {
+	border-radius: 0px;
+	padding: 0px;
+}
+
+#navbar [role="group"] [role="button"] a {
+	display: block;
+	padding: 1.5em var(--pico-form-element-spacing-horizontal);
+	text-decoration: none;
+	color: #555;
+	text-align: center;
+}
+

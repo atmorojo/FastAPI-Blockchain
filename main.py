@@ -1,34 +1,24 @@
 """
-Main module for handling FastAPI endpoints and dependencies related to the blockchain.
+Main module for handling FastAPI endpoints
+and dependencies related to the blockchain.
 """
 
-from typing import Annotated, Union
+from typing import Annotated
 
-from fastapi import FastAPI, Depends, Request  # HTTPException (?)
-# from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI, Form, Depends, HTTPException
+from fastapi.responses import HTMLResponse, Response, RedirectResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
+from jose import jwt
 import src.blockchain as _blockchain
-import templates.base_template as temp
+import src.security as _security
+import templates.base_template as tpl
+import templates.pages as pages
+from routes import users
 
 app = FastAPI()
+app.include_router(users.routes)
 app.mount("/static", StaticFiles(directory="static"), name="static")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
-# CORS --
-# origins = [
-#     "http://localhost:5173"
-# ]
-# 
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=origins,
-#     allow_credentials=True,
-#     allow_methods=["*"],
-#     allow_headers=["*"],
-# )
 
 
 class BlockData(BaseModel):
@@ -46,37 +36,51 @@ def get_blockchain():
     """
     blockchain = _blockchain.Blockchain()
 #    if not blockchain.is_chain_valid():
-#        raise HTTPException(status_code=400, detail="The blockchain is invalid")
+#        raise HTTPException(
+#           status_code=400,
+#           detail="The blockchain is invalid"
+#        )
     return blockchain
 
 
-class User(BaseModel):
-    username: str
-    email: Union[str, None] = None
-    full_name: Union[str, None] = None
-    disabled: Union[bool, None] = None
+@app.get("/dashboard", response_class=HTMLResponse)
+async def index(
+    username: Annotated[
+        _security.User, Depends(_security.get_current_active_user)
+    ]
+):
+    return str(pages.dashboard_page())
 
 
-def fake_decode_token(token):
-    return User(
-        username=token + "fakedecoded",
-        email="john@example.com", full_name="John Doe"
+@app.get("/login", response_class=HTMLResponse)
+def login_get():
+    return HTMLResponse(
+        str(pages.login_page())
     )
 
 
-async def get_current_user(
-    token: Annotated[str, Depends(oauth2_scheme)]
+@app.post("/login")
+async def login_post(
+    response: Response,
+    username: str = Form(...),
+    password: str = Form(...)
 ):
-    user = fake_decode_token(token)
-    return user
-
-
-@app.get("/", response_class=HTMLResponse)
-async def index(
-    request: Request,
-    token: Annotated[str, Depends(oauth2_scheme)]
-):
-    return str(temp.base_page(page_title="APDH App"))
+    if username not in _security.users:
+        raise HTTPException(
+            status_code=302,
+            detail="Incorect username or password",
+            # headers={"location": "/login"}
+        )
+    db_password = _security.users[username]["hashed_password"]
+    if not password == db_password:
+        raise HTTPException(
+            status_code=302,
+            detail="Incorect username or password",
+            # headers={"location": "/login"}
+        )
+    token = jwt.encode({"sub": username}, _security.secret_key)
+    response.set_cookie("session", token)
+    return RedirectResponse("/dashboard", status_code=303)
 
 
 @app.post("/mine_block/")
@@ -91,18 +95,25 @@ def mine_block(
 
 
 @app.get("/blockchain/")
-def get_blockchain_route(blockchain: _blockchain.Blockchain = Depends(get_blockchain)):
+def get_blockchain_route(
+        blockchain: _blockchain.Blockchain = Depends(get_blockchain)
+):
     """Returns the entire blockchain."""
     return blockchain.chain
 
+
 # pylint: disable=unused-argument
 @app.get("/validate/")
-def is_blockchain_valid(blockchain: _blockchain.Blockchain = Depends(get_blockchain)):
+def is_blockchain_valid(
+        blockchain: _blockchain.Blockchain = Depends(get_blockchain)
+):
     """Checks if the blockchain is valid and returns a relevant message."""
     return {"message": "The blockchain is valid."}
 
 
 @app.get("/blockchain/last/")
-def previous_block(blockchain: _blockchain.Blockchain = Depends(get_blockchain)):
+def previous_block(
+        blockchain: _blockchain.Blockchain = Depends(get_blockchain)
+):
     """Returns the last block in the blockchain."""
     return blockchain.get_previous_block()
