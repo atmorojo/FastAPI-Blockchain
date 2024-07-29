@@ -4,7 +4,12 @@ from htpy import (
     a,
     header,
     nav,
-    Element
+    Element,
+    table,
+    thead,
+    tbody,
+    th,
+    tr,
 )
 
 
@@ -22,5 +27,20 @@ def navbar() -> Element:
                 nav_link("/profile", "Profile"),
                 nav_link("/settings", "Settings"),
             ]
+        ]
+    ]
+
+
+def table_header(headers) -> Element:
+    return thead[tr[
+            (th[i] for i in headers)
+    ]]
+
+
+def table_builder(headers, rows) -> Element:
+    return table("#table")[
+        table_header(headers),
+        tbody[
+            rows
         ]
     ]

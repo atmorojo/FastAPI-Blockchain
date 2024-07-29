@@ -31,16 +31,11 @@ def base_page(*,
             meta(name="color-scheme", content="light dark"),
             link(rel="stylesheet", href="/static/pico.sand.min.css"),
             link(rel="stylesheet", href="/static/style.css"),
-            script(src="/static/script.js"),
             script(src="/static/htmx.min.js"),
             title[page_title],
             extra_head
         ],
         body[
             main("#content")[content],
-            div("#footer")[
-                "© Copyright 2024 by ",
-                a(href="#")["me"]
-            ]
         ]
     ]

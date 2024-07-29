@@ -38,8 +38,8 @@ class Juleha(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, index=True)
     ms_sertifikat = Column(String, index=True)
-    upload_sertifikat = Column(String, index=True)
-    waktu_upload = Column(DateTime, index=True)
+    upload_sertifikat = Column(String)
+    waktu_upload = Column(DateTime)
     ternaks = relationship("Ternak", back_populates="juleha")
 
 
@@ -60,8 +60,8 @@ class Ternak(Base):
     bobot = Column(Float, index=True)
     jenis = Column(String, index=True)
     kesehatan = Column(String, index=True)
-    peternak_id = Column(Integer, ForeignKey("peternak.id"))
-    juleha_id = Column(Integer, ForeignKey("juleha.id"))
+    peternak_id = Column(Integer, ForeignKey("peternaks.id"))
     peternak = relationship("Peternak", back_populates="ternaks")
+    juleha_id = Column(Integer, ForeignKey("julehas.id"))
     juleha = relationship("Juleha", back_populates="ternaks")
 

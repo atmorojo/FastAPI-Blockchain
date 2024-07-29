@@ -34,3 +34,20 @@ def create_user_item(db: Session, item: schemas.ItemCreate, user_id: int):
     db.commit()
     db.refresh(db_item)
     return db_item
+
+
+def get_julehas(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.Juleha).offset(skip).limit(limit).all()
+
+
+def create_juleha(db: Session, juleha: schemas.Juleha):
+    db_juleha = models.Juleha(name=juleha.name)
+    db.add(db_juleha)
+    db.commit()
+    db.refresh(db_juleha)
+    return db_juleha
+
+
+def get_juleha(db: Session, juleha_id: int):
+    return db.query(models.Juleha).filter(models.Juleha.id == juleha_id).first()
+

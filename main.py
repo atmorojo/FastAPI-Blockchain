@@ -10,14 +10,17 @@ from fastapi.responses import HTMLResponse, Response, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from jose import jwt
+import logging
 import src.blockchain as _blockchain
 import src.security as _security
 import templates.base_template as tpl
 import templates.pages as pages
-from routes import users
+from routes import users, juleha
 
+logger = logging.getLogger('uvicorn.error')
 app = FastAPI()
 app.include_router(users.routes)
+app.include_router(juleha.routes)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
@@ -61,7 +64,6 @@ def login_get():
 
 @app.post("/login")
 async def login_post(
-    response: Response,
     username: str = Form(...),
     password: str = Form(...)
 ):
@@ -79,8 +81,10 @@ async def login_post(
             # headers={"location": "/login"}
         )
     token = jwt.encode({"sub": username}, _security.secret_key)
+    response = RedirectResponse("/dashboard", status_code=302)
     response.set_cookie("session", token)
-    return RedirectResponse("/dashboard", status_code=303)
+    response.set_cookie("telo", "telogodok")
+    return response
 
 
 @app.post("/mine_block/")
