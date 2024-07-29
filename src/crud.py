@@ -51,3 +51,8 @@ def create_juleha(db: Session, juleha: schemas.Juleha):
 def get_juleha(db: Session, juleha_id: int):
     return db.query(models.Juleha).filter(models.Juleha.id == juleha_id).first()
 
+
+def rm_juleha(db: Session, juleha: schemas.Juleha):
+    db.delete(juleha)
+    db.commit()
+    return get_julehas(db)

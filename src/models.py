@@ -40,7 +40,7 @@ class Juleha(Base):
     ms_sertifikat = Column(String, index=True)
     upload_sertifikat = Column(String)
     waktu_upload = Column(DateTime)
-    ternaks = relationship("Ternak", back_populates="juleha")
+    # ternaks = relationship("Ternak", back_populates="juleha")
 
 
 class Peternak(Base):
@@ -62,6 +62,5 @@ class Ternak(Base):
     kesehatan = Column(String, index=True)
     peternak_id = Column(Integer, ForeignKey("peternaks.id"))
     peternak = relationship("Peternak", back_populates="ternaks")
-    juleha_id = Column(Integer, ForeignKey("julehas.id"))
-    juleha = relationship("Juleha", back_populates="ternaks")
-
+    # juleha_id = Column(Integer, ForeignKey("julehas.id"))
+    # juleha = relationship("Juleha", back_populates="ternaks")

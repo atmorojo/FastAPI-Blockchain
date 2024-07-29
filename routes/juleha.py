@@ -39,8 +39,27 @@ def read_julehas(
 
 
 @routes.get("/julehas/{juleha_id}", response_model=schemas.Juleha)
-def read_juleha( juleha_id: int, db: Session = Depends(get_db)):
+def read_juleha(juleha_id: int, db: Session = Depends(get_db)):
     db_juleha = crud.get_juleha(db, juleha_id=juleha_id)
     if db_juleha is None:
         raise HTTPException(status_code=404, detail="User not found")
     return db_juleha
+
+
+@routes.delete("/julehas/{juleha_id}", response_model=list[schemas.Juleha])
+def remove_juleha(
+    juleha_id: int,
+    db: Session = Depends(get_db)
+):
+    db_juleha = crud.get_juleha(db, juleha_id=juleha_id)
+    if db_juleha is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return crud.rm_juleha(db, db_juleha)
+
+
+@routes.put("/julehas/", response_model=schemas.Juleha)
+def update_juleha(
+        juleha: schemas.Juleha,
+        db: Session = Depends(get_db)
+):
+    return crud.create_juleha(db=db, juleha=juleha)
