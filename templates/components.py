@@ -1,15 +1,20 @@
 from htpy import (
+    render_node,
     ul,
+    aside,
     li,
     a,
     header,
     nav,
+    span,
     Element,
     table,
+    label,
     thead,
     tbody,
     th,
     tr,
+    input
 )
 
 
@@ -44,3 +49,23 @@ def table_builder(headers, rows) -> Element:
             rows
         ]
     ]
+
+
+def drawer_menu() -> Element:
+    return render_node([
+        input(
+            "#burger-btn.burger-btn",
+            type_="checkbox",
+        ),
+        label(".burger-icon", for_="burger-btn")[
+            span,
+            span,
+            span
+        ],
+        aside(".nav-drawer")[nav[ul[
+            li[a(href="/dashboard")["Dashboard"]],
+            li[a(href="/julehas")["Juleha"]],
+            li[a(href="#")["Peternak"]],
+            li[a(href="#")["Ternak"]],
+        ]]]
+    ])

@@ -6,44 +6,23 @@ and dependencies related to the blockchain.
 from typing import Annotated
 
 from fastapi import FastAPI, Form, Depends, HTTPException
-from fastapi.responses import HTMLResponse, Response, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
 from jose import jwt
-import logging
-import src.blockchain as _blockchain
 import src.security as _security
-import templates.base_template as tpl
 import templates.pages as pages
-from routes import users, juleha
+from routes import users, juleha, blockchain
+from src import models 
+from src.database import engine
 
-logger = logging.getLogger('uvicorn.error')
+models.Base.metadata.create_all(bind=engine)
+
 app = FastAPI()
 app.include_router(users.routes)
 app.include_router(juleha.routes)
+app.include_router(blockchain.routes)
 app.mount("/static", StaticFiles(directory="static"), name="static")
-
-
-class BlockData(BaseModel):
-    """Model for block data input."""
-    name: str
-    transaction: str
-    hash: str
-    previous_hash: str
-
-
-def get_blockchain():
-    """
-    Provides an instance of the Blockchain.
-    Checks if the blockchain is valid and raises an HTTPException if not.
-    """
-    blockchain = _blockchain.Blockchain()
-#    if not blockchain.is_chain_valid():
-#        raise HTTPException(
-#           status_code=400,
-#           detail="The blockchain is invalid"
-#        )
-    return blockchain
+app.mount("/files", StaticFiles(directory="files"), name="files")
 
 
 @app.get("/dashboard", response_class=HTMLResponse)
@@ -86,38 +65,3 @@ async def login_post(
     response.set_cookie("telo", "telogodok")
     return response
 
-
-@app.post("/mine_block/")
-def mine_block(
-    block_data: BlockData
-        # , blockchain: _blockchain.Blockchain = Depends(get_blockchain)
-):
-    """Mines a block with the provided data and returns the new block."""
-    # return blockchain.mine_block(data=block_data.data)
-    print(block_data)
-    return block_data
-
-
-@app.get("/blockchain/")
-def get_blockchain_route(
-        blockchain: _blockchain.Blockchain = Depends(get_blockchain)
-):
-    """Returns the entire blockchain."""
-    return blockchain.chain
-
-
-# pylint: disable=unused-argument
-@app.get("/validate/")
-def is_blockchain_valid(
-        blockchain: _blockchain.Blockchain = Depends(get_blockchain)
-):
-    """Checks if the blockchain is valid and returns a relevant message."""
-    return {"message": "The blockchain is valid."}
-
-
-@app.get("/blockchain/last/")
-def previous_block(
-        blockchain: _blockchain.Blockchain = Depends(get_blockchain)
-):
-    """Returns the last block in the blockchain."""
-    return blockchain.get_previous_block()

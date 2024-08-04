@@ -11,7 +11,7 @@ html, body {
 	margin: auto 2em;
 }
 
-.login {
+.full {
 	width: 100%;
 }
 
@@ -38,4 +38,85 @@ html, body {
 	color: #555;
 	text-align: center;
 }
+.burger-btn {
+	display: none;
+}
 
+.burger-icon {
+	position: fixed;
+	top: 10px;
+	left: 10px;
+	width: 30px;
+	height: 30px;
+	cursor: pointer;
+	z-index: 2;
+}
+
+.burger-icon span {
+	display: block;
+	width: 100%;
+	height: 4px;
+	background-color: black;
+	margin: 6px 0;
+	transition: 0.3s;
+}
+
+.burger-btn:checked~.burger-icon span:nth-child(1) {
+	transform: rotate(45deg);
+	position: relative;
+	top: 10px;
+}
+
+.burger-btn:checked~.burger-icon span:nth-child(2) {
+	opacity: 0;
+}
+
+.burger-btn:checked~.burger-icon span:nth-child(3) {
+	transform: rotate(-45deg);
+	position: relative;
+	top: -10px;
+}
+
+.nav-drawer {
+	position: fixed;
+	top: 0;
+	left: -250px;
+	width: 250px;
+	height: 100%;
+	background-color: var(--pico-primary-background);
+	color: white;
+	transition: 0.3s;
+	z-index: 1;
+	padding: 1em;
+	padding-top: 5em;
+}
+
+.burger-btn:checked~.nav-drawer {
+	left: 0;
+}
+
+.nav-drawer a {
+	display: block;
+	padding-left: 2em;
+	text-decoration: none;
+}
+
+.nav-drawer a:hover {
+	background-color: var(--pico-primary-focus);
+}
+
+.datatable-sorter {
+	padding: 0;
+}
+
+.table-actions a {
+	cursor: pointer;
+	text-decoration: none;
+}
+
+@media only screen and (max-width: 600px) {
+	.datatable-top {
+		display: flex;
+		flex-direction: column;
+	}
+}
