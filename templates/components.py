@@ -1,5 +1,4 @@
 from htpy import (
-    render_node,
     ul,
     aside,
     li,
@@ -12,6 +11,7 @@ from htpy import (
     label,
     thead,
     tbody,
+    div,
     th,
     tr,
     input
@@ -52,7 +52,13 @@ def table_builder(headers, rows) -> Element:
 
 
 def drawer_menu() -> Element:
-    return render_node([
+    return div(
+        ".drawer-wrapper",
+        _="""
+on click from elsewhere
+set #burger-btn.checked to false
+        """
+    )[
         input(
             "#burger-btn.burger-btn",
             type_="checkbox",
@@ -62,10 +68,12 @@ def drawer_menu() -> Element:
             span,
             span
         ],
-        aside(".nav-drawer")[nav[ul[
+        aside(
+            ".nav-drawer",
+        )[nav[ul[
             li[a(href="/dashboard")["Dashboard"]],
             li[a(href="/julehas")["Juleha"]],
-            li[a(href="#")["Peternak"]],
-            li[a(href="#")["Ternak"]],
+            li[a(href="/peternaks")["Peternak"]],
+            li[a(href="/ternak")["Ternak"]],
         ]]]
-    ])
+    ]

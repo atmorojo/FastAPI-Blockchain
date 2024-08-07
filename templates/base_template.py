@@ -32,6 +32,7 @@ def base_page(*,
             link(rel="stylesheet", href="/static/pico.sand.min.css"),
             link(rel="stylesheet", href="/static/style.css"),
             script(src="/static/htmx.min.js"),
+            script(src="/static/hyperscript.org@0.9.12"),
             title[page_title],
             extra_head
         ],
