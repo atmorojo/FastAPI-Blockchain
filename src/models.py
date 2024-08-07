@@ -38,7 +38,8 @@ class Juleha(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String, index=True)
-    ms_sertifikat = Column(String, index=True)
+    nomor_sertifikat = Column(String, index=True)
+    masa_sertifikat = Column(String, index=True)
     upload_sertifikat = Column(String)
     waktu_upload = Column(DateTime(timezone=True), server_default=func.now())
     ternaks = relationship("Ternak", back_populates="juleha")
