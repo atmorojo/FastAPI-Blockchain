@@ -7,7 +7,7 @@ from datetime import datetime
 from src import models
 from controllers import juleha_ctrl
 from src.database import SessionLocal, engine
-import templates.pages as pages
+import templates.juleha as pages
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -28,7 +28,8 @@ def get_db():
 @routes.post("/")
 async def create_juleha(
     name: str = Form(...),
-    ms_sertifikat: str = Form(...),
+    masa_sertifikat: str = Form(...),
+    nomor_sertifikat: str = Form(...),
     file_sertifikat: UploadFile = File(...),
     db: Session = Depends(get_db)
 ):
@@ -40,7 +41,8 @@ async def create_juleha(
 
     juleha = models.Juleha(
         name=name,
-        ms_sertifikat=ms_sertifikat,
+        nomor_sertifikat=nomor_sertifikat,
+        masa_sertifikat=masa_sertifikat,
         upload_sertifikat=file_sertifikat.filename,
         waktu_upload=datetime.now()
     )
@@ -50,7 +52,7 @@ async def create_juleha(
 
 @routes.get("/new", response_class=HTMLResponse)
 def new_juleha():
-    return str(pages.juleha_form(lock=False))
+    return str(pages.juleha_detail(lock=False))
 
 
 @routes.get("/", response_class=HTMLResponse)
@@ -99,12 +101,14 @@ async def update_juleha(
     juleha_id: int,
     db: Session = Depends(get_db),
     name: str = Form(...),
-    ms_sertifikat: str = Form(...),
+    nomor_sertifikat: str = Form(...),
+    masa_sertifikat: str = Form(...),
     file_sertifikat: UploadFile = File(None),
 ):
     juleha = juleha_ctrl.get_juleha(db, juleha_id)
     juleha.name = name
-    juleha.ms_sertifikat = ms_sertifikat
+    juleha.nomor_sertifikat = nomor_sertifikat
+    juleha.masa_sertifikat = masa_sertifikat
 
     if file_sertifikat is not None:
         juleha.upload_sertifikat = file_sertifikat.filename

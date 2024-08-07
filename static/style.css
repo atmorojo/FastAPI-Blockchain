@@ -5,10 +5,12 @@ html, body {
 }
 
 #content {
+	max-width: 980px;
 	display: flex;
 	min-height: 100%;
 	flex-direction: column;
-	margin: auto 2em;
+	margin: auto auto;
+	padding: 0 2em;
 }
 
 .full {
@@ -38,6 +40,7 @@ html, body {
 	color: #555;
 	text-align: center;
 }
+
 .burger-btn {
 	display: none;
 }
@@ -56,7 +59,7 @@ html, body {
 	display: block;
 	width: 100%;
 	height: 4px;
-	background-color: black;
+	background-color: #333;
 	margin: 6px 0;
 	transition: 0.3s;
 }
