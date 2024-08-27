@@ -11,7 +11,7 @@ from fastapi.staticfiles import StaticFiles
 from jose import jwt
 import src.security as _security
 import templates.pages as pages
-from routes import users, juleha, blockchain, peternak, ternak, rph
+from routes import users, juleha, blockchain, peternak, ternak, rph, penyelia
 from src import models
 from src.database import engine
 
@@ -23,6 +23,7 @@ app.include_router(juleha.routes)
 app.include_router(peternak.routes)
 app.include_router(rph.routes)
 app.include_router(ternak.routes)
+app.include_router(penyelia.routes)
 app.include_router(blockchain.routes)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/files", StaticFiles(directory="files"), name="files")

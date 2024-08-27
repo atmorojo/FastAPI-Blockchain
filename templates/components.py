@@ -75,5 +75,7 @@ set #burger-btn.checked to false
             li[a(href="/julehas")["Juleha"]],
             li[a(href="/peternaks")["Peternak"]],
             li[a(href="/ternak")["Ternak"]],
+            li[a(href="/rph")["RPH"]],
+            li[a(href="/penyelia")["Penyelia"]],
         ]]]
     ]

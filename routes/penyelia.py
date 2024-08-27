@@ -31,7 +31,11 @@ penyelia_db = Crud(models.Penyelia, next(get_db()))
 
 @routes.get("/new", response_class=HTMLResponse)
 def new_penyelia():
-    return str(pages.penyelia_detail(lock=False))
+    rph = Crud(models.Rph, next(get_db())).get()
+    return str(pages.penyelia_detail(
+        rph=rph,
+        lock=False
+    ))
 
 
 @routes.post("/")
@@ -50,13 +54,12 @@ async def create_penyelia(
                 await out_file.write(content)
 
     penyelia = models.Penyelia(
-        nip: nip,
+        nip=nip,
         name=name,
         status=status,
         tgl_berlaku=tgl_berlaku,
         rph_id=rph_id,
         file_sk=file_sk.filename,
-        waktu_upload=datetime.now()
     )
     penyelia_db.create(penyelia)
     return RedirectResponse("/penyelia", status_code=302)
@@ -85,13 +88,14 @@ def read_penyelia(penyelia_id: int):
 @routes.get("/edit/{penyelia_id}", response_class=HTMLResponse)
 def edit_penyelia(req: Request, penyelia_id: int):
     penyelia = penyelia_db.get_by_id(penyelia_id)
+    rph = Crud(models.Rph, next(get_db())).get()
     lock = False
     if penyelia is None:
         raise HTTPException(status_code=404, detail="User not found")
     if req.headers.get('HX-Request'):
-        return str(pages.penyelia_form(penyelia, lock))
+        return str(pages.penyelia_form(penyelia, rph, lock))
     else:
-        return str(pages.penyelia_detail(penyelia, lock))
+        return str(pages.penyelia_detail(penyelia, rph, lock))
 
 
 @routes.put("/{penyelia_id}", response_class=HTMLResponse)
@@ -105,20 +109,21 @@ async def update_penyelia(
     file_sk: UploadFile = File(None)  # Remember to give that None
 ):
     penyelia = penyelia_db.get_by_id(penyelia_id)
+    penyelia.nip = nip
     penyelia.name = name
-    penyelia.alamat = alamat
-    penyelia.telepon = telepon
-    penyelia.status_sk = status_sk
+    penyelia.status = status
+    penyelia.tgl_berlaku = tgl_berlaku
+    penyelia.rph_id = rph_id
 
     if file_sk is not None:
         penyelia.file_sk = file_sk.filename
-        penyelia.waktu_upload = datetime.now()
         out_file_path = './files/sk_penyelia/' + file_sk.filename
         async with aiofiles.open(out_file_path, 'wb') as out_file:
             while content := await file_sk.read(1024):
                 await out_file.write(content)
     penyelia = penyelia_db.update(penyelia)
-    return str(pages.penyelia_form(penyelia, lock=True))
+    rph = Crud(models.Rph, next(get_db())).get()
+    return str(pages.penyelia_form(penyelia, rph, lock=True))
 
 
 # Delete

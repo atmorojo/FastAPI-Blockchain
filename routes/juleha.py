@@ -61,7 +61,7 @@ def new_juleha():
 @routes.get("/", response_class=HTMLResponse)
 def read_julehas(skip: int = 0, limit: int = 100):
     julehas = juleha_db.get(skip=skip, limit=limit)
-    return str(pages.julehas_page(julehas))
+    return str(pages.julehas_page(julehas, "Daftar Juleha"))
 
 
 @routes.get("/{juleha_id}", response_class=HTMLResponse)

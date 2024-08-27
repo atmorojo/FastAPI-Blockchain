@@ -18,9 +18,9 @@ from htpy import (
 )
 
 
-def julehas_page(julehas) -> Element:
+def julehas_page(julehas, title="") -> Element:
     return base_page(
-        page_title="Juleha",
+        page_title="Juleha" + (" | " + title if title != "" else title),
         extra_head=[
             link(rel="stylesheet", href="/static/datatable.style.css"),
             script(src="/static/simple-datatables.904.js"),
