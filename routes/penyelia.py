@@ -3,7 +3,6 @@ from fastapi import (
 )
 from fastapi.responses import HTMLResponse, RedirectResponse
 import aiofiles
-from datetime import datetime
 
 from src import models
 from controllers.crud import Crud

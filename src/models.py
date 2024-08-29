@@ -92,3 +92,23 @@ class Penyelia(Base):
     file_sk = Column(String, index=True)
     rph_id = Column(Integer, ForeignKey("rphs.id"))
     rph = relationship("Rph", back_populates="penyelias")
+
+
+class Pasar(Base):
+    __tablename__ = "pasars"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String, index=True)
+    alamat = Column(String, index=True)
+
+    lapaks = relationship("Lapak", back_populates="pasar")
+
+
+class Lapak(Base):
+    __tablename__ = "lapaks"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String, index=True)
+    no_lapak = Column(String)
+    pasar_id = Column(Integer, ForeignKey("pasars.id"))
+    pasar = relationship("Pasar", back_populates="lapaks")
