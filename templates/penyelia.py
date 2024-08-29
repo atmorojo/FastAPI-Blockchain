@@ -20,25 +20,6 @@ from htpy import (
 )
 
 
-def penyelias_page(penyelias) -> Element:
-    return base_page(
-        page_title="Penyelia",
-        extra_head=[
-            link(rel="stylesheet", href="/static/datatable.style.css"),
-            script(src="/static/simple-datatables.904.js"),
-        ],
-        content=[
-            drawer_menu(),
-            div(style="margin-top: 4em;")[
-                h1["Penyelia"],
-                a(role="button", href="/penyelia/new")["+ penyelia"],
-                penyelias_table(penyelias),
-                script(src="/static/script.js"),
-            ]
-        ]
-    )
-
-
 def penyelia_detail(penyelia=None, rph=None, lock: bool = False) -> Element:
     return base_page(
         page_title="Penyelia",
@@ -50,64 +31,6 @@ def penyelia_detail(penyelia=None, rph=None, lock: bool = False) -> Element:
             ]
         ]
     )
-
-
-def update_btn(parent_route, id):
-    return button(
-        ".full",
-        hx_put=parent_route + str(id),
-        hx_target="#form",
-        hx_indicator="#form",
-        hx_encoding="multipart/form-data",
-        hx_push_url="true"
-    )["Simpan Perubahan"]
-
-
-def file_input(_value, _name, lock):
-    return input(
-        type_="file",
-        name=_name,
-        value=_value,
-        disabled=lock,
-    )
-
-
-def edit_btn(parent_route, id):
-    return button(
-        ".full",
-        hx_get=parent_route + "edit/" + str(id),
-        hx_target="#form",
-        hx_push_url="true"
-    )["Edit"]
-
-
-submit_btn = input(type_="submit", value="Simpan")
-
-
-def show_img(url):
-    return img(".full", src="/files/" + url)
-
-
-def inlabel(_label, _type, _name, _value, lock):
-    return label[
-        small[_label],
-        input(type_=_type, name=_name, disabled=lock, value=_value),
-    ],
-
-
-def combo_gen(label_text, name, items, selected=None, placeholder=None):
-    return label[
-        small[label_text],
-        select(name=name)[
-            (option(
-                value="", disabled=True, selected=True, hidden=True
-            )[placeholder] if placeholder else None),
-            (option(
-                value=item.id,
-                selected=(item.id == selected)
-            )[item.name] for item in items)
-        ]
-    ]
 
 
 def penyelia_form(penyelia, rph, lock: bool = False) -> Element:
@@ -160,9 +83,9 @@ def penyelia_form(penyelia, rph, lock: bool = False) -> Element:
 
 
 def penyelias_table(penyelias) -> Element:
-    return div("#table-wrapper")[
-        table_builder(
-            ["NIP", "Nama", "Status", "RPH", "Actions"],
+    col_headers = ["NIP", "Nama", "Status", "RPH", "Actions"]
+    return table_builder(
+            col_headers,
             (a[tr[
                 td[penyelia.nip],
                 td[penyelia.name],
@@ -183,4 +106,3 @@ Apakah anda yakin mau menghapus data {penyelia.name}?
                 ],
             ]] for penyelia in penyelias)
         )
-    ]

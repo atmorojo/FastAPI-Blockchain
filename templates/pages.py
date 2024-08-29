@@ -51,3 +51,21 @@ def dashboard_page() -> Element:
         ]
     )
 
+
+def table_page(title, datatable) -> Element:
+    return base_page(
+        page_title=title,
+        extra_head=[
+            link(rel="stylesheet", href="/static/datatable.style.css"),
+            script(src="/static/simple-datatables.904.js"),
+        ],
+        content=[
+            drawer_menu(),
+            div(style="margin-top: 4em;")[
+                h1[title],
+                a(role="button", href="/penyelia/new")["+ penyelia"],
+                datatable,
+                script(src="/static/script.js"),
+            ]
+        ]
+    )
