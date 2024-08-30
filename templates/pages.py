@@ -1,21 +1,16 @@
 from templates.base_template import base_page
-from templates.components import table_builder, drawer_menu
+from templates.components import drawer_menu
 from htpy import (
     form,
     div,
-    img,
     h1,
     button,
     p,
     input,
     Element,
-    tr,
-    td,
     link,
     script,
     a,
-    label,
-    small,
 )
 
 
@@ -66,6 +61,22 @@ def table_page(title, datatable) -> Element:
                 a(role="button", href="/penyelia/new")["+ penyelia"],
                 datatable,
                 script(src="/static/script.js"),
+            ]
+        ]
+    )
+
+
+def detail_page(
+    title,
+    detail_form,
+) -> Element:
+    return base_page(
+        page_title=title,
+        content=[
+            drawer_menu(),
+            div(style="margin: 4em 0;")[
+                h1["Tambah " + title],
+                detail_form,
             ]
         ]
     )

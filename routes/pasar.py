@@ -1,13 +1,13 @@
 from fastapi import (
-    APIRouter, HTTPException, UploadFile, Form, File, Request
+    APIRouter, HTTPException, Form, Request
 )
 from fastapi.responses import HTMLResponse, RedirectResponse
-import aiofiles
 
 from src import models
 from controllers.crud import Crud
 from src.database import SessionLocal, engine
-import templates.pasar as pages
+import templates.pages as pages
+import templates.pasar as pasar_view
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -31,9 +31,9 @@ pasar_db = Crud(models.Pasar, next(get_db()))
 @routes.get("/new", response_class=HTMLResponse)
 def new_pasar():
     rph = Crud(models.Rph, next(get_db())).get()
-    return str(pages.pasar_detail(
-        rph=rph,
-        lock=False
+    return str(pages.detail_page(
+        "Pasar",
+        pasar_view.
     ))
 
 

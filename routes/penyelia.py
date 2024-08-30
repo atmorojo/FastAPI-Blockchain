@@ -7,7 +7,7 @@ import aiofiles
 from src import models
 from controllers.crud import Crud
 from src.database import SessionLocal, engine
-import templates.penyelia as pages
+from templates import pages, penyelia
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -31,9 +31,9 @@ penyelia_db = Crud(models.Penyelia, next(get_db()))
 @routes.get("/new", response_class=HTMLResponse)
 def new_penyelia():
     rph = Crud(models.Rph, next(get_db())).get()
-    return str(pages.penyelia_detail(
-        rph=rph,
-        lock=False
+    return str(pages.detail_page(
+        "Penyelia",
+        penyelia.penyelia_form(None, rph, False)
     ))
 
 
@@ -70,15 +70,21 @@ async def create_penyelia(
 @routes.get("/", response_class=HTMLResponse)
 def read_penyelias(skip: int = 0, limit: int = 100):
     penyelias = penyelia_db.get(skip=skip, limit=limit)
-    return str(pages.penyelias_page(penyelias))
+    return str(pages.table_page(
+        "Penyelia",
+        penyelia.penyelias_table(penyelias)
+    ))
 
 
 @routes.get("/{penyelia_id}", response_class=HTMLResponse)
 def read_penyelia(penyelia_id: int):
-    penyelia = penyelia_db.get_by_id(penyelia_id)
-    if penyelia is None:
+    dt_penyelia = penyelia_db.get_by_id(penyelia_id)
+    if dt_penyelia is None:
         raise HTTPException(status_code=404, detail="User not found")
-    return str(pages.penyelia_detail(penyelia, lock=True))
+    return str(pages.detail_page(
+        "Penyelia",
+        penyelia.penyelia_form(dt_penyelia, None, True)
+    ))
 
 
 # Update
@@ -86,15 +92,19 @@ def read_penyelia(penyelia_id: int):
 
 @routes.get("/edit/{penyelia_id}", response_class=HTMLResponse)
 def edit_penyelia(req: Request, penyelia_id: int):
-    penyelia = penyelia_db.get_by_id(penyelia_id)
-    rph = Crud(models.Rph, next(get_db())).get()
+    dt_penyelia = penyelia_db.get_by_id(penyelia_id)
+    list_rph = Crud(models.Rph, next(get_db())).get()
     lock = False
-    if penyelia is None:
+
+    if dt_penyelia is None:
         raise HTTPException(status_code=404, detail="User not found")
+
+    form = penyelia.penyelia_form(dt_penyelia, list_rph, lock)
+
     if req.headers.get('HX-Request'):
-        return str(pages.penyelia_form(penyelia, rph, lock))
+        return str(form)
     else:
-        return str(pages.penyelia_detail(penyelia, rph, lock))
+        return str(pages.detail_page("Penyelia", form))
 
 
 @routes.put("/{penyelia_id}", response_class=HTMLResponse)
@@ -107,22 +117,23 @@ async def update_penyelia(
     rph_id: int = Form(...),
     file_sk: UploadFile = File(None)  # Remember to give that None
 ):
-    penyelia = penyelia_db.get_by_id(penyelia_id)
-    penyelia.nip = nip
-    penyelia.name = name
-    penyelia.status = status
-    penyelia.tgl_berlaku = tgl_berlaku
-    penyelia.rph_id = rph_id
+    dt_penyelia = penyelia_db.get_by_id(penyelia_id)
+    dt_penyelia.nip = nip
+    dt_penyelia.name = name
+    dt_penyelia.status = status
+    dt_penyelia.tgl_berlaku = tgl_berlaku
+    dt_penyelia.rph_id = rph_id
 
     if file_sk is not None:
-        penyelia.file_sk = file_sk.filename
+        dt_penyelia.file_sk = file_sk.filename
         out_file_path = './files/sk_penyelia/' + file_sk.filename
         async with aiofiles.open(out_file_path, 'wb') as out_file:
             while content := await file_sk.read(1024):
                 await out_file.write(content)
-    penyelia = penyelia_db.update(penyelia)
-    rph = Crud(models.Rph, next(get_db())).get()
-    return str(pages.penyelia_form(penyelia, rph, lock=True))
+    dt_penyelia = penyelia_db.update(dt_penyelia)
+    list_rph = Crud(models.Rph, next(get_db())).get()
+
+    return str(penyelia.penyelia_form(dt_penyelia, list_rph, True))
 
 
 # Delete
@@ -130,8 +141,8 @@ async def update_penyelia(
 
 @routes.delete("/{penyelia_id}", response_class=HTMLResponse)
 def remove_penyelia(penyelia_id: int):
-    penyelia = penyelia_db.get_by_id(penyelia_id)
-    if penyelia is None:
+    dt_penyelia = penyelia_db.get_by_id(penyelia_id)
+    if dt_penyelia is None:
         raise HTTPException(status_code=404, detail="User not found")
-    penyelias = penyelia_db.remove(penyelia)
-    return str(pages.penyelias_table(penyelias))
+    penyelias = penyelia_db.remove(dt_penyelia)
+    return str(penyelia.penyelias_table(penyelias))

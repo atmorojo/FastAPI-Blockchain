@@ -1,36 +1,25 @@
-from templates.base_template import base_page
-from templates.components import table_builder, drawer_menu
+from templates.components import (
+    table_builder,
+    show_img,
+    edit_btn,
+    inlabel,
+    file_input,
+    combo_gen,
+    update_btn,
+    submit_btn,
+)
+
 from htpy import (
-    select,
-    option,
     form,
     div,
     img,
-    h1,
-    button,
-    input,
     Element,
     tr,
     td,
-    link,
-    script,
     a,
     label,
     small,
 )
-
-
-def penyelia_detail(penyelia=None, rph=None, lock: bool = False) -> Element:
-    return base_page(
-        page_title="Penyelia",
-        content=[
-            drawer_menu(),
-            div(style="margin: 4em 0;")[
-                h1["Tambah penyelia"],
-                penyelia_form(penyelia, rph, lock),
-            ]
-        ]
-    )
 
 
 def penyelia_form(penyelia, rph, lock: bool = False) -> Element:
@@ -84,9 +73,7 @@ def penyelia_form(penyelia, rph, lock: bool = False) -> Element:
 
 def penyelias_table(penyelias) -> Element:
     col_headers = ["NIP", "Nama", "Status", "RPH", "Actions"]
-    return table_builder(
-            col_headers,
-            (a[tr[
+    rows = (tr[
                 td[penyelia.nip],
                 td[penyelia.name],
                 td[penyelia.status],
@@ -104,5 +91,9 @@ Apakah anda yakin mau menghapus data {penyelia.name}?
                         )["Hapus"],
                     ]
                 ],
-            ]] for penyelia in penyelias)
+            ] for penyelia in penyelias)
+
+    return table_builder(
+        col_headers,
+        rows
         )
