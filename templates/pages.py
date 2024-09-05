@@ -58,7 +58,10 @@ def table_page(title, datatable) -> Element:
             drawer_menu(),
             div(style="margin-top: 4em;")[
                 h1[title],
-                a(role="button", href="/penyelia/new")["+ penyelia"],
+                a(
+                    role="button",
+                    href="/" + title.lower() + "/new"
+                )["+ " + title.lower()],
                 datatable,
                 script(src="/static/script.js"),
             ]

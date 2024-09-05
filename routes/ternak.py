@@ -29,6 +29,7 @@ ternak_db = Crud(models.Ternak, next(get_db()))
 
 @routes.post("/")
 async def create_ternak(
+    name: str = Form(...),
     bobot: str = Form(...),
     jenis: str = Form(...),
     kesehatan: str = Form(...),
@@ -36,6 +37,7 @@ async def create_ternak(
     juleha_id: int = Form(...),
 ):
     ternak = models.Ternak(
+        name=name,
         bobot=bobot,
         jenis=jenis,
         kesehatan=kesehatan,
@@ -98,6 +100,7 @@ def remove_ternak(ternak_id: int):
 @routes.put("/{ternak_id}", response_class=HTMLResponse)
 async def update_ternak(
     ternak_id: int,
+    name: str = Form(...),
     bobot: str = Form(...),
     jenis: str = Form(...),
     kesehatan: str = Form(...),
@@ -105,6 +108,7 @@ async def update_ternak(
     juleha_id: int = Form(...),
 ):
     ternak = ternak_db.get_by_id(ternak_id)
+    ternak.name = name
     ternak.bobot = bobot
     ternak.jenis = jenis
     ternak.kesehatan = kesehatan

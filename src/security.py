@@ -4,43 +4,47 @@ from fastapi import Depends, HTTPException
 from fastapi.security import APIKeyCookie
 from jose import jwt
 from pydantic import BaseModel
+from src.database import SessionLocal, engine
+from controllers import user_ctrl
 
 cookie_sec = APIKeyCookie(name="session")
 secret_key = "ladadidadadida"
 
-users = {
-    "johndoe": {
-        "username": "johndoe",
-        "full_name": "John Doe",
-        "email": "johndoe@example.com",
-        "hashed_password": "fakehashedsecret",
-        "disabled": False,
-    },
-    "alice": {
-        "username": "alice",
-        "full_name": "Alice Wonderson",
-        "email": "alice@example.com",
-        "hashed_password": "fakehashedsecret2",
-        "disabled": True,
-    },
-}
+
+# Dependency
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
 class User(BaseModel):
     username: str
     email: str | None = None
-    full_name: str | None = None
-    disabled: bool | None = None
+    role: str | None = None
+    is_active: bool | None = None
 
 
 class UserInDB(User):
     hashed_password: str
 
 
-def get_user(db, username: str):
-    if username in db:
-        user_dict = db[username]
-        return UserInDB(**user_dict)
+def check_user(username: str, password: str):
+    user = user_ctrl.get_user_by_username(next(get_db()), username)
+    if user is None:
+        raise HTTPException(
+            status_code=302,
+            detail="Incorect username or password",
+            # headers={"location": "/login"}
+        )
+    if not password == user.hashed_password:
+        raise HTTPException(
+            status_code=302,
+            detail="Incorect username or password",
+            # headers={"location": "/login"}
+        )
 
 
 async def get_current_user(
@@ -48,7 +52,8 @@ async def get_current_user(
 ):
     try:
         payload = jwt.decode(session, secret_key)
-        user = users[payload["sub"]]
+        print(payload["sub"])
+        user = user_ctrl.get_user_by_username(next(get_db()), payload["sub"])
         return user
     except Exception:
         raise HTTPException(
@@ -61,11 +66,11 @@ async def get_current_user(
 async def get_current_active_user(
     current_user: Annotated[User, Depends(get_current_user)]
 ):
-    if (current_user["disabled"] is False):
+    if current_user.is_active:
         return current_user
     else:
         raise HTTPException(
             status_code=302,
             detail="Inactive user",
-            headers={"location": "/login"}
+            # headers={"location": "/login"}
         )

@@ -11,7 +11,19 @@ from fastapi.staticfiles import StaticFiles
 from jose import jwt
 import src.security as _security
 import templates.pages as pages
-from routes import users, juleha, blockchain, peternak, ternak, rph, penyelia
+from routes import (
+    users,
+    juleha,
+    blockchain,
+    peternak,
+    ternak,
+    rph,
+    penyelia,
+    pasar,
+    transportasi,
+    lapak,
+    transaksi,
+)
 from src import models
 from src.database import engine
 
@@ -24,6 +36,10 @@ app.include_router(peternak.routes)
 app.include_router(rph.routes)
 app.include_router(ternak.routes)
 app.include_router(penyelia.routes)
+app.include_router(pasar.routes)
+app.include_router(lapak.routes)
+app.include_router(transportasi.routes)
+app.include_router(transaksi.routes)
 app.include_router(blockchain.routes)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/files", StaticFiles(directory="files"), name="files")
@@ -50,26 +66,8 @@ async def login_post(
     username: str = Form(...),
     password: str = Form(...)
 ):
-    if username not in _security.users:
-        raise HTTPException(
-            status_code=302,
-            detail="Incorect username or password",
-            # headers={"location": "/login"}
-        )
-    db_password = _security.users[username]["hashed_password"]
-    if not password == db_password:
-        raise HTTPException(
-            status_code=302,
-            detail="Incorect username or password",
-            # headers={"location": "/login"}
-        )
+    _security.check_user(username, password)
     token = jwt.encode({"sub": username}, _security.secret_key)
     response = RedirectResponse("/dashboard", status_code=302)
     response.set_cookie("session", token)
-    response.set_cookie("telo", "telogodok")
     return response
-
-
-@app.post("/nodemcu")
-def nodemcu_post(pelak):
-    print(pelak)

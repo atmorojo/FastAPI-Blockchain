@@ -17,20 +17,11 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True)
+    username = Column(String, unique=True, index=True)
     email = Column(String, unique=True, index=True)
     hashed_password = Column(String)
+    role = Column(String)
     is_active = Column(Boolean, default=True)
-    items = relationship("Item", back_populates="owner")
-
-
-class Item(Base):
-    __tablename__ = "items"
-
-    id = Column(Integer, primary_key=True)
-    title = Column(String, index=True)
-    description = Column(String, index=True)
-    owner_id = Column(Integer, ForeignKey("users.id"))
-    owner = relationship("User", back_populates="items")
 
 
 class Juleha(Base):
@@ -59,6 +50,7 @@ class Ternak(Base):
     __tablename__ = "ternaks"
 
     id = Column(Integer, primary_key=True)
+    name = Column(String, index=True)
     bobot = Column(Float, index=True)
     jenis = Column(String, index=True)
     kesehatan = Column(String, index=True)
@@ -104,6 +96,7 @@ class Pasar(Base):
     lapaks = relationship("Lapak", back_populates="pasar")
 
 
+# Durung digawe mastere
 class Lapak(Base):
     __tablename__ = "lapaks"
 
@@ -112,3 +105,32 @@ class Lapak(Base):
     no_lapak = Column(String)
     pasar_id = Column(Integer, ForeignKey("pasars.id"))
     pasar = relationship("Pasar", back_populates="lapaks")
+
+
+class Transportasi(Base):
+    __tablename__ = "transportasis"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String, index=True)
+    rph_id = Column(Integer, ForeignKey("rphs.id"))
+    rph = relationship("Rph")
+
+
+class Transaksi(Base):
+    __tablename__ = "transaksis"
+
+    id = Column(Integer, primary_key=True)
+    jumlah = Column(Float)
+    status = Column(String)
+    validasi_1 = Column(Integer)
+    validasi_2 = Column(Integer)
+    transportasi_id = Column(Integer, ForeignKey("transportasis.id"))
+    lapak_id = Column(Integer, ForeignKey("lapaks.id"))
+    penyelia_id = Column(Integer, ForeignKey("penyelias.id"))
+    juleha_id = Column(Integer, ForeignKey("julehas.id"))
+    ternak_id = Column(Integer, ForeignKey("ternaks.id"))
+    transportasi = relationship("Transportasi")
+    lapak = relationship("Lapak")
+    penyelia = relationship("Penyelia")
+    juleha = relationship("Juleha")
+    ternak = relationship("Ternak")

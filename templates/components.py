@@ -84,6 +84,10 @@ set #burger-btn.checked to false
             li[a(href="/ternak")["Ternak"]],
             li[a(href="/rph")["RPH"]],
             li[a(href="/penyelia")["Penyelia"]],
+            li[a(href="/pasar")["Pasar"]],
+            li[a(href="/lapak")["Lapak"]],
+            li[a(href="/transportasi")["Transportasi"]],
+            li[a(href="/transaksi")["Transaksi"]],
         ]]]
     ]
 

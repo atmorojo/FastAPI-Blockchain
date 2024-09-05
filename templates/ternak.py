@@ -1,5 +1,5 @@
 from templates.base_template import base_page
-from templates.components import table_builder, drawer_menu
+from templates.components import table_builder, drawer_menu, inlabel
 from htpy import (
     select,
     option,
@@ -114,6 +114,8 @@ def ternak_form(
         autocomplete="off"
     )[
         img(".htmx-indicator", src="/static/indicator.gif"),
+        inlabel("Tag", "text", "name",
+                (ternak.name if ternak else ""), lock),
         label[
             small["Bobot"],
             input(
