@@ -1,12 +1,12 @@
-"""This is a simple implementation of a blockchain."""
+"""This is a simple implementation of a blockchain. No proof required lol"""
 
 import os
 import datetime as _dt
 import hashlib as _hashlib
+import json
 from sqlitedict import SqliteDict
 
 # Constants
-POW_PREFIX = "00"
 DATABASE_URL = os.getenv('DATABASE_URL')
 if DATABASE_URL is None:
     DATABASE_URL = './data/production.sqlite'
@@ -19,20 +19,20 @@ class Blockchain:
         """
         Use sqlitedict to store blockchain data
         """
-        self.chain = SqliteDict(DATABASE_URL, autocommit=True)
+        self.chain = SqliteDict(
+            DATABASE_URL,
+            autocommit=True,
+            encode=json.dumps,
+            decode=json.loads
+        )
 
         if len(self.chain) == 0:
-            genesis_block = self._create_block(1, "genesis block")
+            genesis_block = self._create_block(1, "genesis block", "")
             self.chain[1] = genesis_block
 
-    def mine_block(self, data: str) -> dict:
+    def mine_block(self, data: dict) -> dict:
         """Mine and append a block with provided data to the blockchain."""
-        """
-        TODO:
-        * Let validator node create the block
-        * Let other nodes know a block is created and validate it
-        * If valid block add it to the chain
-        """
+
         previous_block = self.get_previous_block()
         new_index = len(self.chain) + 1
         block = self._create_block(
@@ -42,7 +42,7 @@ class Blockchain:
         return block
 
     def _create_block(
-        self, index: int, transaction: str, previous_hash: str = ''
+        self, index: int, transaction: dict, previous_hash: str
     ) -> dict:
         """Create a new block."""
         new_block = {
@@ -50,8 +50,6 @@ class Blockchain:
             "previous_hash": previous_hash,
             "timestamp":  str(_dt.datetime.now()),
             "transaction": transaction,
-            "block_author": self.name,
-            "validator": None
         }
         new_block["current_hash"] = self.calculate_hash(new_block)
         return new_block
@@ -62,6 +60,7 @@ class Blockchain:
 
     def calculate_hash(self, block: dict):
         return _hashlib.sha256(
-            block["previous_hash"] + block["timestamp"] +
-            block["transaction"] + block["name"]
-        ).hexdigest(),
+            (block["previous_hash"] +
+             block["timestamp"] +
+             json.dumps(block["transaction"])).encode()
+        ).hexdigest()

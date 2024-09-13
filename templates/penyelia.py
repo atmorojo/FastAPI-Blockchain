@@ -74,26 +74,26 @@ def penyelia_form(penyelia, rph, lock: bool = False) -> Element:
 def penyelias_table(penyelias) -> Element:
     col_headers = ["NIP", "Nama", "Status", "RPH", "Actions"]
     rows = (tr[
-                td[penyelia.nip],
-                td[penyelia.name],
-                td[penyelia.status],
-                td[penyelia.rph.name],
-                td[
-                    div(".table-actions", role="group")[
-                        a(href="/penyelia/" + str(penyelia.id))["Detail"],
-                        a(href="/penyelia/edit/" + str(penyelia.id))["Edit"],
-                        a(
-                            hx_delete="/penyelia/" + str(penyelia.id),
-                            hx_confirm=f"""
+        td[penyelia.nip],
+        td[penyelia.name],
+        td[penyelia.status],
+        td[penyelia.rph.name],
+        td[
+            div(".table-actions", role="group")[
+                a(href="/penyelia/" + str(penyelia.id))["Detail"],
+                a(href="/penyelia/edit/" + str(penyelia.id))["Edit"],
+                a(
+                    hx_delete="/penyelia/" + str(penyelia.id),
+                    hx_confirm=f"""
 Apakah anda yakin mau menghapus data {penyelia.name}?
-                            """,
-                            hx_target="#table-wrapper"
-                        )["Hapus"],
-                    ]
-                ],
-            ] for penyelia in penyelias)
+                    """,
+                    hx_target="#table-wrapper"
+                )["Hapus"],
+            ]
+        ],
+    ] for penyelia in penyelias)
 
     return table_builder(
         col_headers,
         rows
-        )
+    )

@@ -1,5 +1,14 @@
-from templates.base_template import base_page
-from templates.components import table_builder, drawer_menu, inlabel
+from templates.components import (
+    table_builder,
+    show_img,
+    edit_btn,
+    inlabel,
+    file_input,
+    combo_gen,
+    update_btn,
+    submit_btn,
+)
+
 from htpy import (
     select,
     option,
@@ -56,55 +65,31 @@ def ternak_detail(ternak=None, julehas=None, peternaks=None,
 def ternak_form(
     ternak=None, julehas=None, peternaks=None, lock: bool = False
 ) -> Element:
-    if lock is False:
-        if ternak is not None:
-            form_btn = button(
-                ".full",
-                hx_put="/ternak/" + str(ternak.id),
-                hx_target="#form",
-                hx_indicator="#form",
-                hx_encoding="multipart/form-data",
-                hx_push_url="true"
-            )["Simpan Perubahan"]
-
-            juleha_combo = select(name="juleha_id")[
-                (option(
-                    value=juleha.id,
-                    selected=(juleha.id == ternak.juleha_id)
-                )[juleha.name] for juleha in julehas)
-            ]
-            peternak_combo = select(name="peternak_id")[
-                (option(
-                    value=peternak.id,
-                    selected=(peternak.id == ternak.peternak_id)
-                )[peternak.name] for peternak in peternaks)
-            ]
-        else:
-            form_btn = input(type_="submit", value="Simpan")
-            juleha_combo = select(name="juleha_id")[
-                option(value="", disabled=True, selected=True, hidden=True)[
-                    "Pilih Juleha"],
-                (option(value=juleha.id)[juleha.name] for juleha in julehas)
-            ]
-            peternak_combo = select(name="peternak_id")[
-                option(value="", disabled=True, selected=True, hidden=True)[
-                    "Pilih Peternak"],
-                (option(value=peternak.id)[peternak.name] for peternak in
-                 peternaks)
-            ]
-
+    if lock:
+        form_btn = edit_btn("/ternak", ternak.id)
+        juleha_combo = inlabel(
+            "Juleha", "text", "juleha_id",
+            ternak.juleha.name, lock
+        )
+        peternak_combo = inlabel(
+            "Peternak", "text", "peternak_id",
+            ternak.peternak.name, lock
+        )
     else:
-        form_btn = button(
-            ".full",
-            hx_get="/ternak/edit/" + str(ternak.id),
-            hx_target="#form",
-            hx_push_url="true"
-        )["Edit"]
-
-        juleha_combo = input(
-            type_="text", value=ternak.juleha.name, disabled=True)
-        peternak_combo = input(
-            type_="text", value=ternak.peternak.name, disabled=True)
+        juleha_combo = combo_gen(
+            "Juleha", "juleha_id", julehas,
+            (ternak.juleha_id if ternak else None),
+            (None if ternak else "Pilih Juleha")
+        )
+        peternak_combo = combo_gen(
+            "Peternak", "peternak_id", peternaks,
+            (ternak.peternak_id if ternak else None),
+            (None if ternak else "Pilih Peternak")
+        )
+        if ternak is not None:
+            form_btn = update_btn("/ternak/", ternak.id)
+        else:
+            form_btn = submit_btn
 
     return form(
         "#form",
@@ -143,41 +128,39 @@ def ternak_form(
                 value=(ternak.kesehatan if ternak else "")
             ),
         ],
-        label[
-            small["Juleha"],
-            juleha_combo
-        ],
-        label[
-            small["Peternak"],
-            peternak_combo
-        ],
+        juleha_combo,
+        peternak_combo,
+        inlabel("Waktu Disembelih", "datetime-local", "waktu_sembelih",
+                (ternak.waktu_sembelih if ternak else ""),
+                lock),
         form_btn
     ]
 
 
 def ternaks_table(ternaks) -> Element:
-    return div("#table-wrapper")[
-        table_builder(
-            ["Bobot", "Jenis", "Kesehatan", "Peternak", "Juleha", "Actions"],
-            (a[tr[
-                td[str(ternak.bobot) + "kg"],
-                td[ternak.jenis],
-                td[ternak.kesehatan],
-                td[ternak.peternak.name],
-                td[ternak.juleha.name],
-                td[
-                    div(".table-actions", role="group")[
-                        a(href="/ternak/" + str(ternak.id))["Detail"],
-                        a(href="/ternak/edit/" + str(ternak.id))["Edit"],
-                        a(
-                            hx_delete="/ternak/" + str(ternak.id),
-                            hx_confirm=f"""
-Apakah anda yakin mau menghapus data {ternak.id}?
-                            """,
-                            hx_target="#table-wrapper"
-                        )["Hapus"],
-                    ]
-                ],
-            ]] for ternak in ternaks)
-        )
+    col_headers = [
+        "Bobot", "Jenis", "Kesehatan",
+        "Peternak", "Juleha", "Actions"
     ]
+    rows = (tr[
+        td[str(ternak.bobot) + "kg"],
+        td[ternak.jenis],
+        td[ternak.kesehatan],
+        td[ternak.peternak.name],
+        td[ternak.juleha.name],
+        td[
+            div(".table-actions", role="group")[
+                a(href="/ternak/" + str(ternak.id))["Detail"],
+                a(href="/ternak/edit/" + str(ternak.id))["Edit"],
+                a(
+                    hx_delete="/ternak/" + str(ternak.id),
+                    hx_confirm=f"""
+Apakah anda yakin mau menghapus data {ternak.id}?
+                    """,
+                    hx_target="#table-wrapper"
+                )["Hapus"],
+            ]
+        ],
+    ] for ternak in ternaks)
+
+    return table_builder(col_headers, rows)

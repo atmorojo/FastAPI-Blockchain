@@ -54,6 +54,7 @@ class Ternak(Base):
     bobot = Column(Float, index=True)
     jenis = Column(String, index=True)
     kesehatan = Column(String, index=True)
+    waktu_sembelih = Column(String)
     peternak_id = Column(Integer, ForeignKey("peternaks.id"))
     peternak = relationship("Peternak", back_populates="ternaks")
     juleha_id = Column(Integer, ForeignKey("julehas.id"))
@@ -134,3 +135,24 @@ class Transaksi(Base):
     penyelia = relationship("Penyelia")
     juleha = relationship("Juleha")
     ternak = relationship("Ternak")
+
+
+class Pengiriman(Base):
+    __tablename__ = "pengirimans"
+
+    id = Column(Integer, primary_key=True)
+    waktu_kirim = Column(String)
+    waktu_selesai = Column(String)
+    status = Column(String)
+    iot_id = Column(Integer, ForeignKey("iots.id"))
+    transaksi_id = Column(Integer, ForeignKey("transaksis.id"))
+    iot = relationship("IoT")
+    transaksi = relationship("Transaksi")
+
+
+class IoT(Base):
+    __tablename__ = "iots"
+
+    id = Column(Integer, primary_key=True)
+    rph_id = Column(Integer, ForeignKey("rphs.id"))
+    rph = relationship("Rph")

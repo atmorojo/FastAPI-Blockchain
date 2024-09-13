@@ -11,7 +11,6 @@ routes = APIRouter(prefix="/blockchain")
 
 class BlockData(BaseModel):
     """Model for block data input."""
-    name: str
     transaction: str
     hash: str
     previous_hash: str

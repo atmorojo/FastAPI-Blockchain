@@ -6,6 +6,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from src import models
 from controllers.crud import Crud
 from src.database import SessionLocal, engine
+import src.blockchain as bc
 import templates.pages as pages
 import templates.transaksi as transaksi_view
 
@@ -25,7 +26,42 @@ def get_db():
         db.close()
 
 
+class Blockdata:
+    def __init__(
+        self,
+        id_transaksi,
+        rph_name,
+        lapak_name,
+        peternak_name,
+        jumlah,
+        waktu_sembelih,
+        id_csa=None,
+        waktu_kirim=None,
+        temp_min=None,
+        temp_max=None,
+        humi_min=None,
+        humi_max=None,
+        status_validasi=None,
+    ):
+        self.id_transaksi = id_transaksi
+        self.id_csa = id_csa
+        self.rph_name = rph_name
+        self.lapak_name = lapak_name
+        self.peternak_name = peternak_name
+        self.jumlah = jumlah
+        self.waktu_sembelih = waktu_sembelih
+        self.waktu_kirim = waktu_kirim
+        self.temp_min = temp_min
+        self.temp_max = temp_max
+        self.humi_min = humi_min
+        self.humi_max = humi_max
+        self.status_validasi = status_validasi
+
+
 transaksi_db = Crud(models.Transaksi, next(get_db()))
+pengiriman_db = Crud(models.Pengiriman, next(get_db()))
+
+chain = bc.Blockchain()
 
 
 @routes.get("/new", response_class=HTMLResponse)
@@ -55,6 +91,8 @@ async def create_transaksi(
     penyelia_id: int = Form(...),
     juleha_id: int = Form(...),
     ternak_id: int = Form(...),
+    iot_id: int = Form(...),
+    waktu_kirim: str = Form(...),
 ):
     transaksi = models.Transaksi(
         jumlah=jumlah,
@@ -64,7 +102,28 @@ async def create_transaksi(
         juleha_id=juleha_id,
         ternak_id=ternak_id,
     )
-    transaksi_db.create(transaksi)
+
+    transaksi = transaksi_db.create(transaksi)
+
+    pengiriman = models.Pengiriman(
+        transaksi_id=transaksi.id,
+        iot_id=iot_id,
+        waktu_kirim=waktu_kirim,
+        status_kirim="dikirim"
+    )
+
+    pengiriman = pengiriman_db.create(pengiriman)
+
+    block = Blockdata(
+        id_transaksi=transaksi.id,
+        rph_name=transaksi.transportasi.rph.name,
+        lapak_name=transaksi.lapak.name,
+        peternak_name=transaksi.ternak.peternak.name,
+        jumlah=transaksi.jumlah,
+        waktu_sembelih=transaksi.ternak.waktu_sembelih,
+        waktu_kirim=pengiriman.waktu_kirim
+    )
+    chain.mine_block(block.__dict__)
     return RedirectResponse("/transaksi", status_code=302)
 
 

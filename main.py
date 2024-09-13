@@ -41,6 +41,7 @@ app.include_router(lapak.routes)
 app.include_router(transportasi.routes)
 app.include_router(transaksi.routes)
 app.include_router(blockchain.routes)
+
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/files", StaticFiles(directory="files"), name="files")
 
