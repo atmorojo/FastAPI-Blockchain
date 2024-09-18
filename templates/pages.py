@@ -78,7 +78,7 @@ def detail_page(
         content=[
             drawer_menu(),
             div(style="margin: 4em 0;")[
-                h1["Tambah " + title],
+                h1[title.title()],
                 detail_form,
             ]
         ]

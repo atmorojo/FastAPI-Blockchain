@@ -1,5 +1,5 @@
 from fastapi import (
-    APIRouter, HTTPException, Form, Request
+    APIRouter, HTTPException, Form, Request, Depends
 )
 from fastapi.responses import HTMLResponse, RedirectResponse
 
@@ -9,6 +9,7 @@ from src.database import SessionLocal, engine
 import src.blockchain as bc
 import templates.pages as pages
 import templates.transaksi as transaksi_view
+from sqlalchemy.orm import Session
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -71,6 +72,8 @@ def new_transaksi():
     penyelia = Crud(models.Penyelia, next(get_db())).get()
     juleha = Crud(models.Juleha, next(get_db())).get()
     ternak = Crud(models.Ternak, next(get_db())).get()
+    iot = Crud(models.IoT, next(get_db())).get()
+
     return str(pages.detail_page(
         "Transaksi",
         transaksi_view.transaksi_form(
@@ -79,6 +82,7 @@ def new_transaksi():
             penyelia=penyelia,
             juleha=juleha,
             ternak=ternak,
+            iot=iot
         )
     ))
 
@@ -109,7 +113,7 @@ async def create_transaksi(
         transaksi_id=transaksi.id,
         iot_id=iot_id,
         waktu_kirim=waktu_kirim,
-        status_kirim="dikirim"
+        status="dikirim"
     )
 
     pengiriman = pengiriman_db.create(pengiriman)
@@ -143,11 +147,18 @@ def read_transaksis(skip: int = 0, limit: int = 100):
 def read_transaksi(transaksi_id: int):
     lock = True
     transaksi = transaksi_db.get_by_id(transaksi_id)
+    pengiriman = pengiriman_db.get_by("transaksi_id", transaksi_id)
+
     if transaksi is None:
         raise HTTPException(status_code=404, detail="User not found")
+
     return str(pages.detail_page(
         "transaksi",
-        transaksi_view.transaksi_form(transaksi=transaksi, lock=lock)
+        transaksi_view.transaksi_form(
+            transaksi=transaksi,
+            pengiriman=pengiriman,
+            lock=lock
+        )
     ))
 
 
@@ -162,6 +173,9 @@ def edit_transaksi(req: Request, transaksi_id: int):
     penyelia = Crud(models.Penyelia, next(get_db())).get()
     juleha = Crud(models.Juleha, next(get_db())).get()
     ternak = Crud(models.Ternak, next(get_db())).get()
+    iot = Crud(models.IoT, next(get_db())).get()
+    pengiriman = pengiriman_db.get_by("transaksi_id", transaksi_id)
+
     if transaksi is None:
         raise HTTPException(status_code=404, detail="User not found")
 
@@ -172,6 +186,8 @@ def edit_transaksi(req: Request, transaksi_id: int):
         penyelia=penyelia,
         juleha=juleha,
         ternak=ternak,
+        iot=iot,
+        pengiriman=pengiriman
     )
     if req.headers.get('HX-Request'):
         return str(form)
@@ -188,8 +204,12 @@ async def update_transaksi(
     penyelia_id: int = Form(...),
     juleha_id: int = Form(...),
     ternak_id: int = Form(...),
+    iot_id: int = Form(...),
+    waktu_kirim: str = Form(...),
+    db: Session = Depends(get_db),
 ):
     lock = True
+
     transaksi = transaksi_db.get_by_id(transaksi_id)
     transaksi.jumlah = jumlah
     transaksi.lapak_id = lapak_id
@@ -197,9 +217,28 @@ async def update_transaksi(
     transaksi.penyelia_id = penyelia_id
     transaksi.juleha_id = juleha_id
     transaksi.ternak_id = ternak_id
-
     transaksi = transaksi_db.update(transaksi)
-    return str(transaksi_view.transaksi_form(transaksi, lock))
+
+    pengiriman = pengiriman_db.get_by("transaksi_id", transaksi_id)
+    pengiriman.waktu_kirim = waktu_kirim
+    pengiriman = pengiriman_db.update(pengiriman)
+
+    block = Blockdata(
+        id_transaksi=transaksi.id,
+        rph_name=transaksi.transportasi.rph.name,
+        lapak_name=transaksi.lapak.name,
+        peternak_name=transaksi.ternak.peternak.name,
+        jumlah=transaksi.jumlah,
+        waktu_sembelih=transaksi.ternak.waktu_sembelih,
+        waktu_kirim=pengiriman.waktu_kirim
+    )
+    chain.mine_block(block.__dict__)
+
+    return str(transaksi_view.transaksi_form(
+        transaksi,
+        lock,
+        pengiriman=pengiriman
+    ))
 
 
 # Delete

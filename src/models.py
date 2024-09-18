@@ -154,5 +154,6 @@ class IoT(Base):
     __tablename__ = "iots"
 
     id = Column(Integer, primary_key=True)
+    node = Column(String)
     rph_id = Column(Integer, ForeignKey("rphs.id"))
     rph = relationship("Rph")

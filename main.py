@@ -23,9 +23,11 @@ from routes import (
     transportasi,
     lapak,
     transaksi,
+    iot,
 )
 from src import models
 from src.database import engine
+import src.blockchain as bc
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -40,6 +42,7 @@ app.include_router(pasar.routes)
 app.include_router(lapak.routes)
 app.include_router(transportasi.routes)
 app.include_router(transaksi.routes)
+app.include_router(iot.routes)
 app.include_router(blockchain.routes)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -72,3 +75,15 @@ async def login_post(
     response = RedirectResponse("/dashboard", status_code=302)
     response.set_cookie("session", token)
     return response
+
+
+@app.get("/insert")
+def insert(
+    node: str = None,
+    humi=None,
+    temp=None
+):
+    resp = {"node": node, "humi": humi, "temp": temp}
+    chain = bc.Blockchain("./data/iot.db")
+    chain.mine_block(resp)
+    return chain.get_previous_block()

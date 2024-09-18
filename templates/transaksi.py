@@ -25,8 +25,13 @@ def transaksi_form(
     transportasi=None,
     penyelia=None,
     juleha=None,
-    ternak=None
+    ternak=None,
+    iot=None,
+    pengiriman=None,
 ) -> Element:
+    waktu_kirim_input = inlabel(
+        "Waktu Kirim", "datetime-local", "waktu_kirim",
+        (pengiriman.waktu_kirim if pengiriman else ""), lock)
     if lock:
         form_btn = edit_btn("/transaksi/", transaksi.id)
         transportasi_input = inlabel(
@@ -44,6 +49,9 @@ def transaksi_form(
         ternak_input = inlabel(
             "Ternak", "text", "ternak_id",
             transaksi.ternak.name, lock)
+        iot_input = inlabel(
+            "IoT", "text", "iot_id",
+            pengiriman.iot.node, lock)
     else:
         transportasi_input = combo_gen(
             "Transportasi", "transportasi_id",
@@ -70,6 +78,11 @@ def transaksi_form(
             ternak, (transaksi.ternak_id if transaksi else None),
             "Pilih Ternak"
         )
+        iot_input = combo_gen(
+            "IoT", "iot_id",
+            iot, (pengiriman.iot_id if transaksi else None),
+            "Pilih IoT", "node"
+        )
         form_btn = (update_btn(
             "/transaksi/", transaksi.id
         ) if transaksi else submit_btn)
@@ -81,7 +94,7 @@ def transaksi_form(
         enctype="multipart/form-data"
     )[
         img(".htmx-indicator", src="/static/indicator.gif"),
-        inlabel("Jumlah", "text", "jumlah",
+        inlabel("Jumlah", "number", "jumlah",
                 (transaksi.jumlah if transaksi else ""),
                 lock),
         transportasi_input,
@@ -89,6 +102,8 @@ def transaksi_form(
         penyelia_input,
         juleha_input,
         ternak_input,
+        iot_input,
+        waktu_kirim_input,
         form_btn
     ]
 

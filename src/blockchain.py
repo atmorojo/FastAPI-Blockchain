@@ -1,26 +1,23 @@
 """This is a simple implementation of a blockchain. No proof required lol"""
 
-import os
 import datetime as _dt
 import hashlib as _hashlib
 import json
 from sqlitedict import SqliteDict
 
 # Constants
-DATABASE_URL = os.getenv('DATABASE_URL')
-if DATABASE_URL is None:
-    DATABASE_URL = './data/production.sqlite'
+DATABASE_URL = './data/production.sqlite'
 
 
 class Blockchain:
     """A simple implementation of a blockchain."""
 
-    def __init__(self):
+    def __init__(self, db=DATABASE_URL):
         """
         Use sqlitedict to store blockchain data
         """
         self.chain = SqliteDict(
-            DATABASE_URL,
+            db,
             autocommit=True,
             encode=json.dumps,
             decode=json.loads

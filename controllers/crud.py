@@ -18,6 +18,11 @@ class Crud:
             self.model.id == id
         ).first()
 
+    def get_by(self, field: str, query):
+        return self.db.query(self.model).filter(
+            getattr(self.model, field) == query
+        ).first()
+
     def remove(self, row):
         self.db.delete(row)
         self.db.commit()

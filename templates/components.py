@@ -135,7 +135,10 @@ def inlabel(_label, _type, _name, _value, lock):
     ],
 
 
-def combo_gen(label_text, name, items, selected=None, placeholder=None):
+def combo_gen(
+        label_text, name, items,
+        selected=None, placeholder=None, custom_name=None
+):
     return label[
         small[label_text],
         select(name=name)[
@@ -145,6 +148,10 @@ def combo_gen(label_text, name, items, selected=None, placeholder=None):
             (option(
                 value=item.id,
                 selected=(item.id == selected)
-            )[item.name] for item in items)
+            )[
+                (getattr(
+                    item, custom_name
+                )) if custom_name else item.name
+            ] for item in items)
         ]
     ]
