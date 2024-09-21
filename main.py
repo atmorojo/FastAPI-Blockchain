@@ -11,6 +11,7 @@ from fastapi.staticfiles import StaticFiles
 from jose import jwt
 import src.security as _security
 import templates.pages as pages
+import templates.validasi as validasi_tpl
 from routes import (
     users,
     juleha,
@@ -28,6 +29,8 @@ from routes import (
 from src import models
 from src.database import engine
 import src.blockchain as bc
+from src.database import SessionLocal
+from controllers.crud import Crud
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -49,13 +52,60 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/files", StaticFiles(directory="files"), name="files")
 
 
+# Dependency
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
 @app.get("/dashboard", response_class=HTMLResponse)
 async def index(
-    username: Annotated[
+    user: Annotated[
         _security.User, Depends(_security.get_current_active_user)
-    ]
+    ],
+    db=Depends(get_db)
 ):
-    return str(pages.dashboard_page())
+    match user.role:
+        case 1:
+            page = pages.dashboard_page()
+        case 2:
+            validasi = db.query(models.Transaksi).filter(
+                models.Transaksi.juleha_id == user.alias,
+            ).all()
+            table = validasi_tpl.validasi_table(validasi, "validasi_1")
+            page = pages.table_page("Validasi Juleha", table, False)
+        case 3:
+            validasi = db.query(models.Transaksi).filter(
+                models.Transaksi.penyelia_id == user.alias,
+            ).all()
+            table = validasi_tpl.validasi_table(validasi, "validasi_2")
+            page = pages.table_page("Validasi Penyelia", table, False)
+        case _:
+            page = "Not allowed"
+
+    return str(page)
+
+
+@app.put("/validasi/{validasi_id}", response_class=HTMLResponse)
+def validasi(
+    validasi_id: int,
+    user=Depends(_security.get_current_active_user),
+    db=Depends(get_db)
+):
+    validasi_ctrl = Crud(models.Transaksi, db)
+    validasi = validasi_ctrl.get_by_id(validasi_id)
+
+    if user.role == 2:
+        validasi.validasi_1 = 1
+    elif user.role == 3:
+        validasi.validasi_2 = 1
+
+    validasi_ctrl.update(validasi)
+
+    return str(validasi_tpl.validated)
 
 
 @app.get("/login", response_class=HTMLResponse)
@@ -79,10 +129,14 @@ async def login_post(
 
 @app.get("/insert")
 def insert(
-    node: str = None,
+    node=None,
     humi=None,
     temp=None
 ):
+    """
+    TODO:
+    * Filter node. Do not accept unregistered nodes
+    """
     resp = {"node": node, "humi": humi, "temp": temp}
     chain = bc.Blockchain("./data/iot.db")
     chain.mine_block(resp)

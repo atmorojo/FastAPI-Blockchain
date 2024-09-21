@@ -52,7 +52,6 @@ async def get_current_user(
 ):
     try:
         payload = jwt.decode(session, secret_key)
-        print(payload["sub"])
         user = user_ctrl.get_user_by_username(next(get_db()), payload["sub"])
         return user
     except Exception:
@@ -74,3 +73,9 @@ async def get_current_active_user(
             detail="Inactive user",
             # headers={"location": "/login"}
         )
+
+
+async def get_current_user_role(
+    current_user: Annotated[User, Depends(get_current_active_user)]
+):
+    return current_user.role

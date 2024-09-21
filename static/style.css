@@ -115,6 +115,18 @@ html, body {
 .table-actions a {
 	cursor: pointer;
 	text-decoration: none;
+	font-weight: bold;
+}
+
+.table-actions [role="button"] {
+	flex: 0 1 auto !important;
+	padding: 0.5em 1em !important;
+	font-size: .7em !important;
+}
+
+.warning {
+	border-color: #ff4b4b;
+	color: #ff4b4b;
 }
 
 @media only screen and (max-width: 600px) {

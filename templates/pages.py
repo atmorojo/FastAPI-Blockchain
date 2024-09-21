@@ -47,7 +47,14 @@ def dashboard_page() -> Element:
     )
 
 
-def table_page(title, datatable) -> Element:
+def table_page(title, datatable, button=True) -> Element:
+    if button:
+        add_button = a(
+            role="button", href="/" + title.lower() + "/new"
+        )["+ " + title.lower()]
+    else:
+        add_button = ""
+
     return base_page(
         page_title=title,
         extra_head=[
@@ -58,10 +65,7 @@ def table_page(title, datatable) -> Element:
             drawer_menu(),
             div(style="margin-top: 4em;")[
                 h1[title],
-                a(
-                    role="button",
-                    href="/" + title.lower() + "/new"
-                )["+ " + title.lower()],
+                add_button,
                 datatable,
                 script(src="/static/script.js"),
             ]

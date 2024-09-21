@@ -41,12 +41,12 @@ def mine_block(
     return block_data
 
 
-@routes.get("/blockchain/")
+@routes.get("/")
 def get_blockchain_route(
         blockchain: _blockchain.Blockchain = Depends(get_blockchain)
 ):
     """Returns the entire blockchain."""
-    return blockchain.chain
+    return blockchain.chain.items()
 
 
 # pylint: disable=unused-argument

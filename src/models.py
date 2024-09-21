@@ -22,6 +22,7 @@ class User(Base):
     hashed_password = Column(String)
     role = Column(String)
     is_active = Column(Boolean, default=True)
+    alias = Column(Integer)
 
 
 class Juleha(Base):
@@ -97,7 +98,6 @@ class Pasar(Base):
     lapaks = relationship("Lapak", back_populates="pasar")
 
 
-# Durung digawe mastere
 class Lapak(Base):
     __tablename__ = "lapaks"
 

@@ -1,3 +1,17 @@
+(A) +apdh Add CSA result of temp and humi to a table
+(A) +apdh Add Lapak user
+(A) +apdh Add lapak dashboard to confirm received package
+(A) +apdh Add qrcode page
+(A) +apdh Update CSA result to bc
+(A) +apdh Update validated transaction to bc (daging halal/dalam proses validasi)
+(B) +apdh Create guards so unauthorized users can't access certain pages
+(B) +apdh Only show ternak slaughtered at admin's rph
+(B) +apdh Remove rph id dropdown and use admin's rph id instead
+(B) +apdh Remove transactioned ternak from transaksi list
+(B) +apdh Download bc to users machines
+(C) +apdh Make user master forms 
+(C) +apdh remove drawer_menu from non-admin user
 x 2024-09-16 Push transaction data to blockchain +apdh
-(B) Add role based routing after login +apdh
-(B) Make user master forms +apdh
+x 2024-09-20 Add role based routing after login +apdh
+x 2024-09-21 Make table of slaughtered ternaks and a confirm button +apdh
+x 2024-09-21 The button updates the validasi in transaksi +apdh
