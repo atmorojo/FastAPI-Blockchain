@@ -4,6 +4,7 @@ and dependencies related to the blockchain.
 """
 
 from typing import Annotated
+import json
 
 from fastapi import FastAPI, Form, Depends, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -83,6 +84,17 @@ async def index(
             ).all()
             table = validasi_tpl.validasi_table(validasi, "validasi_2")
             page = pages.table_page("Validasi Penyelia", table, False)
+        case 4:
+            transaksi = db.query(
+                models.Transaksi, models.Pengiriman
+            ).filter(
+                models.Pengiriman.transaksi_id == models.Transaksi.id
+            ).filter(
+                models.Transaksi.lapak_id == user.alias
+            ).all()
+#            table = validasi_tpl.lapak_table(transaksi, "validasi_2")
+#            page = pages.table_page("Validasi Penyelia", table, False)
+            page = vars(transaksi[0][1])
         case _:
             page = "Not allowed"
 
