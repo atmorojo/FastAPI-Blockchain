@@ -33,7 +33,7 @@ class Juleha(Base):
     nomor_sertifikat = Column(String, index=True)
     masa_sertifikat = Column(String, index=True)
     upload_sertifikat = Column(String)
-    waktu_upload = Column(DateTime(timezone=True), server_default=func.now())
+    waktu_upload = Column(DateTime(timezone=True))
     ternaks = relationship("Ternak", back_populates="juleha")
 
 
@@ -43,7 +43,7 @@ class Peternak(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, index=True)
     alamat = Column(String, index=True)
-    status_usaha = Column(String, index=True)
+    status_usaha = Column(String, index=True)  # mandiri/badan usaha
     ternaks = relationship("Ternak", back_populates="peternak")
 
 
@@ -51,10 +51,10 @@ class Ternak(Base):
     __tablename__ = "ternaks"
 
     id = Column(Integer, primary_key=True)
-    name = Column(String, index=True)
+    img = Column(String, index=True)
     bobot = Column(Float, index=True)
-    jenis = Column(String, index=True)
-    kesehatan = Column(String, index=True)
+    jenis = Column(String, index=True)  # Kambing, domba, kerbau, sapi
+    kesehatan = Column(String, index=True)  #
     waktu_sembelih = Column(String)
     peternak_id = Column(Integer, ForeignKey("peternaks.id"))
     peternak = relationship("Peternak", back_populates="ternaks")
@@ -69,9 +69,9 @@ class Rph(Base):
     name = Column(String, index=True)
     alamat = Column(String, index=True)
     telepon = Column(String)
-    status_sertifikasi = Column(String, index=True)
+    status_sertifikasi = Column(String, index=True)  # sudah/belum
     file_sertifikasi = Column(String, index=True)
-    waktu_upload = Column(DateTime(timezone=True), server_default=func.now())
+    waktu_upload = Column(DateTime(timezone=True))
     penyelias = relationship("Penyelia", back_populates="rph")
 
 
@@ -81,7 +81,7 @@ class Penyelia(Base):
     id = Column(Integer, primary_key=True)
     nip = Column(String, index=True)
     name = Column(String, index=True)
-    status = Column(String, index=True)
+    status = Column(String, index=True)  # aktif/tidak aktif tergantung tgl_berlaku
     tgl_berlaku = Column(String)
     file_sk = Column(String, index=True)
     rph_id = Column(Integer, ForeignKey("rphs.id"))

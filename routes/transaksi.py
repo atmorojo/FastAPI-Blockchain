@@ -43,6 +43,7 @@ class Blockdata:
         humi_min=None,
         humi_max=None,
         status_validasi=None,
+        # Add juleha.name
     ):
         self.id_transaksi = id_transaksi
         self.id_csa = id_csa
