@@ -58,3 +58,20 @@ def validasi_table(validasis, validator) -> Element:
         col_headers,
         rows
         )
+
+
+def lapak_table(validasis, validator) -> Element:
+    col_headers = ["Tag Kambing", "Actions"]
+    rows = (tr[
+      td[validasi.ternak.name],
+      td[
+        div(".table-actions", role="group")[
+          (validated if getattr(validasi, validator) else action_button(validasi))
+        ]
+      ],
+    ] for validasi in validasis)
+
+    return table_builder(
+        col_headers,
+        rows
+        )
