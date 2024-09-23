@@ -153,3 +153,13 @@ def insert(
     chain = bc.Blockchain("./data/iot.db")
     chain.mine_block(resp)
     return chain.get_previous_block()
+
+
+@app.get("/sensorbc")
+def sensorbc():
+    """
+    TODO:
+    * Filter node. Do not accept unregistered nodes
+    """
+    chain = bc.Blockchain("./data/iot.db")
+    return chain.chain.items()
