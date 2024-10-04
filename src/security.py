@@ -1,11 +1,13 @@
+import hashlib
 from typing import Annotated
 
 from fastapi import Depends, HTTPException
 from fastapi.security import APIKeyCookie
 from jose import jwt
-from pydantic import BaseModel
+from sqlalchemy.orm import Session
 from src.database import SessionLocal, engine
 from controllers import user_ctrl
+from src import schemas
 
 cookie_sec = APIKeyCookie(name="session")
 secret_key = "ladadidadadida"
@@ -20,26 +22,21 @@ def get_db():
         db.close()
 
 
-class User(BaseModel):
-    username: str
-    email: str | None = None
-    role: str | None = None
-    is_active: bool | None = None
-
-
-class UserInDB(User):
-    hashed_password: str
-
-
-def check_user(username: str, password: str):
-    user = user_ctrl.get_user_by_username(next(get_db()), username)
-    if user is None:
+def check_user(
+    username: str,
+    password: str,
+    db: Session
+):
+    print(db)
+    db_user = user_ctrl.get_user_by_username(db=db, username=username)
+    if db_user is None:
         raise HTTPException(
             status_code=302,
             detail="Incorect username or password",
             # headers={"location": "/login"}
         )
-    if not password == user.hashed_password:
+    hashed_password = hashlib.sha256(password.encode()).hexdigest()
+    if not hashed_password == db_user.hashed_password:
         raise HTTPException(
             status_code=302,
             detail="Incorect username or password",
@@ -63,7 +60,7 @@ async def get_current_user(
 
 
 async def get_current_active_user(
-    current_user: Annotated[User, Depends(get_current_user)]
+    current_user: Annotated[schemas.User, Depends(get_current_user)]
 ):
     if current_user.is_active:
         return current_user
@@ -73,9 +70,3 @@ async def get_current_active_user(
             detail="Inactive user",
             # headers={"location": "/login"}
         )
-
-
-async def get_current_user_role(
-    current_user: Annotated[User, Depends(get_current_active_user)]
-):
-    return current_user.role

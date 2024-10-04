@@ -8,7 +8,8 @@ from datetime import datetime
 from src import models
 from controllers.crud import Crud
 from src.database import SessionLocal, engine
-import templates.rph as pages
+import templates.pages as pages
+import templates.rph as tpl_rph
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -37,53 +38,65 @@ async def create_rph(
     status_sertifikasi: str = Form(...),
     file_sertifikasi: UploadFile = File(...),
 ):
-    if file_sertifikasi.filename != "":
-        out_file_path = './files/sert_rph/' + file_sertifikasi.filename
-        async with aiofiles.open(out_file_path, 'wb') as out_file:
-            while content := await file_sertifikasi.read(1024):
-                await out_file.write(content)
-
     rph = models.Rph(
         name=name,
         alamat=alamat,
         telepon=telepon,
         status_sertifikasi=status_sertifikasi,
-        file_sertifikasi=file_sertifikasi.filename,
-        waktu_upload=datetime.now()
     )
-    rph_db.create(rph)
+    rph = rph_db.create(rph)
+
+    if file_sertifikasi.filename != "":
+        out_file_path = './files/sert_rph/' + str(rph.id)
+        async with aiofiles.open(out_file_path, 'wb') as out_file:
+            while content := await file_sertifikasi.read(1024):
+                await out_file.write(content)
+
+    rph.file_sertifikasi = rph.id
+    rph.waktu_upload = datetime.now()
+    rph = rph_db.update(rph)
     return RedirectResponse("/rph", status_code=302)
 
 
 @routes.get("/new", response_class=HTMLResponse)
 def new_rph():
-    return str(pages.rph_detail(lock=False))
+    return str(pages.detail_page(
+        "RPH",
+        tpl_rph.rph_form()
+    ))
 
 
 @routes.get("/", response_class=HTMLResponse)
 def read_rphs(skip: int = 0, limit: int = 100):
     rphs = rph_db.get(skip=skip, limit=limit)
-    return str(pages.rphs_page(rphs))
+    return str(pages.table_page(
+        "RPH",
+        tpl_rph.rphs_table(rphs)
+    ))
 
 
 @routes.get("/{rph_id}", response_class=HTMLResponse)
 def read_rph(rph_id: int):
+    lock = True
     rph = rph_db.get_by_id(rph_id)
     if rph is None:
         raise HTTPException(status_code=404, detail="User not found")
-    return str(pages.rph_detail(rph, lock=True))
+    return str(pages.detail_page(
+        "RPH",
+        tpl_rph.rph_form(rph, lock)
+    ))
 
 
 @routes.get("/edit/{rph_id}", response_class=HTMLResponse)
 def edit_rph(req: Request, rph_id: int):
     rph = rph_db.get_by_id(rph_id)
-    lock = False
     if rph is None:
         raise HTTPException(status_code=404, detail="User not found")
+    form = tpl_rph.rph_form(rph)
     if req.headers.get('HX-Request'):
-        return str(pages.rph_form(rph, lock))
+        return str(form)
     else:
-        return str(pages.rph_detail(rph, lock))
+        return str(pages.detail_page("RPH", form))
 
 
 @routes.delete("/{rph_id}", response_class=HTMLResponse)
@@ -92,7 +105,7 @@ def remove_rph(rph_id: int):
     if rph is None:
         raise HTTPException(status_code=404, detail="User not found")
     rphs = rph_db.remove(rph)
-    return str(pages.rphs_table(rphs))
+    return str(tpl_rph.rphs_table(rphs))
 
 
 @routes.put("/{rph_id}", response_class=HTMLResponse)
@@ -104,6 +117,8 @@ async def update_rph(
     status_sertifikasi: str = Form(...),
     file_sertifikasi: UploadFile = File(None)  # Remember to give that None
 ):
+    lock = True
+
     rph = rph_db.get_by_id(rph_id)
     rph.name = name
     rph.alamat = alamat
@@ -111,11 +126,11 @@ async def update_rph(
     rph.status_sertifikasi = status_sertifikasi
 
     if file_sertifikasi is not None:
-        rph.file_sertifikasi = file_sertifikasi.filename
+        rph.file_sertifikasi = rph_id
         rph.waktu_upload = datetime.now()
-        out_file_path = './files/sert_rph/' + file_sertifikasi.filename
+        out_file_path = './files/sert_rph/' + str(rph_id)
         async with aiofiles.open(out_file_path, 'wb') as out_file:
             while content := await file_sertifikasi.read(1024):
                 await out_file.write(content)
     rph = rph_db.update(rph)
-    return str(pages.rph_form(rph, lock=True))
+    return str(tpl_rph.rph_form(rph, lock))

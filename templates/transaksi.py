@@ -111,25 +111,25 @@ def transaksi_form(
 def transaksis_table(transaksis) -> Element:
     col_headers = ["Juleha", "Lapak", "Status", "Actions"]
     rows = (tr[
-                td[transaksi.juleha.name],
-                td[transaksi.lapak.name],
-                td[transaksi.status],
-                td[
-                    div(".table-actions", role="group")[
-                        a(href="/transaksi/" + str(transaksi.id))["Detail"],
-                        a(href="/transaksi/edit/" + str(transaksi.id))["Edit"],
-                        a(
-                            hx_delete="/transaksi/" + str(transaksi.id),
-                            hx_confirm=f"""
+        td[transaksi.juleha.name],
+        td[transaksi.lapak.name],
+        td[transaksi.status],
+        td[
+            div(".table-actions", role="group")[
+                a(href="/transaksi/" + str(transaksi.id))["Detail"],
+                a(href="/transaksi/edit/" + str(transaksi.id))["Edit"],
+                a(
+                    hx_delete="/transaksi/" + str(transaksi.id),
+                    hx_confirm=f"""
 Apakah anda yakin mau menghapus data {transaksi.id}?
-                            """,
-                            hx_target="#table-wrapper"
-                        )["Hapus"],
-                    ]
-                ],
-            ] for transaksi in transaksis)
+                    """,
+                    hx_target="#table-wrapper"
+                )["Hapus"],
+            ]
+        ],
+    ] for transaksi in transaksis)
 
     return table_builder(
         col_headers,
         rows
-        )
+    )

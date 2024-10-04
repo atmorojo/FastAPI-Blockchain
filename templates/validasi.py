@@ -11,24 +11,6 @@ from htpy import (
 )
 
 
-def action_buttons(id, name):
-    return div(".table-actions", role="group")[
-      a(".outline.secondary", role="button",
-        href="/validasi/" + str(id)
-        )["Detail"],
-      a(".outline.secondary", role="button",
-        href="/validasi/edit/" + str(id)
-        )["Edit"],
-      a(".outline.warning", role="button",
-        hx_delete="/validasi/" + str(id),
-        hx_confirm=f"""
-Apakah anda yakin mau menghapus data {name}?
-        """,
-        hx_target="#table-wrapper"
-        )["Hapus"],
-    ]
-
-
 validated = a(role="button", disabled=True)["Telah divalidasi"]
 
 

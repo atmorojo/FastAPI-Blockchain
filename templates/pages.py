@@ -1,6 +1,10 @@
 from templates.base_template import base_page
-from templates.components import drawer_menu
+from templates.components import navbar
 from htpy import (
+    span,
+    svg,
+    rect,
+    img,
     form,
     div,
     h1,
@@ -34,14 +38,14 @@ def login_page() -> Element:
     )
 
 
-def dashboard_page() -> Element:
+def dashboard_page(user) -> Element:
     return base_page(
         page_title="Dashboard",
         content=[
-            drawer_menu(),
+            navbar,
             div(style="margin-top: 4em;")[
                 h1["Dashboard"],
-                p["Selamat datang, user"],
+                p[f"Selamat datang, {user.username.title()}"],
             ],
         ]
     )
@@ -50,22 +54,38 @@ def dashboard_page() -> Element:
 def table_page(title, datatable, button=True) -> Element:
     if button:
         add_button = a(
-            role="button", href="/" + title.lower() + "/new"
-        )["+ " + title.lower()]
+            "#tambah-button",
+            role="button",
+            href="/" + title.lower() + "/new"
+        )[svg(".plus", viewBox="0 0 100 100")[
+            rect(".plus-sign",
+                 x="40", y="10",
+                 width="20", height="80"),
+            rect(".plus-sign",
+                 x="10", y="40",
+                 width="80", height="20")
+            ], span[f"tambah {title} baru".title()]
+          ]
     else:
         add_button = ""
 
     return base_page(
-        page_title=title,
+        page_title="APDH" + (" | " + title.title() if title else ""),
         extra_head=[
             link(rel="stylesheet", href="/static/datatable.style.css"),
             script(src="/static/simple-datatables.904.js"),
         ],
         content=[
-            drawer_menu(),
+            navbar,
             div(style="margin-top: 4em;")[
-                h1[title],
-                add_button,
+                div(style="""
+                    display: flex;
+                    justify-content: space-between;
+                    margin: 2em 0;
+                    """)[
+                    h1["Master " + title.title()],
+                    add_button,
+                ],
                 datatable,
                 script(src="/static/script.js"),
             ]
@@ -80,9 +100,16 @@ def detail_page(
     return base_page(
         page_title=title,
         content=[
-            drawer_menu(),
+            navbar,
             div(style="margin: 4em 0;")[
+                a(style="""
+                text-decoration:none;
+                margin: 1em 0;
+                display: inline-block;
+                """,
+                  href=f"/{title.lower()}")[f"← Kembali ke daftar {title}"],
                 h1[title.title()],
+                img(".my-indicator", src="/static/indicator.gif"),
                 detail_form,
             ]
         ]

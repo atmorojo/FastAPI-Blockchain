@@ -43,24 +43,27 @@ async def create_penyelia(
     name: str = Form(...),
     status: str = Form(...),
     tgl_berlaku: str = Form(...),
-    rph_id: int = Form(...),
+    rph_id: int = Form(None),
     file_sk: UploadFile = File(...),
 ):
-    if file_sk.filename != "":
-        out_file_path = './files/sk_penyelia/' + file_sk.filename
-        async with aiofiles.open(out_file_path, 'wb') as out_file:
-            while content := await file_sk.read(1024):
-                await out_file.write(content)
-
     penyelia = models.Penyelia(
         nip=nip,
         name=name,
         status=status,
         tgl_berlaku=tgl_berlaku,
         rph_id=rph_id,
-        file_sk=file_sk.filename,
     )
-    penyelia_db.create(penyelia)
+    penyelia = penyelia_db.create(penyelia)
+
+    if file_sk.filename != "":
+        out_file_path = './files/sk_penyelia/' + str(penyelia.id)
+        async with aiofiles.open(out_file_path, 'wb') as out_file:
+            while content := await file_sk.read(1024):
+                await out_file.write(content)
+
+    penyelia.file_sk = penyelia.id
+    penyelia_db.update(penyelia)
+
     return RedirectResponse("/penyelia", status_code=302)
 
 
@@ -125,11 +128,12 @@ async def update_penyelia(
     dt_penyelia.rph_id = rph_id
 
     if file_sk is not None:
-        dt_penyelia.file_sk = file_sk.filename
-        out_file_path = './files/sk_penyelia/' + file_sk.filename
+        dt_penyelia.file_sk = penyelia_id
+        out_file_path = './files/sk_penyelia/' + str(penyelia_id)
         async with aiofiles.open(out_file_path, 'wb') as out_file:
             while content := await file_sk.read(1024):
                 await out_file.write(content)
+
     dt_penyelia = penyelia_db.update(dt_penyelia)
     list_rph = Crud(models.Rph, next(get_db())).get()
 

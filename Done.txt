@@ -1,0 +1,29 @@
+x 2024-09-16 Push transaction data to blockchain +apdh
+x 2024-09-20 Add role based routing after login +apdh
+x 2024-09-21 Make table of slaughtered ternaks and a confirm button +apdh
+x 2024-09-21 The button updates the validasi in transaksi +apdh
+
+
+x 2024-09-24 +transportasi +model Remove transportasion table
+x 2024-09-24 +transportasi +pengiriman Remove id transportasi/pengiriman and use id iot
+x 2024-09-24 +model +tranksaksi +pengiriman Merge Transaksi & Pengiriman table
+x 2024-09-24 +security Tambah route logout
+x 2024-09-24 +transaksi +model Remove transaksi.juleha
+x 2024-09-24 +transaksi +model Remove transaksi.penyelia
+x 2024-09-24 +transaksi +model Remove transaksi.status
+x 2024-09-26 Fix +models according to the latest revision (22 Sep 2024)
+x 2024-09-28 +security Tambah tombol logout
+x 2024-09-28 Implement hash for admin password
+x 2024-09-28 Update Juleha module to use better abstractions
+x 2024-09-29 Remove Transportasi from navigation drawer
+x 2024-09-29 Update RPH module to use better abstractions
+
+x 2024-09-30 Remove unnecessary margin in the table
+x 2024-09-30 Move tambah data button to top right and change the string
+x 2024-09-30 Add back to table link to make navigating back to table view easier
+x 2024-09-30 Update +Penyelia module to use better abstractions
+x 2024-09-30 Use picocss variable colors to make changing colors easier
+x 2024-09-30 Update table actions style to make them look like buttons 
+x 2024-10-04 Update +Lapak module to use better abstractions
+x 2024-10-04 Update +Pasar module to use better abstractions
+x 2024-10-03 Update +Peternak module to use better abstractions

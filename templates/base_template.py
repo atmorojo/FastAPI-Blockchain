@@ -21,7 +21,7 @@ def base_page(*,
               content: Node = None,
               body_class: str | None = None,
               ) -> Element:
-    return html(lang="en", data_theme="light")[
+    return html(lang="en", data_theme="dark")[
         head[
             meta(charset="utf-8"),
             meta(
@@ -29,7 +29,7 @@ def base_page(*,
                 content="width=device-width, initial-scale=1"
             ),
             meta(name="color-scheme", content="light dark"),
-            link(rel="stylesheet", href="/static/pico.sand.min.css"),
+            link(rel="stylesheet", href="/static/pico.pink.min.css"),
             link(rel="stylesheet", href="/static/style.css"),
             script(src="/static/htmx.min.js"),
             script(src="/static/hyperscript.org@0.9.12"),

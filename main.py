@@ -4,8 +4,7 @@ and dependencies related to the blockchain.
 """
 
 from typing import Annotated
-import json
-
+from sqlalchemy.orm import Session
 from fastapi import FastAPI, Form, Depends, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -22,12 +21,11 @@ from routes import (
     rph,
     penyelia,
     pasar,
-    transportasi,
     lapak,
     transaksi,
     iot,
 )
-from src import models
+from src import models, schemas
 from src.database import engine
 import src.blockchain as bc
 from src.database import SessionLocal
@@ -44,7 +42,6 @@ app.include_router(ternak.routes)
 app.include_router(penyelia.routes)
 app.include_router(pasar.routes)
 app.include_router(lapak.routes)
-app.include_router(transportasi.routes)
 app.include_router(transaksi.routes)
 app.include_router(iot.routes)
 app.include_router(blockchain.routes)
@@ -65,13 +62,13 @@ def get_db():
 @app.get("/dashboard", response_class=HTMLResponse)
 async def index(
     user: Annotated[
-        _security.User, Depends(_security.get_current_active_user)
+        schemas.User, Depends(_security.get_current_active_user)
     ],
     db=Depends(get_db)
 ):
     match user.role:
         case 1:
-            page = pages.dashboard_page()
+            page = pages.dashboard_page(user)
         case 2:
             validasi = db.query(models.Transaksi).filter(
                 models.Transaksi.juleha_id == user.alias,
@@ -130,12 +127,20 @@ def login_get():
 @app.post("/login")
 async def login_post(
     username: str = Form(...),
-    password: str = Form(...)
+    password: str = Form(...),
+    db: Session = Depends(get_db),
 ):
-    _security.check_user(username, password)
+    _security.check_user(username, password, db)
     token = jwt.encode({"sub": username}, _security.secret_key)
     response = RedirectResponse("/dashboard", status_code=302)
     response.set_cookie("session", token)
+    return response
+
+
+@app.get("/logout", response_class=RedirectResponse)
+async def logout():
+    response = RedirectResponse("/login")
+    response.delete_cookie("session")
     return response
 
 

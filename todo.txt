@@ -1,34 +1,29 @@
-(A) +apdh Add CSA result of temp and humi to a table
-(A) +apdh Add Lapak user
-(A) +apdh Add juleha.name to transaction bc
-(A) +apdh Add lapak dashboard to confirm received package
-(A) +apdh Add photo instead of ternak id for validation
-(A) +apdh Add qrcode page
-(A) +apdh Merge Transaksi & Pengiriman table
-(A) +apdh Move validasi to ternak table from transaksi
-(A) +apdh Remove id transportasi/pengiriman and use id iot
-(A) +apdh Remove transaksi.juleha
-(A) +apdh Di halaman qr blockchain ada tombol isi quesioner
-(A) +apdh Pelapak trigger kiriman selesai dari nomor telefon isi quesioner
-(A) +apdh Pelapak bisa lihat kode qr dari sistem 
-(A) +apdh Blockchain waktu_kirim & tambah waktu_terima
-(A) +apdh Contoh tampilan: lama kirim, temp: 29 - 30
-(A) +apdh Report bulanan, harian, range waktu
-(A) +apdh Remove transaksi.penyelia
-(A) +apdh Remove transaksi.status
-(A) +apdh Remove transportasion table
-(A) +apdh Update CSA result to bc
-(A) +apdh Update validated transaction to bc (daging halal/dalam proses validasi)
-(A) +apdh status kirim (0 tidak ada pengiriman, 1 dikirim, 2 diterima)
-(B) +apdh Create guards so unauthorized users can't access certain pages
-(B) +apdh Download bc to users machines
-(B) +apdh Only show ternak slaughtered at admin's rph
-(B) +apdh Remove rph_id dropdown and use admin's rph id instead
-(B) +apdh Remove transactioned ternak from transaksi list
-(C) +apdh Make user master forms 
-(C) +apdh remove drawer_menu from non-admin user
-(B) +apdh Tambah tombol logout
-x 2024-09-16 Push transaction data to blockchain +apdh
-x 2024-09-20 Add role based routing after login +apdh
-x 2024-09-21 Make table of slaughtered ternaks and a confirm button +apdh
-x 2024-09-21 The button updates the validasi in transaksi +apdh
+(A) +ternak Add photo instead of ternak id for validation
+(A) Fix +routes and +template errors that come from changing the +models
+(A) Update +Ternak module to use better abstractions
+(A) Update +Transaksi module to use better abstractions
+
+(B) +admin +transaksi Only show ternak slaughtered today at each rph
+(B) +admin +transaksi Only show ternak slaughtered today at transaksi list
+(B) +admin +transaksi Remove rph_id dropdown and use admin's rph id instead
+(B) +blockchain +lapak Contoh tampilan: lama kirim, temp: 29 - 30
+(B) +blockchain Add juleha.name to transaction bc
+(B) +blockchain Blockchain waktu_kirim & tambah waktu_terima
+(B) +blockchain Download bc to users machines
+(B) +lapak +blockchain Add qrcode page
+(B) +lapak +blockchain Di halaman qr blockchain ada tombol isi quesioner
+(B) +lapak +blockchain Pelapak trigger kiriman selesai dari nomor telefon isi quesioner
+(B) +lapak Add Lapak user
+(B) +lapak Add lapak dashboard to confirm received package
+(B) +lapak Pelapak bisa lihat kode qr dari sistem 
+(B) +report Report bulanan, harian, range waktu
+(B) +security Create guards so unauthorized users can't access certain pages
+(B) +sensor Add CSA result of temp and humi to a table
+(B) +sensor Update CSA result to bc
+(B) +ternak +blockchain Update validated ternak to bc (daging halal/dalam proses validasi)
+(B) +ternak +transaksi Move validasi to ternak table from transaksi
+(B) +transaksi status kirim (0 tidak ada pengiriman, 1 dikirim, 2 diterima)
+(B) Turn the notes on the +models to tasks
+
+(C) +master +user Make user master forms 
+(C) +security remove drawer_menu from non-admin user

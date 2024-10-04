@@ -17,28 +17,17 @@ html, body {
 	width: 100%;
 }
 
-#navbar {
-	width: inherit;
+.drawer-wrapper {
+	height: 30px;
 }
 
-#navbar [role="group"] {
+.navbar {
 	position: fixed;
-	bottom: 0px;
-	left: 0px;
-	margin: 0;
-}
-
-#navbar [role="group"] [role="button"] {
-	border-radius: 0px;
-	padding: 0px;
-}
-
-#navbar [role="group"] [role="button"] a {
-	display: block;
-	padding: 1.5em var(--pico-form-element-spacing-horizontal);
-	text-decoration: none;
-	color: #555;
-	text-align: center;
+	left: 0;
+	top: 0;
+	background: var(--pico-form-element-background-color);
+	padding: 16px;
+	z-index: 999;
 }
 
 .burger-btn {
@@ -46,22 +35,25 @@ html, body {
 }
 
 .burger-icon {
-	position: fixed;
-	top: 10px;
-	left: 10px;
-	width: 30px;
+	position: absolute;
 	height: 30px;
-	cursor: pointer;
+	left: 1em;
 	z-index: 2;
+	display: flex !important;
 }
 
 .burger-icon span {
 	display: block;
 	width: 100%;
 	height: 4px;
-	background-color: #333;
+	background-color: var(--pico-form-element-color);
 	margin: 6px 0;
 	transition: 0.3s;
+}
+
+.burger-icon span:nth-child(1),
+.burger-icon span:nth-child(3) {
+	margin: 3px 0;
 }
 
 .burger-btn:checked~.burger-icon span:nth-child(1) {
@@ -101,18 +93,60 @@ html, body {
 .nav-drawer a {
 	display: block;
 	padding-left: 2em;
-	text-decoration: none;
+	color: wheat;
+}
+
+.nav-drawer hr {
+	border-color: var(--pico-primary-focus);
 }
 
 .nav-drawer a:hover {
 	background-color: var(--pico-primary-focus);
+	text-decoration: none;
+}
+
+#logout_button {
+	top: 16px;
+	padding: 0 1em;
+	font-size: 14px;
+	border-radius: var(--pico-border-radius);
+	text-decoration: none;
+	line-height: 28px;
+	background: var(--pico-background-color);
+	color: var(--pico-color);
+	position: absolute;
+	right: 16px;
+	border: 1px solid var(--pico-color);
+}
+
+#table {
+	min-width: 600px;
+}
+
+.datatable-top {
+		display: flex;
+		justify-content: space-between;
+		flex-direction: row;
+}
+
+.datatable-top::after { display: none !important; }
+
+.datatable-container {
+	overflow-x: scroll;
+	width: 100%;
 }
 
 .datatable-sorter {
 	padding: 0;
 }
 
+.datatable-selector { width: 6em; }
+
+
+.table-actions { margin-bottom: 0; }
+
 .table-actions a {
+	display: block;
 	cursor: pointer;
 	text-decoration: none;
 	font-weight: bold;
@@ -124,6 +158,10 @@ html, body {
 	font-size: .7em !important;
 }
 
+td {
+	vertical-align: middle !important;
+}
+
 .warning {
 	border-color: #ff4b4b;
 	color: #ff4b4b;
@@ -131,7 +169,28 @@ html, body {
 
 @media only screen and (max-width: 600px) {
 	.datatable-top {
-		display: flex;
 		flex-direction: column;
 	}
 }
+
+.my-indicator{
+	display:none;
+}
+.htmx-request .my-indicator{
+	display:inline;
+}
+.htmx-request.my-indicator{
+	display:inline;
+}
+
+.plus { width: 15px; height: 15px; }
+
+#tambah-button {
+	border-radius: 500px;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.spoiler { display: none; }
+.show { display: block; }

@@ -7,6 +7,7 @@ from templates.components import (
     combo_gen,
     update_btn,
     submit_btn,
+    action_buttons,
 )
 
 from htpy import (
@@ -49,7 +50,6 @@ def penyelia_form(penyelia, rph, lock: bool = False) -> Element:
         method="post",
         enctype="multipart/form-data"
     )[
-        img(".htmx-indicator", src="/static/indicator.gif"),
         inlabel("NIP", "text", "nip",
                 (penyelia.nip if penyelia else ""),
                 lock),
@@ -78,19 +78,7 @@ def penyelias_table(penyelias) -> Element:
         td[penyelia.name],
         td[penyelia.status],
         td[penyelia.rph.name],
-        td[
-            div(".table-actions", role="group")[
-                a(href="/penyelia/" + str(penyelia.id))["Detail"],
-                a(href="/penyelia/edit/" + str(penyelia.id))["Edit"],
-                a(
-                    hx_delete="/penyelia/" + str(penyelia.id),
-                    hx_confirm=f"""
-Apakah anda yakin mau menghapus data {penyelia.name}?
-                    """,
-                    hx_target="#table-wrapper"
-                )["Hapus"],
-            ]
-        ],
+        td[action_buttons("penyelia", penyelia.id, penyelia.name)]
     ] for penyelia in penyelias)
 
     return table_builder(

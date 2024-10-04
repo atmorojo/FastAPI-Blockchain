@@ -8,25 +8,24 @@ from sqlalchemy import (
     DateTime
 )
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
 
 from src.database import Base
 
 
 class User(Base):
-    __tablename__ = "users"
+    __tablename__ = "user"
 
     id = Column(Integer, primary_key=True)
     username = Column(String, unique=True, index=True)
     email = Column(String, unique=True, index=True)
     hashed_password = Column(String)
-    role = Column(String)
+    role = Column(Integer, nullable=True)
     is_active = Column(Boolean, default=True)
-    alias = Column(Integer)
+    alias = Column(Integer, nullable=True)
 
 
 class Juleha(Base):
-    __tablename__ = "julehas"
+    __tablename__ = "juleha"
 
     id = Column(Integer, primary_key=True)
     name = Column(String, index=True)
@@ -34,36 +33,40 @@ class Juleha(Base):
     masa_sertifikat = Column(String, index=True)
     upload_sertifikat = Column(String)
     waktu_upload = Column(DateTime(timezone=True))
-    ternaks = relationship("Ternak", back_populates="juleha")
+    ternak = relationship("Ternak", back_populates="juleha")
 
 
 class Peternak(Base):
-    __tablename__ = "peternaks"
+    __tablename__ = "peternak"
 
     id = Column(Integer, primary_key=True)
     name = Column(String, index=True)
     alamat = Column(String, index=True)
     status_usaha = Column(String, index=True)  # mandiri/badan usaha
-    ternaks = relationship("Ternak", back_populates="peternak")
+    ternak = relationship("Ternak", back_populates="peternak")
 
 
 class Ternak(Base):
-    __tablename__ = "ternaks"
+    __tablename__ = "ternak"
 
     id = Column(Integer, primary_key=True)
-    img = Column(String, index=True)
+    peternak_id = Column(Integer, ForeignKey("peternak.id"))
+    juleha_id = Column(Integer, ForeignKey("juleha.id"))
+    penyelia_id = Column(Integer, ForeignKey("penyelia.id"))
+    img = Column(String)
     bobot = Column(Float, index=True)
     jenis = Column(String, index=True)  # Kambing, domba, kerbau, sapi
-    kesehatan = Column(String, index=True)  #
+    kesehatan = Column(String, index=True)  # sehat / layak
     waktu_sembelih = Column(String)
-    peternak_id = Column(Integer, ForeignKey("peternaks.id"))
-    peternak = relationship("Peternak", back_populates="ternaks")
-    juleha_id = Column(Integer, ForeignKey("julehas.id"))
-    juleha = relationship("Juleha", back_populates="ternaks")
+    validasi_1 = Column(Integer)
+    validasi_2 = Column(Integer)
+    peternak = relationship("Peternak", back_populates="ternak")
+    juleha = relationship("Juleha", back_populates="ternak")
+    penyelia = relationship("Penyelia")
 
 
 class Rph(Base):
-    __tablename__ = "rphs"
+    __tablename__ = "rph"
 
     id = Column(Integer, primary_key=True)
     name = Column(String, index=True)
@@ -72,88 +75,67 @@ class Rph(Base):
     status_sertifikasi = Column(String, index=True)  # sudah/belum
     file_sertifikasi = Column(String, index=True)
     waktu_upload = Column(DateTime(timezone=True))
-    penyelias = relationship("Penyelia", back_populates="rph")
+    penyelia = relationship("Penyelia", back_populates="rph")
 
 
 class Penyelia(Base):
-    __tablename__ = "penyelias"
+    __tablename__ = "penyelia"
 
     id = Column(Integer, primary_key=True)
-    nip = Column(String, index=True)
+    rph_id = Column(Integer, ForeignKey("rph.id"))
     name = Column(String, index=True)
+    nip = Column(String, index=True)
     status = Column(String, index=True)  # aktif/tidak aktif tergantung tgl_berlaku
     tgl_berlaku = Column(String)
     file_sk = Column(String, index=True)
-    rph_id = Column(Integer, ForeignKey("rphs.id"))
-    rph = relationship("Rph", back_populates="penyelias")
+    rph = relationship("Rph", back_populates="penyelia")
 
 
 class Pasar(Base):
-    __tablename__ = "pasars"
+    __tablename__ = "pasar"
 
     id = Column(Integer, primary_key=True)
     name = Column(String, index=True)
     alamat = Column(String, index=True)
 
-    lapaks = relationship("Lapak", back_populates="pasar")
+    lapak = relationship("Lapak", back_populates="pasar")
 
 
 class Lapak(Base):
-    __tablename__ = "lapaks"
+    __tablename__ = "lapak"
 
     id = Column(Integer, primary_key=True)
     name = Column(String, index=True)
     no_lapak = Column(String)
-    pasar_id = Column(Integer, ForeignKey("pasars.id"))
-    pasar = relationship("Pasar", back_populates="lapaks")
-
-
-class Transportasi(Base):
-    __tablename__ = "transportasis"
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String, index=True)
-    rph_id = Column(Integer, ForeignKey("rphs.id"))
-    rph = relationship("Rph")
+    pasar_id = Column(Integer, ForeignKey("pasar.id"))
+    telp = Column(String)
+    pasar = relationship("Pasar", back_populates="lapak")
 
 
 class Transaksi(Base):
-    __tablename__ = "transaksis"
+    __tablename__ = "transaksi"
 
     id = Column(Integer, primary_key=True)
+    iot_id = Column(Integer, ForeignKey("iot.id"))
+    lapak_id = Column(Integer, ForeignKey("lapak.id"))
+    ternak_id = Column(Integer, ForeignKey("ternak.id"))
     jumlah = Column(Float)
-    status = Column(String)
-    validasi_1 = Column(Integer)
-    validasi_2 = Column(Integer)
-    transportasi_id = Column(Integer, ForeignKey("transportasis.id"))
-    lapak_id = Column(Integer, ForeignKey("lapaks.id"))
-    penyelia_id = Column(Integer, ForeignKey("penyelias.id"))
-    juleha_id = Column(Integer, ForeignKey("julehas.id"))
-    ternak_id = Column(Integer, ForeignKey("ternaks.id"))
-    transportasi = relationship("Transportasi")
+    waktu_kirim = Column(String)
+    waktu_selesai_kirim = Column(String)
+    status_kirim = Column(String)
+    iot = relationship("IoT")
     lapak = relationship("Lapak")
-    penyelia = relationship("Penyelia")
-    juleha = relationship("Juleha")
     ternak = relationship("Ternak")
 
 
-class Pengiriman(Base):
-    __tablename__ = "pengirimans"
-
-    id = Column(Integer, primary_key=True)
-    waktu_kirim = Column(String)
-    waktu_selesai = Column(String)
-    status = Column(String)
-    iot_id = Column(Integer, ForeignKey("iots.id"))
-    transaksi_id = Column(Integer, ForeignKey("transaksis.id"))
-    iot = relationship("IoT")
-    transaksi = relationship("Transaksi")
-
-
 class IoT(Base):
-    __tablename__ = "iots"
+    __tablename__ = "iot"
 
     id = Column(Integer, primary_key=True)
     node = Column(String)
-    rph_id = Column(Integer, ForeignKey("rphs.id"))
-    rph = relationship("Rph")
+
+
+class Konsumen(Base):
+    __tablename__ = "konsumen"
+
+    id = Column(Integer, primary_key=True)

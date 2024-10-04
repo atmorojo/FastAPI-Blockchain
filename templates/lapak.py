@@ -5,6 +5,7 @@ from templates.components import (
     combo_gen,
     update_btn,
     submit_btn,
+    action_buttons,
 )
 
 from htpy import (
@@ -56,19 +57,7 @@ def lapaks_table(lapaks) -> Element:
                 td[lapak.name],
                 td[lapak.no_lapak],
                 td[lapak.pasar.name],
-                td[
-                    div(".table-actions", role="group")[
-                        a(href="/lapak/" + str(lapak.id))["Detail"],
-                        a(href="/lapak/edit/" + str(lapak.id))["Edit"],
-                        a(
-                            hx_delete="/lapak/" + str(lapak.id),
-                            hx_confirm=f"""
-Apakah anda yakin mau menghapus data {lapak.name}?
-                            """,
-                            hx_target="#table-wrapper"
-                        )["Hapus"],
-                    ]
-                ],
+                td[action_buttons("lapak", lapak.id, lapak.name)],
             ] for lapak in lapaks)
 
     return table_builder(

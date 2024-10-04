@@ -61,7 +61,6 @@ class Blockdata:
 
 
 transaksi_db = Crud(models.Transaksi, next(get_db()))
-pengiriman_db = Crud(models.Pengiriman, next(get_db()))
 
 chain = bc.Blockchain()
 
@@ -110,14 +109,6 @@ async def create_transaksi(
 
     transaksi = transaksi_db.create(transaksi)
 
-    pengiriman = models.Pengiriman(
-        transaksi_id=transaksi.id,
-        iot_id=iot_id,
-        waktu_kirim=waktu_kirim,
-        status="dikirim"
-    )
-
-    pengiriman = pengiriman_db.create(pengiriman)
 
     block = Blockdata(
         id_transaksi=transaksi.id,

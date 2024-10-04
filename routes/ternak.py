@@ -1,5 +1,5 @@
 from fastapi import (
-    APIRouter, HTTPException, Form, Request
+    APIRouter, HTTPException, Form, Request, UploadFile
 )
 from fastapi.responses import HTMLResponse, RedirectResponse
 
@@ -30,7 +30,7 @@ ternak_db = Crud(models.Ternak, next(get_db()))
 
 @routes.post("/")
 async def create_ternak(
-    name: str = Form(...),
+    img: UploadFile = Form(...),
     bobot: str = Form(...),
     jenis: str = Form(...),
     kesehatan: str = Form(...),

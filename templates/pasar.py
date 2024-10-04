@@ -1,24 +1,17 @@
 from templates.components import (
     table_builder,
-    show_img,
+    action_buttons,
     edit_btn,
     inlabel,
-    file_input,
-    combo_gen,
     update_btn,
     submit_btn,
 )
 
 from htpy import (
     form,
-    div,
-    img,
     Element,
     tr,
     td,
-    a,
-    label,
-    small,
 )
 
 
@@ -37,7 +30,6 @@ def pasar_form(pasar, lock: bool = False) -> Element:
         method="post",
         enctype="multipart/form-data"
     )[
-        img(".htmx-indicator", src="/static/indicator.gif"),
         inlabel("Nama", "text", "name",
                 (pasar.name if pasar else ""),
                 lock),
@@ -53,19 +45,7 @@ def pasars_table(pasars) -> Element:
     rows = (tr[
                 td[pasar.name],
                 td[pasar.alamat],
-                td[
-                    div(".table-actions", role="group")[
-                        a(href="/pasar/" + str(pasar.id))["Detail"],
-                        a(href="/pasar/edit/" + str(pasar.id))["Edit"],
-                        a(
-                            hx_delete="/pasar/" + str(pasar.id),
-                            hx_confirm=f"""
-Apakah anda yakin mau menghapus data {pasar.name}?
-                            """,
-                            hx_target="#table-wrapper"
-                        )["Hapus"],
-                    ]
-                ],
+                td[action_buttons("pasar", pasar.id, pasar.name)],
             ] for pasar in pasars)
 
     return table_builder(
