@@ -23,7 +23,7 @@ def login_page() -> Element:
         page_title="Login",
         content=[
             div(style="margin-top: 4em;")[
-                form(action="/login", method="post")[
+                form(action="/logggin", method="post")[
                     h1["Sign In"],
                     input(type_="text", name="username"),
                     input(type_="password", name="password"),

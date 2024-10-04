@@ -52,7 +52,7 @@ async def create_juleha(
         async with aiofiles.open(out_file_path, 'wb') as out_file:
             while content := await file_sertifikat.read(1024):
                 await out_file.write(content)
-        juleha = juleha_db.update(juleha)
+        juleha_db.update(juleha)
 
     return RedirectResponse("/juleha", status_code=302)
 

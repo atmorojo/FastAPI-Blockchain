@@ -1,8 +1,10 @@
 from fastapi import (
-    APIRouter, HTTPException, Form, Request, UploadFile
+    APIRouter, HTTPException, Form, Request, UploadFile, Depends
 )
 from fastapi.responses import HTMLResponse, RedirectResponse
+import aiofiles
 
+from sqlalchemy.orm import Session
 from src import models
 from controllers.crud import Crud
 from src.database import SessionLocal, engine
@@ -39,7 +41,6 @@ async def create_ternak(
     waktu_sembelih: str = Form(None)
 ):
     ternak = models.Ternak(
-        name=name,
         bobot=bobot,
         jenis=jenis,
         kesehatan=kesehatan,
@@ -47,14 +48,22 @@ async def create_ternak(
         juleha_id=juleha_id,
         waktu_sembelih=waktu_sembelih
     )
-    ternak_db.create(ternak)
+    ternak = ternak_db.create(ternak)
+
+    if img.filename != "":
+        ternak.img = ternak.id
+        out_file_path = './files/ternak/' + str(ternak.id)
+        async with aiofiles.open(out_file_path, 'wb') as out_file:
+            while content := await img.read(1024):
+                await out_file.write(content)
+        ternak_db.update(ternak)
     return RedirectResponse("/ternak", status_code=302)
 
 
 @routes.get("/new", response_class=HTMLResponse)
-def new_ternak():
-    peternaks = Crud(models.Peternak, next(get_db())).get()
-    julehas = Crud(models.Juleha, next(get_db())).get()
+def new_ternak(db: Session = Depends(get_db)):
+    peternaks = Crud(models.Peternak, db).get()
+    julehas = Crud(models.Juleha, db).get()
     return str(pages.detail_page(
         "Ternak",
         ternak_view.ternak_form(

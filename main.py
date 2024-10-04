@@ -124,7 +124,7 @@ def login_get():
     )
 
 
-@app.post("/login")
+@app.post("/logggin")
 async def login_post(
     username: str = Form(...),
     password: str = Form(...),
