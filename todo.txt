@@ -1,6 +1,4 @@
-(A) +ternak Add photo instead of ternak id for validation
 (A) Fix +routes and +template errors that come from changing the +models
-(A) Update +Ternak module to use better abstractions
 (A) Update +Transaksi module to use better abstractions
 
 (B) +admin +transaksi Only show ternak slaughtered today at each rph

@@ -126,12 +126,17 @@ def update_btn(parent_route, id):
 
 
 def file_input(_value, _name, lock):
-    return input(
-        type_="file",
-        name=_name,
-        value=_value,
-        disabled=lock,
-    )
+    return div[
+        input(
+            "#upload",
+            type_="file",
+            accept="image/*",
+            capture="environment",
+            name=_name,
+            disabled=lock,
+        ),
+        img("#preview"),
+    ]
 
 
 def edit_btn(parent_route, id):
@@ -151,6 +156,10 @@ submit_btn = input(
 
 
 def show_img(url):
+    return img(".full", src="/files/" + url)
+
+
+def spoiler(url):
     return div[
         button(
             type_="button",
@@ -167,10 +176,14 @@ def show_img(url):
     ]
 
 
-def inlabel(_label, _type, _name, _value, lock):
+def inlabel(_label, _type, _name, _value, lock, focus=False):
     return label[
         small[_label],
-        input(type_=_type, name=_name, disabled=lock, value=_value),
+        input(autofocus=focus,
+              type_=_type,
+              name=_name,
+              disabled=lock,
+              value=_value),
     ],
 
 

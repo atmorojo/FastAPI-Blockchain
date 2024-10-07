@@ -36,7 +36,7 @@ def juleha_form(juleha=None, lock: bool = False) -> Element:
 
     return form(
         "#form",
-        action="/juleha",
+        action="/juleha/",
         method="post",
         enctype="multipart/form-data"
     )[

@@ -23,7 +23,7 @@ def login_page() -> Element:
         page_title="Login",
         content=[
             div(style="margin-top: 4em;")[
-                form(action="/logggin", method="post")[
+                form(action="/login", method="post")[
                     h1["Sign In"],
                     input(type_="text", name="username"),
                     input(type_="password", name="password"),
@@ -107,7 +107,7 @@ def detail_page(
                 margin: 1em 0;
                 display: inline-block;
                 """,
-                  href=f"/{title.lower()}")[f"← Kembali ke daftar {title}"],
+                  href=f"/{title.lower()}/")[f"← Kembali ke daftar {title}"],
                 h1[title.title()],
                 img(".my-indicator", src="/static/indicator.gif"),
                 detail_form,

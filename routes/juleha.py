@@ -54,7 +54,7 @@ async def create_juleha(
                 await out_file.write(content)
         juleha_db.update(juleha)
 
-    return RedirectResponse("/juleha", status_code=302)
+    return RedirectResponse("/juleha/", status_code=302)
 
 
 @routes.get("/new", response_class=HTMLResponse)

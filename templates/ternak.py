@@ -39,7 +39,8 @@ def ternak_form(
     lock: bool = False
 ) -> Element:
     if lock:
-        form_btn = edit_btn("/ternak", ternak.id)
+        form_btn = edit_btn("/ternak/", ternak.id)
+        picture = show_img("img_ternak/" + ternak.img)
         juleha_combo = inlabel(
             "Juleha", "text", "juleha_id",
             ternak.juleha.name, lock
@@ -52,11 +53,16 @@ def ternak_form(
             "penyelia", "text", "penyelia_id",
             ternak.penyelia.name, lock
         )
+
         jenis = inlabel("Jenis", "text", "jenis",
                         (ternak.jenis if ternak else ""), lock)
         kesehatan = inlabel("kesehatan", "text", "kesehatan",
                             (ternak.kesehatan if ternak else ""), lock)
     else:
+        picture = file_input(
+            (ternak.img if ternak else ""),
+            "img", lock
+        )
         juleha_combo = combo_gen(
             "Juleha", "juleha_id", julehas,
             (ternak.juleha_id if ternak else None),
@@ -68,16 +74,18 @@ def ternak_form(
             (None if ternak else "Pilih Peternak")
         )
         penyelia_combo = combo_gen(
-            "penyelia", "penyelia_id", penyelias,
+            "Penyelia", "penyelia_id", penyelias,
             (ternak.penyelia_id if ternak else None),
             (None if ternak else "Pilih penyelia")
         )
-        jenis = dropdown_gen("Jenis Ternak", "jenis", 
-                             ["Kambing", "Sapi", "Domba", "Kerbau"]
-                             (ternak.jenis if ternak else None))
-        kesehatan = dropdown_gen("Kesehatan", "kesehatan", 
-                                 ["Sehat", "Layak"]
-                                 (ternak.kesehatan if ternak else None))
+        jenis = dropdown_gen(
+            "Jenis Ternak", "jenis",
+            ["Kambing", "Sapi", "Domba", "Kerbau"],
+            (ternak.jenis if ternak else None))
+        kesehatan = dropdown_gen(
+            "Kesehatan", "kesehatan",
+            ["Sehat", "Layak"],
+            (ternak.kesehatan if ternak else None))
         if ternak is not None:
             form_btn = update_btn("/ternak/", ternak.id)
         else:
@@ -85,15 +93,17 @@ def ternak_form(
 
     return form(
         "#form",
-        action="/ternak",
+        action="/ternak/",
         method="post",
         enctype="multipart/form-data",
         autocomplete="off"
     )[
-        inlabel("Tag", "text", "name",
-                (ternak.name if ternak else ""), lock),
-        inlabel("Bobot", "text", "bobot",
-                (ternak.bobot if ternak else ""), lock),
+        label[
+            small["Gambar"],
+            picture
+        ],
+        inlabel("Bobot", "number", "bobot",
+                (ternak.bobot if ternak else ""), lock, True),
         jenis,
         kesehatan,
         juleha_combo,
@@ -102,20 +112,21 @@ def ternak_form(
         inlabel("Waktu Disembelih", "datetime-local", "waktu_sembelih",
                 (ternak.waktu_sembelih if ternak else ""),
                 lock),
-        form_btn
+        form_btn,
+        script(src="/static/compress_logic.js", type_="module", defer=True),
     ]
 
 
 def ternaks_table(ternaks) -> Element:
     col_headers = [
-        "Bobot", "Jenis", "Kesehatan",
-        "Peternak", "Juleha", "Actions"
+        "Foto", "Bobot", "Jenis",
+        "Kesehatan", "Juleha", "Actions"
     ]
     rows = (tr[
+        td(style="width: 50px;")[show_img("img_ternak/" + ternak.img)],
         td[str(ternak.bobot) + "kg"],
         td[ternak.jenis],
         td[ternak.kesehatan],
-        td[ternak.peternak.name],
         td[ternak.juleha.name],
         td[action_buttons("ternak", ternak.id, "ini")],
     ] for ternak in ternaks)

@@ -64,7 +64,7 @@ async def create_penyelia(
     penyelia.file_sk = penyelia.id
     penyelia_db.update(penyelia)
 
-    return RedirectResponse("/penyelia", status_code=302)
+    return RedirectResponse("/penyelia/", status_code=302)
 
 
 # Read

@@ -22,10 +22,11 @@ def peternak_form(peternak=None, lock: bool = False) -> Element:
                                (peternak.status_usaha if peternak else ""),
                                lock),
     else:
-        status_usaha = dropdown_gen("Status Usaha", "status_usaha",
-                                    ["Mandiri", "Badan Usaha"],
-                                    (peternak.status_usaha if peternak else None)
-                                    )
+        status_usaha = dropdown_gen(
+            "Status Usaha", "status_usaha",
+            ["Mandiri", "Badan Usaha"],
+            (peternak.status_usaha if peternak else None)
+        )
         if peternak is not None:
             form_btn = update_btn("/peternak/", peternak.id)
         else:

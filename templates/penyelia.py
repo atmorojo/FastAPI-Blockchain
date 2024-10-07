@@ -46,7 +46,7 @@ def penyelia_form(penyelia, rph, lock: bool = False) -> Element:
 
     return form(
         "#form",
-        action="/penyelia",
+        action="/penyelia/",
         method="post",
         enctype="multipart/form-data"
     )[

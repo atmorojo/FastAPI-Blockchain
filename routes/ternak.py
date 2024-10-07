@@ -1,5 +1,5 @@
 from fastapi import (
-    APIRouter, HTTPException, Form, Request, UploadFile, Depends
+    APIRouter, HTTPException, Form, Request, File, UploadFile, Depends
 )
 from fastapi.responses import HTMLResponse, RedirectResponse
 import aiofiles
@@ -32,12 +32,13 @@ ternak_db = Crud(models.Ternak, next(get_db()))
 
 @routes.post("/")
 async def create_ternak(
-    img: UploadFile = Form(...),
+    img: UploadFile = File(...),
     bobot: str = Form(...),
     jenis: str = Form(...),
     kesehatan: str = Form(...),
     peternak_id: int = Form(...),
     juleha_id: int = Form(...),
+    penyelia_id: int = Form(...),
     waktu_sembelih: str = Form(None)
 ):
     ternak = models.Ternak(
@@ -46,29 +47,32 @@ async def create_ternak(
         kesehatan=kesehatan,
         peternak_id=peternak_id,
         juleha_id=juleha_id,
+        penyelia_id=penyelia_id,
         waktu_sembelih=waktu_sembelih
     )
     ternak = ternak_db.create(ternak)
 
     if img.filename != "":
         ternak.img = ternak.id
-        out_file_path = './files/ternak/' + str(ternak.id)
+        out_file_path = './files/img_ternak/' + str(ternak.id)
         async with aiofiles.open(out_file_path, 'wb') as out_file:
             while content := await img.read(1024):
                 await out_file.write(content)
         ternak_db.update(ternak)
-    return RedirectResponse("/ternak", status_code=302)
+    return RedirectResponse("/ternak/", status_code=302)
 
 
 @routes.get("/new", response_class=HTMLResponse)
 def new_ternak(db: Session = Depends(get_db)):
     peternaks = Crud(models.Peternak, db).get()
     julehas = Crud(models.Juleha, db).get()
+    penyelias = Crud(models.Penyelia, db).get()
     return str(pages.detail_page(
         "Ternak",
         ternak_view.ternak_form(
             peternaks=peternaks,
             julehas=julehas,
+            penyelias=penyelias,
             lock=False
         )
     ))
@@ -84,7 +88,9 @@ def read_ternaks(skip: int = 0, limit: int = 100):
 
 
 @routes.get("/{ternak_id}", response_class=HTMLResponse)
-def read_ternak(ternak_id: int):
+def read_ternak(
+    ternak_id: int,
+):
     ternak = ternak_db.get_by_id(ternak_id)
     if ternak is None:
         raise HTTPException(status_code=404, detail="User not found")
@@ -95,14 +101,23 @@ def read_ternak(ternak_id: int):
 
 
 @routes.get("/edit/{ternak_id}", response_class=HTMLResponse)
-def edit_ternak(req: Request, ternak_id: int):
+def edit_ternak(
+    req: Request,
+    ternak_id: int,
+    db: Session = Depends(get_db),
+):
     ternak = ternak_db.get_by_id(ternak_id)
     if ternak is None:
         raise HTTPException(status_code=404, detail="User not found")
-    peternaks = Crud(models.Peternak, next(get_db())).get()
-    julehas = Crud(models.Juleha, next(get_db())).get()
+    peternaks = Crud(models.Peternak, db).get()
+    julehas = Crud(models.Juleha, db).get()
+    penyelias = Crud(models.Penyelia, db).get()
     form = ternak_view.ternak_form(
-        ternak, peternaks=peternaks, julehas=julehas, lock=False
+        ternak,
+        peternaks=peternaks,
+        julehas=julehas,
+        penyelias=penyelias,
+        lock=False
     )
     if req.headers.get('HX-Request'):
         return str(form)
@@ -118,27 +133,35 @@ def remove_ternak(ternak_id: int):
     if ternak is None:
         raise HTTPException(status_code=404, detail="User not found")
     ternaks = ternak_db.remove(ternak)
-    return str(pages.ternaks_table(ternaks))
+    return str(ternak_view.ternaks_table(ternaks))
 
 
 @routes.put("/{ternak_id}", response_class=HTMLResponse)
 async def update_ternak(
     ternak_id: int,
-    name: str = Form(...),
     bobot: str = Form(...),
     jenis: str = Form(...),
     kesehatan: str = Form(...),
     peternak_id: int = Form(...),
     juleha_id: int = Form(...),
-    waktu_sembelih: str = Form(None)
+    penyelia_id: int = Form(...),
+    waktu_sembelih: str = Form(None),
+    img: UploadFile = Form(None)
 ):
     ternak = ternak_db.get_by_id(ternak_id)
-    ternak.name = name
     ternak.bobot = bobot
     ternak.jenis = jenis
     ternak.kesehatan = kesehatan
     ternak.peternak_id = peternak_id
     ternak.juleha_id = juleha_id
+    ternak.penyelia_id = penyelia_id
     ternak.waktu_sembelih = waktu_sembelih
+
+    if img is not None:
+        ternak.img = ternak.id
+        out_file_path = './files/img_ternak/' + str(ternak.id)
+        async with aiofiles.open(out_file_path, 'wb') as out_file:
+            while content := await img.read(1024):
+                await out_file.write(content)
     ternak = ternak_db.update(ternak)
     return str(ternak_view.ternak_form(ternak, lock=True))
