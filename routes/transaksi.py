@@ -8,7 +8,7 @@ from controllers.crud import Crud
 from src.database import SessionLocal, engine
 import src.blockchain as bc
 import templates.pages as pages
-import templates.transaksi as transaksi_view
+import templates.transaksi as tpl_transaksi
 from sqlalchemy.orm import Session
 
 models.Base.metadata.create_all(bind=engine)
@@ -30,29 +30,32 @@ def get_db():
 class Blockdata:
     def __init__(
         self,
-        id_transaksi,
         rph_name,
         lapak_name,
         peternak_name,
+        juleha_name,
         jumlah,
         waktu_sembelih,
+        waktu_kirim,
+        id_transaksi,
         id_csa=None,
-        waktu_kirim=None,
         temp_min=None,
         temp_max=None,
         humi_min=None,
         humi_max=None,
         status_validasi=None,
-        # Add juleha.name
+        waktu_selesai_kirim=None,
     ):
         self.id_transaksi = id_transaksi
         self.id_csa = id_csa
         self.rph_name = rph_name
         self.lapak_name = lapak_name
         self.peternak_name = peternak_name
+        self.juleha_name = juleha_name
         self.jumlah = jumlah
         self.waktu_sembelih = waktu_sembelih
         self.waktu_kirim = waktu_kirim
+        self.waktu_selesai_kirim = waktu_selesai_kirim
         self.temp_min = temp_min
         self.temp_max = temp_max
         self.humi_min = humi_min
@@ -61,125 +64,110 @@ class Blockdata:
 
 
 transaksi_db = Crud(models.Transaksi, next(get_db()))
-
 chain = bc.Blockchain()
 
 
+# TABLE PAGE
+@routes.get("/", response_class=HTMLResponse)
+def table_transaksis(
+        skip: int = 0, limit: int = 100,
+        db: Session = Depends(get_db)
+):
+    transaksi = Crud(models.Transaksi, db).get(skip=skip, limit=limit)
+    table = tpl_transaksi.transaksis_table(transaksi)
+    page = pages.table_page("Transaksi", table)
+    return str(page)
+
+
+# NEW PAGE
 @routes.get("/new", response_class=HTMLResponse)
-def new_transaksi():
-    transportasi = Crud(models.Transportasi, next(get_db())).get()
-    lapak = Crud(models.Lapak, next(get_db())).get()
-    penyelia = Crud(models.Penyelia, next(get_db())).get()
-    juleha = Crud(models.Juleha, next(get_db())).get()
-    ternak = Crud(models.Ternak, next(get_db())).get()
-    iot = Crud(models.IoT, next(get_db())).get()
+def new_transaksi(db: Session = Depends(get_db)):
+    lapak = Crud(models.Lapak, db).get()
+    ternak = Crud(models.Ternak, db).get()
+    iot = Crud(models.IoT, db).get()
 
     return str(pages.detail_page(
         "Transaksi",
-        transaksi_view.transaksi_form(
-            transportasi=transportasi,
+        tpl_transaksi.transaksi_form(
             lapak=lapak,
-            penyelia=penyelia,
-            juleha=juleha,
             ternak=ternak,
             iot=iot
         )
     ))
 
 
+# POST ENDPOINT
 @routes.post("/")
 async def create_transaksi(
     jumlah: str = Form(...),
     lapak_id: int = Form(...),
-    transportasi_id: int = Form(...),
-    penyelia_id: int = Form(...),
-    juleha_id: int = Form(...),
     ternak_id: int = Form(...),
-    iot_id: int = Form(...),
-    waktu_kirim: str = Form(...),
+    iot_id: int = Form(None),
+    waktu_kirim: str = Form(None),
 ):
     transaksi = models.Transaksi(
         jumlah=jumlah,
         lapak_id=lapak_id,
-        transportasi_id=transportasi_id,
-        penyelia_id=penyelia_id,
-        juleha_id=juleha_id,
         ternak_id=ternak_id,
+        iot_id=iot_id,
+        waktu_kirim=waktu_kirim,
+        status_kirim="dikirim"
     )
 
     transaksi = transaksi_db.create(transaksi)
 
-
     block = Blockdata(
         id_transaksi=transaksi.id,
-        rph_name=transaksi.transportasi.rph.name,
+        rph_name=transaksi.ternak.penyelia.rph.name,
         lapak_name=transaksi.lapak.name,
         peternak_name=transaksi.ternak.peternak.name,
+        juleha_name=transaksi.ternak.juleha.name,
         jumlah=transaksi.jumlah,
         waktu_sembelih=transaksi.ternak.waktu_sembelih,
-        waktu_kirim=pengiriman.waktu_kirim
+        waktu_kirim=transaksi.waktu_kirim
     )
     chain.mine_block(block.__dict__)
     return RedirectResponse("/transaksi", status_code=302)
 
 
-# Read
-
-
-@routes.get("/", response_class=HTMLResponse)
-def read_transaksis(skip: int = 0, limit: int = 100):
-    transaksis = transaksi_db.get(skip=skip, limit=limit)
-    return str(pages.table_page(
-        "Transaksi",
-        transaksi_view.transaksis_table(transaksis)
-    ))
-
-
+# DETAIL PAGE
 @routes.get("/{transaksi_id}", response_class=HTMLResponse)
 def read_transaksi(transaksi_id: int):
     lock = True
     transaksi = transaksi_db.get_by_id(transaksi_id)
-    pengiriman = pengiriman_db.get_by("transaksi_id", transaksi_id)
 
     if transaksi is None:
         raise HTTPException(status_code=404, detail="User not found")
 
     return str(pages.detail_page(
         "transaksi",
-        transaksi_view.transaksi_form(
+        tpl_transaksi.transaksi_form(
             transaksi=transaksi,
-            pengiriman=pengiriman,
             lock=lock
         )
     ))
 
 
-# Update
-
-
+# Edit Page
 @routes.get("/edit/{transaksi_id}", response_class=HTMLResponse)
-def edit_transaksi(req: Request, transaksi_id: int):
+def edit_transaksi(
+    req: Request,
+    transaksi_id: int,
+    db: Session = Depends(get_db)
+):
     transaksi = transaksi_db.get_by_id(transaksi_id)
-    transportasi = Crud(models.Transportasi, next(get_db())).get()
-    lapak = Crud(models.Lapak, next(get_db())).get()
-    penyelia = Crud(models.Penyelia, next(get_db())).get()
-    juleha = Crud(models.Juleha, next(get_db())).get()
-    ternak = Crud(models.Ternak, next(get_db())).get()
-    iot = Crud(models.IoT, next(get_db())).get()
-    pengiriman = pengiriman_db.get_by("transaksi_id", transaksi_id)
+    lapak = Crud(models.Lapak, db).get()
+    ternak = Crud(models.Ternak, db).get()
+    iot = Crud(models.IoT, db).get()
 
     if transaksi is None:
         raise HTTPException(status_code=404, detail="User not found")
 
-    form = transaksi_view.transaksi_form(
+    form = tpl_transaksi.transaksi_form(
         transaksi=transaksi,
-        transportasi=transportasi,
         lapak=lapak,
-        penyelia=penyelia,
-        juleha=juleha,
         ternak=ternak,
         iot=iot,
-        pengiriman=pengiriman
     )
     if req.headers.get('HX-Request'):
         return str(form)
@@ -187,14 +175,12 @@ def edit_transaksi(req: Request, transaksi_id: int):
         return str(pages.detail_page("Transaksi", form))
 
 
+# PUT ENDPOINT
 @routes.put("/{transaksi_id}", response_class=HTMLResponse)
 async def update_transaksi(
     transaksi_id: int,
     jumlah: str = Form(...),
     lapak_id: int = Form(...),
-    transportasi_id: int = Form(...),
-    penyelia_id: int = Form(...),
-    juleha_id: int = Form(...),
     ternak_id: int = Form(...),
     iot_id: int = Form(...),
     waktu_kirim: str = Form(...),
@@ -205,31 +191,25 @@ async def update_transaksi(
     transaksi = transaksi_db.get_by_id(transaksi_id)
     transaksi.jumlah = jumlah
     transaksi.lapak_id = lapak_id
-    transaksi.transportasi_id = transportasi_id
-    transaksi.penyelia_id = penyelia_id
-    transaksi.juleha_id = juleha_id
     transaksi.ternak_id = ternak_id
+    transaksi.iot_id = iot_id
     transaksi = transaksi_db.update(transaksi)
-
-    pengiriman = pengiriman_db.get_by("transaksi_id", transaksi_id)
-    pengiriman.waktu_kirim = waktu_kirim
-    pengiriman = pengiriman_db.update(pengiriman)
 
     block = Blockdata(
         id_transaksi=transaksi.id,
-        rph_name=transaksi.transportasi.rph.name,
+        rph_name=transaksi.ternak.penyelia.rph.name,
         lapak_name=transaksi.lapak.name,
         peternak_name=transaksi.ternak.peternak.name,
+        juleha_name=transaksi.ternak.juleha.name,
         jumlah=transaksi.jumlah,
         waktu_sembelih=transaksi.ternak.waktu_sembelih,
-        waktu_kirim=pengiriman.waktu_kirim
+        waktu_kirim=transaksi.waktu_kirim
     )
     chain.mine_block(block.__dict__)
 
-    return str(transaksi_view.transaksi_form(
+    return str(tpl_transaksi.transaksi_form(
         transaksi,
         lock,
-        pengiriman=pengiriman
     ))
 
 
@@ -242,4 +222,4 @@ def remove_transaksi(transaksi_id: int):
     if transaksi is None:
         raise HTTPException(status_code=404, detail="User not found")
     transaksis = transaksi_db.remove(transaksi)
-    return str(transaksi_view.transaksis_table(transaksis))
+    return str(tpl_transaksi.transaksis_table(transaksis))

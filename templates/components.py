@@ -3,6 +3,7 @@ from htpy import (
     a,
     aside,
     button,
+    details,
     div,
     h1,
     header,
@@ -17,6 +18,7 @@ from htpy import (
     select,
     small,
     span,
+    summary,
     table,
     tbody,
     th,
@@ -105,6 +107,7 @@ def drawer_menu() -> Element:
             li[a(href="/juleha")["Juleha"]],
             li[a(href="/penyelia")["Penyelia"]],
             li[a(href="/peternak")["Peternak"]],
+            li[a(href="/iot")["IoT"]],
             li[hr],
             li[a(href="/ternak")["Ternak"]],
             li[a(href="/pasar")["Pasar"]],
@@ -224,3 +227,46 @@ def dropdown_gen(
             )[item] for item in option_items)
         ]
     ]
+
+
+def img_dropdown(
+    label_text, field_name,
+    img_dir, items,
+    selected=None,
+    extra_li=None,
+    extra_text=None
+):
+    return div[
+        small[label_text],
+        details(".dropdown")[
+            summary[label_text],
+            ul[
+                (li[label[
+                    input(type_="radio",
+                          name=field_name,
+                          value=item.id,
+                          data_helper=(
+                              extra_text if extra_text else ""
+                          ) + item.peternak.name,
+                          _="""
+                            set :grandpa to the closest <details/>
+                            init
+                                log my @checked
+                                if my @checked == "" trigger poke
+                            end
+                            on click
+                                toggle @open on :grandpa
+                                trigger poke
+                            end
+                            on poke
+                                put my @data-helper into
+                                    the first <summary/> in :grandpa
+                          """,
+                          checked=(item.id == selected)
+                          ),
+                    img(style="height: 4em; margin-right: 2em;",
+                        src=img_dir + item.img),
+                    (extra_text if extra_text else "") + item.peternak.name
+                ]] for item in items),
+                extra_li
+            ]]]

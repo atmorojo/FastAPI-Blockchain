@@ -123,8 +123,8 @@ def ternaks_table(ternaks) -> Element:
         "Kesehatan", "Juleha", "Actions"
     ]
     rows = (tr[
-        td(style="width: 50px;")[show_img(
-            "img_ternak/" + (ternak.img if ternak.img else ""))],
+        td(style="width: 50px;")[
+            show_img("img_ternak/" + (ternak.img if ternak.img else ""))],
         td[str(ternak.bobot) + "kg"],
         td[ternak.jenis],
         td[ternak.kesehatan],

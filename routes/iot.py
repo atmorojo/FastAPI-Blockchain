@@ -35,21 +35,18 @@ iot_db = Crud(models.IoT, next(get_db()))
 
 @routes.get("/new", response_class=HTMLResponse)
 def new_iot():
-    rph = Crud(models.Rph, next(get_db())).get()
     return str(pages.detail_page(
         "iot",
-        iot_view.iot_form(rph=rph)
+        iot_view.iot_form()
     ))
 
 
 @routes.post("/")
 async def create_iot(
     node: str = Form(...),
-    rph_id: int = Form(...),
 ):
     iot = models.IoT(
         node=node,
-        rph_id=rph_id,
     )
     iot_db.create(iot)
     return RedirectResponse("/iot", status_code=302)
@@ -85,11 +82,10 @@ def read_iot(iot_id: int):
 @routes.get("/edit/{iot_id}", response_class=HTMLResponse)
 def edit_iot(req: Request, iot_id: int):
     iot = iot_db.get_by_id(iot_id)
-    rph = Crud(models.Rph, next(get_db())).get()
     if iot is None:
         raise HTTPException(status_code=404, detail="User not found")
 
-    form = iot_view.iot_form(iot=iot, rph=rph)
+    form = iot_view.iot_form(iot=iot)
     if req.headers.get('HX-Request'):
         return str(form)
     else:
@@ -100,12 +96,10 @@ def edit_iot(req: Request, iot_id: int):
 async def update_iot(
     iot_id: int,
     node: str = Form(...),
-    rph_id: int = Form(...),
 ):
     lock = True
     iot = iot_db.get_by_id(iot_id)
     iot.node = node
-    iot.rph_id = rph_id
 
     iot = iot_db.update(iot)
     return str(iot_view.iot_form(iot, lock))
