@@ -25,24 +25,27 @@ from htpy import (
     thead,
     tr,
     ul,
+    style,
+    script
 )
 
 
-def action_buttons(route, id, name):
+def action_buttons(route, id, name, extra_1=None):
     return div(".table-actions.full", role="group")[
-      a(".outline.secondary", role="button",
-        href="/" + route + "/" + str(id)
-        )["Detail"],
-      a(".outline.secondary", role="button",
-        href="/" + route + "/edit/" + str(id)
-        )["Edit"],
-      a(".outline.warning", role="button",
-        hx_delete="/" + route + "/" + str(id),
-        hx_confirm=f"""
+        extra_1,
+        a(".outline.secondary", role="button",
+          href="/" + route + "/" + str(id)
+          )["Detail"],
+        a(".outline.secondary", role="button",
+          href="/" + route + "/edit/" + str(id)
+          )["Edit"],
+        a(".outline.warning", role="button",
+          hx_delete="/" + route + "/" + str(id),
+          hx_confirm=f"""
 Apakah anda yakin mau menghapus data {name}?
-        """,
-        hx_target="#table-wrapper"
-        )["Hapus"],
+          """,
+          hx_target="#table-wrapper"
+          )["Hapus"],
     ]
 
 
@@ -270,3 +273,18 @@ def img_dropdown(
                 ]] for item in items),
                 extra_li
             ]]]
+
+
+def tpl_print(url):
+    css = """
+    @media print {
+        @page {
+            margin: 0;
+            size: 58mm 58mm;
+        }
+    }
+    """
+    return div[
+        style[css],
+        img(".full", src=url, onload="window-print();")
+    ]

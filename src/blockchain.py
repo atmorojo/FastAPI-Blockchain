@@ -4,6 +4,8 @@ import datetime as _dt
 import hashlib as _hashlib
 import json
 from sqlitedict import SqliteDict
+import qrcode
+import io
 
 # Constants
 DATABASE_URL = './data/production.sqlite'
@@ -61,3 +63,29 @@ class Blockchain:
              block["timestamp"] +
              json.dumps(block["transaction"])).encode()
         ).hexdigest()
+
+    def query_block(self, id_transaksi):
+        query = """
+        SELECT
+            json_extract(value, '$.transaction') as value
+        FROM unnamed
+        WHERE
+            json_extract(value, '$.transaction.id_transaksi') = ?
+        ORDER BY json_extract(value, '$.timestamp') DESC
+        LIMIT 1
+        """
+
+        item = self.chain.conn.select_one(query, (id_transaksi,))
+
+        return item
+
+
+# qrcode generator
+def qr_generator(url):
+    """ Returns a qrcode image. """
+    img_bytes = io.BytesIO()
+    img = qrcode.make(url)
+    img.save(img_bytes)
+    img_bytes.seek(0)
+
+    return img_bytes.read()

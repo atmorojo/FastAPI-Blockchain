@@ -1,7 +1,12 @@
 from pydantic import BaseModel
 import src.blockchain as _blockchain
+import json
+import qrcode
+import io
 from fastapi import (
     APIRouter,
+    Response,
+    Request,
     Depends
 )
 
@@ -64,3 +69,12 @@ def previous_block(
 ):
     """Returns the last block in the blockchain."""
     return blockchain.get_previous_block()
+
+
+@routes.get("/{transaksi_id}")
+def read_blockchain(
+    transaksi_id: int,
+    blockchain: _blockchain.Blockchain = Depends(get_blockchain),
+):
+    """ Returns a specific block from the blockchain. """
+    return json.loads(blockchain.query_block(transaksi_id)[0])

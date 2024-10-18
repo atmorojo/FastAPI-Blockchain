@@ -5,13 +5,14 @@ and dependencies related to the blockchain.
 
 from typing import Annotated
 from sqlalchemy.orm import Session
-from fastapi import FastAPI, Form, Depends, HTTPException
+from fastapi import FastAPI, Form, Depends, HTTPException, Request, Response
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from jose import jwt
 import src.security as _security
 import templates.pages as pages
 import templates.validasi as validasi_tpl
+from templates.components import tpl_print
 from routes import (
     users,
     juleha,
@@ -168,3 +169,15 @@ def sensorbc():
     """
     chain = bc.Blockchain("./data/iot.db")
     return chain.chain.items()
+
+
+@app.get("/qr/{transaksi_id}")
+def qr_gen(req: Request, transaksi_id: int):
+    root = str(req.base_url)
+    img = bc.qr_generator(f"{root}/blockchain/{transaksi_id}")
+    return Response(content=img, media_type="image/png")
+
+
+@app.get("/print/qr/{transaksi_id}", response_class=HTMLResponse)
+def qr_print(req: Request, transaksi_id: int):
+    return str(tpl_print(f"{req.base_url}qr/{transaksi_id}"))

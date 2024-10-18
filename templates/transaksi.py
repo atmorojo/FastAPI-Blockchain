@@ -7,10 +7,11 @@ from templates.components import (
     update_btn,
     submit_btn,
     action_buttons,
-    img_dropdown
+    img_dropdown,
 )
 
 from htpy import (
+    img,
     small,
     label,
     form,
@@ -86,10 +87,16 @@ def transaksi_form(
 def transaksis_table(transaksis) -> Element:
     col_headers = ["No. Transaksi", "Lapak", "Status", "Actions"]
     rows = (tr[
-        td[str(transaksi.id)],
+        td(style="width: 50px;")[
+            img(".full", src=f"/qr/{transaksi.id}")
+        ],
         td[transaksi.lapak.name],
         td[transaksi.status_kirim],
-        td[action_buttons("transaksi", transaksi.id, "ini")]
+        td[action_buttons(
+            "transaksi", transaksi.id, "ini",
+            extra_1=a(".outline.secondary", role="button",
+                      href=f"/print/qr/{transaksi.id}")["Print QR"]
+        )]
     ] for transaksi in transaksis)
 
     return table_builder(
