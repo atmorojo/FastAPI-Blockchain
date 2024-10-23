@@ -182,14 +182,15 @@ def spoiler(url):
     ]
 
 
-def inlabel(_label, _type, _name, _value, lock, focus=False):
+def inlabel(_label, _type, _name, _value, lock, focus=False, ro=False):
     return label[
         small[_label],
         input(autofocus=focus,
               type_=_type,
               name=_name,
               disabled=lock,
-              value=_value),
+              value=_value,
+              readonly=ro),
     ],
 
 
@@ -218,16 +219,19 @@ def combo_gen(
 def dropdown_gen(
     label_text, name, option_items,
     selected=None, placeholder=None,
+    displayed_options=None, hx=None,
 ):
     return label[
         small[label_text],
-        select(name=name)[
+        select(hx, name=name)[
             option(
                 value="", disabled=True, selected=True, hidden=True
             )[(placeholder if placeholder else f"Pilih {label_text}")],
             (option(
                 value=item, selected=(item == selected)
-            )[item] for item in option_items)
+            )[
+                (displayed_options[index] if displayed_options else item)
+            ] for index, item in enumerate(option_items))
         ]
     ]
 

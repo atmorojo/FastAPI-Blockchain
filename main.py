@@ -63,11 +63,13 @@ def get_db():
 @app.get("/dashboard", response_class=HTMLResponse)
 async def index(
     user: Annotated[
-        schemas.User, Depends(_security.get_current_active_user)
+        schemas.User, Depends(_security.get_current_user)
     ],
     db=Depends(get_db)
 ):
-    match user.role:
+    match _security.get_role(user):
+        case 0:
+            page = pages.dashboard_page(user)
         case 1:
             page = pages.dashboard_page(user)
         case 2:
@@ -102,7 +104,7 @@ async def index(
 @app.put("/validasi/{validasi_id}", response_class=HTMLResponse)
 def validasi(
     validasi_id: int,
-    user=Depends(_security.get_current_active_user),
+    user=Depends(_security.get_current_user),
     db=Depends(get_db)
 ):
     validasi_ctrl = Crud(models.Transaksi, db)

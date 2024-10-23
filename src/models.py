@@ -18,11 +18,18 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     username = Column(String, unique=True, index=True)
     email = Column(String, unique=True, index=True)
-    hashed_password = Column(String)
-    role = Column(Integer, nullable=True)
-    is_active = Column(Boolean, default=True)
-    alias = Column(Integer, nullable=True)
+    password = Column(String)
+    phone = Column(Integer, nullable=True)
+    tgl_update = Column(Integer, nullable=True)
+    role = relationship("Role", back_populates="user", uselist=False)
 
+
+class Role(Base):
+    __tablename__ = "role"
+    user_id = Column(Integer, ForeignKey("user.id"), primary_key=True)
+    role = Column(Integer) # 0 super, 1 admin, 2 penyelia, 3 juleha, 4 lapak
+    acting_as = Column(Integer)
+    user = relationship("User", back_populates="role")
 
 class Juleha(Base):
     __tablename__ = "juleha"

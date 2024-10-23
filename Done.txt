@@ -31,3 +31,9 @@ x 2024-10-06 +ternak Add photo instead of ternak id for validation
 x 2024-10-06 Added upload image form camera feature
 x 2024-10-06 Update +Ternak module to use better abstractions
 x 2024-10-07 Compress uploaded file before uploading
+x 2024-10-19 Fix +routes and +template errors that come from changing the +models
+x 2024-10-19 Update +Transaksi module to use better abstractions
+x 2024-10-19 +blockchain Add juleha.name to transaction bc
+x 2024-10-19 +blockchain Blockchain waktu_kirim & tambah waktu_terima
+x 2024-10-19 +lapak +blockchain Add qrcode page
+x 2024-10-23 +master +user Make user master forms 

@@ -16,6 +16,3 @@ class UserLogin(UserBase):
 
 class User(UserBase):
     id: int
-    is_active: bool
-    role: int
-    alias: int

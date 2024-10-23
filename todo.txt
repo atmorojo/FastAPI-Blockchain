@@ -1,14 +1,8 @@
-(A) Fix +routes and +template errors that come from changing the +models
-(A) Update +Transaksi module to use better abstractions
-
 (B) +admin +transaksi Only show ternak slaughtered today at each rph
 (B) +admin +transaksi Only show ternak slaughtered today at transaksi list
 (B) +admin +transaksi Remove rph_id dropdown and use admin's rph id instead
 (B) +blockchain +lapak Contoh tampilan: lama kirim, temp: 29 - 30
-(B) +blockchain Add juleha.name to transaction bc
-(B) +blockchain Blockchain waktu_kirim & tambah waktu_terima
 (B) +blockchain Download bc to users machines
-(B) +lapak +blockchain Add qrcode page
 (B) +lapak +blockchain Di halaman qr blockchain ada tombol isi quesioner
 (B) +lapak +blockchain Pelapak trigger kiriman selesai dari nomor telefon isi quesioner
 (B) +lapak Add Lapak user
@@ -23,5 +17,8 @@
 (B) +transaksi status kirim (0 tidak ada pengiriman, 1 dikirim, 2 diterima)
 (B) Turn the notes on the +models to tasks
 
-(C) +master +user Make user master forms 
 (C) +security remove drawer_menu from non-admin user
+hapus transaksi pakai password
+hapus masukin ke bc dgn keterangan deleted 
+HTTPException custom view?
+Form validation

@@ -6,7 +6,7 @@ from fastapi.security import APIKeyCookie
 from jose import jwt
 from sqlalchemy.orm import Session
 from src.database import SessionLocal, engine
-from controllers import user_ctrl
+from controllers.user_ctrl import UserCrud
 from src import schemas
 
 cookie_sec = APIKeyCookie(name="session")
@@ -25,10 +25,10 @@ def get_db():
 def check_user(
     username: str,
     password: str,
-    db: Session
+    db: Session = Depends(get_db),
 ):
-    print(db)
-    db_user = user_ctrl.get_user_by_username(db=db, username=username)
+    user_ctrl = UserCrud(db)
+    db_user = user_ctrl.get_user_by_username(username=username)
     if db_user is None:
         raise HTTPException(
             status_code=302,
@@ -36,20 +36,22 @@ def check_user(
             # headers={"location": "/login"}
         )
     hashed_password = hashlib.sha256(password.encode()).hexdigest()
-    if not hashed_password == db_user.hashed_password:
+    if not hashed_password == db_user.password:
         raise HTTPException(
             status_code=302,
-            detail="Incorect username or password",
+            detail="DIncorect username or password",
             # headers={"location": "/login"}
         )
 
 
 async def get_current_user(
-    session: Annotated[str, Depends(cookie_sec)]
+    session: Annotated[str, Depends(cookie_sec)],
+    db: Session = Depends(get_db),
 ):
     try:
+        user_ctrl = UserCrud(db)
         payload = jwt.decode(session, secret_key)
-        user = user_ctrl.get_user_by_username(next(get_db()), payload["sub"])
+        user = user_ctrl.get_user_by_username(payload["sub"])
         return user
     except Exception:
         raise HTTPException(
@@ -59,14 +61,17 @@ async def get_current_user(
         )
 
 
-async def get_current_active_user(
-    current_user: Annotated[schemas.User, Depends(get_current_user)]
-):
-    if current_user.is_active:
-        return current_user
+def is_admin(user = Depends(get_current_user)):
+    if get_role(user) > 1:
+        return False
     else:
-        raise HTTPException(
-            status_code=302,
-            detail="Inactive user",
-            # headers={"location": "/login"}
-        )
+        return user
+
+def is_super_admin(user = Depends(get_current_user)):
+    if get_role(user) > 0:
+        return False
+    else:
+        return user
+
+def get_role(user):
+    return user.role.role
