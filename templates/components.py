@@ -144,6 +144,7 @@ def drawer_menu() -> Element:
             ".nav-drawer",
         )[nav[ul[
             li[a(href="/dashboard")["Dashboard"]],
+            li[a(href="/users")["Users"]],
             li[a(href="/rph")["RPH"]],
             li[a(href="/juleha")["Juleha"]],
             li[a(href="/penyelia")["Penyelia"]],
