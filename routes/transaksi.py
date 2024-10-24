@@ -10,6 +10,7 @@ import src.blockchain as bc
 import templates.pages as pages
 import templates.transaksi as tpl_transaksi
 from sqlalchemy.orm import Session
+from src.security import current_user_validation, get_current_user
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -216,9 +217,16 @@ async def update_transaksi(
 # Delete
 
 
-@routes.delete("/{transaksi_id}", response_class=HTMLResponse)
-def remove_transaksi(transaksi_id: int):
-    transaksi = transaksi_db.get_by_id(transaksi_id)
+@routes.post("/{rm_transaksi_id}", response_class=HTMLResponse)
+def remove_transaksi(
+    rm_transaksi_id: int,
+    password: str = Form(...),
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user)
+):
+    if not current_user_validation(current_user, password):
+        return str(tpl_transaksi.unauthorized("/transaksi/"))
+    transaksi = transaksi_db.get_by_id(rm_transaksi_id)
     if transaksi is None:
         raise HTTPException(status_code=404, detail="User not found")
     transaksis = transaksi_db.remove(transaksi)

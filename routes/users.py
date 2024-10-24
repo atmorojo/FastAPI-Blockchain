@@ -6,6 +6,7 @@ from datetime import date
 from controllers.user_ctrl import UserCrud
 from controllers.crud import Crud
 from src import models, schemas
+from src.security import current_user_validation, get_current_user
 from src.database import SessionLocal, engine
 import templates.pages as pages
 import templates.users as tpl_users
@@ -35,10 +36,10 @@ def read_users(db: Session = Depends(get_db), skip: int = 0, limit: int = 100):
     juleha_list = Crud(models.Juleha, db).get()
     lapak_list = Crud(models.Lapak, db).get()
     actors = {
-        "rph" : rph_list,
-        "penyelia" : penyelia_list,
-        "juleha" : juleha_list,
-        "lapak" : lapak_list
+        "rph": rph_list,
+        "penyelia": penyelia_list,
+        "juleha": juleha_list,
+        "lapak": lapak_list
     }
     users = user_ctrl.get_users(skip=skip, limit=limit)
     return str(pages.table_page(
@@ -68,11 +69,11 @@ async def create_user(
     db: Session = Depends(get_db)
 ):
     user = models.User(
-        username = username,
-        email = email,
-        password = password,
-        phone = phone,
-        tgl_update = date.today(),
+        username=username,
+        email=email,
+        password=password,
+        phone=phone,
+        tgl_update=date.today(),
     )
     user_ctrl = UserCrud(db)
     db_user = user_ctrl.get_user_by_email(email=user.email)
@@ -81,9 +82,9 @@ async def create_user(
     db_user = user_ctrl.create_user(user=user)
     role_ctrl = Crud(models.Role, db)
     role = models.Role(
-        user_id = db_user.id,
-        role = role,
-        acting_as = acting_as,
+        user_id=db_user.id,
+        role=role,
+        acting_as=acting_as,
     )
     role_ctrl.create(role)
     return RedirectResponse("/users", status_code=302)
@@ -131,10 +132,10 @@ def read_user(username: str, db: Session = Depends(get_db)):
     juleha_list = Crud(models.Juleha, db).get()
     lapak_list = Crud(models.Lapak, db).get()
     actors = {
-        "rph" : rph_list,
-        "penyelia" : penyelia_list,
-        "juleha" : juleha_list,
-        "lapak" : lapak_list
+        "rph": rph_list,
+        "penyelia": penyelia_list,
+        "juleha": juleha_list,
+        "lapak": lapak_list
     }
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
@@ -172,10 +173,28 @@ async def update_user(
 
 
 # Delete Endpoint
-@routes.delete("/{username}", response_class=HTMLResponse)
-def remove_user(username: str):
-    user = user_ctrl.get_user_by_username(username)
-    if user is None:
+@routes.post("/{rm_username}", response_class=HTMLResponse)
+def remove_user(
+    rm_username: str,
+    password: str = Form(...),
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user)
+):
+    rph_list = Crud(models.Rph, db).get()
+    penyelia_list = Crud(models.Penyelia, db).get()
+    juleha_list = Crud(models.Juleha, db).get()
+    lapak_list = Crud(models.Lapak, db).get()
+    actors = {
+        "rph": rph_list,
+        "penyelia": penyelia_list,
+        "juleha": juleha_list,
+        "lapak": lapak_list
+    }
+    if not current_user_validation(current_user, password):
+        return str(tpl_users.unauthorized("/users/"))
+    user_ctrl = UserCrud(db)
+    user_db = user_ctrl.get_user_by_username(rm_username)
+    if user_db is None:
         raise HTTPException(status_code=404, detail="User not found")
-    users = user_ctrl.remove(user)
-    return str(tpl_users.users_table(users))
+    users = user_ctrl.remove(user_db)
+    return str(tpl_users.users_table(actors, users))

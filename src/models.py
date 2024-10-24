@@ -21,15 +21,21 @@ class User(Base):
     password = Column(String)
     phone = Column(Integer, nullable=True)
     tgl_update = Column(Integer, nullable=True)
-    role = relationship("Role", back_populates="user", uselist=False)
+    role = relationship(
+        "Role",
+        back_populates="user",
+        uselist=False,
+        cascade="all, delete-orphan"
+    )
 
 
 class Role(Base):
     __tablename__ = "role"
     user_id = Column(Integer, ForeignKey("user.id"), primary_key=True)
-    role = Column(Integer) # 0 super, 1 admin, 2 penyelia, 3 juleha, 4 lapak
+    role = Column(Integer)  # 0 super, 1 admin, 2 penyelia, 3 juleha, 4 lapak
     acting_as = Column(Integer)
     user = relationship("User", back_populates="role")
+
 
 class Juleha(Base):
     __tablename__ = "juleha"

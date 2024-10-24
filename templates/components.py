@@ -1,11 +1,16 @@
 from htpy import (
     Element,
     a,
+    article,
     aside,
     button,
     details,
+    dialog,
     div,
+    footer,
+    form,
     h1,
+    h2,
     header,
     hr,
     img,
@@ -15,9 +20,11 @@ from htpy import (
     nav,
     option,
     p,
+    script,
     select,
     small,
     span,
+    style,
     summary,
     table,
     tbody,
@@ -25,8 +32,6 @@ from htpy import (
     thead,
     tr,
     ul,
-    style,
-    script
 )
 
 
@@ -47,6 +52,39 @@ Apakah anda yakin mau menghapus data {name}?
           hx_target="#table-wrapper"
           )["Hapus"],
     ]
+
+
+def secure_action_buttons(route, id, name, extra_1=None):
+    return div(".secure_action_buttons")[
+        dialog(f"#confirm_hapus_{str(id)}", open=False)[
+            form(
+                autocomplete="off",
+                hx_post="/" + route + "/" + str(id),
+                hx_target="#table-wrapper"
+            )[
+                article[
+                    h2["Konfirmasi Penghapusan Data"],
+                    p["Masukkan password untuk menghapus data ini:"],
+                    input(type_="password", name="password"),
+                    footer[
+                        button(".secondary", type_="button",
+                               _=f"on click toggle @open on #confirm_hapus_{str(id)}"
+                               )["Cancel"],
+                        button(type_="submit", style="width: auto;")["Confirm"]
+                    ]]]
+        ],
+        div(".table-actions.full", role="group")[
+            extra_1,
+            a(".outline.secondary", role="button",
+              href="/" + route + "/" + str(id)
+              )["Detail"],
+            a(".outline.secondary", role="button",
+              href="/" + route + "/edit/" + str(id)
+              )["Edit"],
+            a(".outline.warning", role="button",
+              _=f"on click toggle @open on #confirm_hapus_{str(id)}"
+              )["Hapus"],
+        ]]
 
 
 def nav_link(path: str, menu: str) -> Element:

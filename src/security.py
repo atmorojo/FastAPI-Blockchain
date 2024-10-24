@@ -61,17 +61,25 @@ async def get_current_user(
         )
 
 
-def is_admin(user = Depends(get_current_user)):
+def current_user_validation(user, password):
+    hashed_password = hashlib.sha256(password.encode()).hexdigest()
+    print(hashed_password == user.password)
+    return hashed_password == user.password
+
+
+def is_admin(user=Depends(get_current_user)):
     if get_role(user) > 1:
         return False
     else:
         return user
 
-def is_super_admin(user = Depends(get_current_user)):
+
+def is_super_admin(user=Depends(get_current_user)):
     if get_role(user) > 0:
         return False
     else:
         return user
+
 
 def get_role(user):
     return user.role.role

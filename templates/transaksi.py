@@ -6,11 +6,13 @@ from templates.components import (
     show_img,
     update_btn,
     submit_btn,
-    action_buttons,
+    secure_action_buttons,
     img_dropdown,
 )
 
 from htpy import (
+    div,
+    blockquote,
     img,
     small,
     label,
@@ -92,7 +94,7 @@ def transaksis_table(transaksis) -> Element:
         ],
         td[transaksi.lapak.name],
         td[transaksi.status_kirim],
-        td[action_buttons(
+        td[secure_action_buttons(
             "transaksi", transaksi.id, "ini",
             extra_1=a(".outline.secondary", role="button",
                       href=f"/print/qr/{transaksi.id}")["Print QR"]
@@ -103,3 +105,10 @@ def transaksis_table(transaksis) -> Element:
         col_headers,
         rows
     )
+
+
+def unauthorized(prev_link):
+    return div[
+        a(href=prev_link)["← Kembali ke tabel user"],
+        blockquote["Unauthorized"]
+    ]

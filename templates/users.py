@@ -6,11 +6,12 @@ from templates.components import (
     combo_gen,
     update_btn,
     submit_btn,
-    action_buttons,
+    secure_action_buttons,
     dropdown_gen,
 )
 
 from htpy import (
+    blockquote,
     render_node,
     form,
     div,
@@ -76,13 +77,14 @@ def users_table(actors, users) -> Element:
         td[user.email],
         td[role_list[user.role.role]],
         td[name_fetcher(actors, user)],
-        td[action_buttons("users", user.username, user.username)],
+        td[secure_action_buttons("users", user.username, user.username)],
     ] for user in users)
 
     return table_builder(
         col_headers,
         rows
         )
+
 
 def name_fetcher(big_list, user):
     name = "No name found"
@@ -109,5 +111,13 @@ def name_fetcher(big_list, user):
 def super_admin():
     return render_node(inlabel("Acting As", "text", "acting_as", "0", False, ro=True))
 
+
 def actors_dropdown(actors) -> Element:
     return combo_gen("Acting as", "acting_as", actors, None, "Pilih pemilik akun")
+
+
+def unauthorized(prev_link):
+    return div[
+        a(href=prev_link)["← Kembali ke tabel user"],
+        blockquote["Unauthorized"]
+    ]
