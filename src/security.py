@@ -35,7 +35,7 @@ def check_user(
             detail="Incorect username or password",
             # headers={"location": "/login"}
         )
-    hashed_password = hashlib.sha256(password.encode()).hexdigest()
+    hashed_password = hash_password(password)
     if not hashed_password == db_user.password:
         raise HTTPException(
             status_code=302,
@@ -62,7 +62,7 @@ async def get_current_user(
 
 
 def current_user_validation(user, password):
-    hashed_password = hashlib.sha256(password.encode()).hexdigest()
+    hashed_password = hash_password(password)
     print(hashed_password == user.password)
     return hashed_password == user.password
 
@@ -83,3 +83,7 @@ def is_super_admin(user=Depends(get_current_user)):
 
 def get_role(user):
     return user.role.role
+
+
+def hash_password(password):
+    return hashlib.sha256(password.encode()).hexdigest()

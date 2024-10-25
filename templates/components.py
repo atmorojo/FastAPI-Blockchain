@@ -221,7 +221,8 @@ def spoiler(url):
     ]
 
 
-def inlabel(_label, _type, _name, _value, lock, focus=False, ro=False):
+def inlabel(_label, _type, _name, _value="", lock=False,
+            focus=False, ro=False, hs=None):
     return label[
         small[_label],
         input(autofocus=focus,
@@ -229,8 +230,10 @@ def inlabel(_label, _type, _name, _value, lock, focus=False, ro=False):
               name=_name,
               disabled=lock,
               value=_value,
-              readonly=ro),
-    ],
+              readonly=ro,
+              _=hs,
+              ),
+    ]
 
 
 def combo_gen(

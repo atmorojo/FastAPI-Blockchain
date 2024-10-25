@@ -11,11 +11,12 @@ from templates.components import (
 )
 
 from htpy import (
+    dialog, article, footer, button, small, header,
+    h4,
     blockquote,
     render_node,
     form,
     div,
-    img,
     Element,
     tr,
     td,
@@ -60,6 +61,11 @@ def user_form(user=None, role=None, actors=None, lock: bool = False) -> Element:
         inlabel("E-mail", "email", "email",
                 (user.email if user else ""),
                 lock),
+        (a(role="button",
+            hx_get=f"/users/{user.username}/pass",
+            hx_target="#pass_dialog"
+           )["Ubah Password"] if user else None),
+        div("#pass_dialog"),
         (None if user else inlabel("Password", "password", "password", "", lock)),
         inlabel("Phone", "text", "phone",
                 (user.phone if user else ""),
@@ -120,4 +126,50 @@ def unauthorized(prev_link):
     return div[
         a(href=prev_link)["← Kembali ke tabel user"],
         blockquote["Unauthorized"]
+    ]
+
+
+def change_password_form(username):
+    return dialog("#ubah_password", open=True)[
+        form(
+            autocomplete="off",
+            hx_put=f"/users/{username}/pass",
+            hx_target="#form",
+            hx_indicator="#form",
+            _="on keyup[event.key=='Enter'] halt the event"
+        )[
+            article[
+                header[
+                    button(aria_label="Close",
+                           _="on click toggle @open on #ubah_password",
+                           rel="prev"),
+                    h4["Ubah Password"],
+                ],
+                inlabel("Password Lama", "password",
+                        "password"),
+                inlabel("Password Baru", "password",
+                        "password_new"),
+                inlabel("Konfirmasi Password Baru", "password",
+                        "password_new_confirm",
+                        hs="""
+on input
+    if <[name='password_new']/>'s value is not my value then
+        hide #pass_submit
+        show #error
+        halt the event
+    else
+        hide #error
+        if <[name='password']/>'s value is not "" show #pass_submit
+    end
+                        """
+                        ),
+                small("#error", style="color: red; display: none;",
+                      )["Password baru tidak sesuai"],
+                footer[
+                    button(".secondary", type_="button",
+                           _="on click toggle @open on #ubah_password"
+                           )["Cancel"],
+                    button("#pass_submit", type_="submit", style="width: auto; display: none;",
+                           )["Confirm"]
+                ]]]
     ]

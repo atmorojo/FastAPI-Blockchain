@@ -6,7 +6,9 @@ from datetime import date
 from controllers.user_ctrl import UserCrud
 from controllers.crud import Crud
 from src import models, schemas
-from src.security import current_user_validation, get_current_user
+from src.security import (
+    current_user_validation, get_current_user, hash_password
+)
 from src.database import SessionLocal, engine
 import templates.pages as pages
 import templates.users as tpl_users
@@ -169,7 +171,52 @@ async def update_user(
 
     user_db = user_ctrl.update(user_db)
     role_ctrl.update(role_db)
-    return str(tpl_users.user_form(user_db, lock=lock))
+    rph_list = Crud(models.Rph, db).get()
+    penyelia_list = Crud(models.Penyelia, db).get()
+    juleha_list = Crud(models.Juleha, db).get()
+    lapak_list = Crud(models.Lapak, db).get()
+    actors = {
+        "rph": rph_list,
+        "penyelia": penyelia_list,
+        "juleha": juleha_list,
+        "lapak": lapak_list
+    }
+    return str(tpl_users.user_form(user_db, actors=actors, lock=lock))
+
+
+@routes.get("/{username}/pass", response_class=HTMLResponse)
+def update_password_view(username: str):
+    return str(tpl_users.change_password_form(username))
+
+
+@routes.put("/{username}/pass", response_class=HTMLResponse)
+async def update_password(
+    username: str,
+    password: str = Form(...),
+    password_new: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    lock = True
+    user_ctrl = UserCrud(db)
+    user_db = user_ctrl.get_user_by_username(username)
+
+    if not current_user_validation(user_db, password):
+        return tpl_users.unauthorized()
+    user_db.password = hash_password(password_new)
+    user_db.tgl_update = date.today()
+
+    user_db = user_ctrl.update(user_db)
+    rph_list = Crud(models.Rph, db).get()
+    penyelia_list = Crud(models.Penyelia, db).get()
+    juleha_list = Crud(models.Juleha, db).get()
+    lapak_list = Crud(models.Lapak, db).get()
+    actors = {
+        "rph": rph_list,
+        "penyelia": penyelia_list,
+        "juleha": juleha_list,
+        "lapak": lapak_list
+    }
+    return str(tpl_users.user_form(user_db, actors=actors, lock=lock))
 
 
 # Delete Endpoint
@@ -198,3 +245,4 @@ def remove_user(
         raise HTTPException(status_code=404, detail="User not found")
     users = user_ctrl.remove(user_db)
     return str(tpl_users.users_table(actors, users))
+
