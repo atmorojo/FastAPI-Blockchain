@@ -9,6 +9,7 @@ from fastapi import FastAPI, Form, Depends, HTTPException, Request, Response
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from jose import jwt
+import json
 import src.security as _security
 import templates.pages as pages
 import templates.validasi as validasi_tpl
@@ -73,14 +74,14 @@ async def index(
         case 1:
             page = pages.dashboard_page(user)
         case 2:
-            validasi = db.query(models.Transaksi).filter(
-                models.Transaksi.juleha_id == user.alias,
+            validasi = db.query(models.Ternak).filter(
+                models.Ternak.penyelia_id == user.role.acting_as,
             ).all()
             table = validasi_tpl.validasi_table(validasi, "validasi_1")
             page = pages.table_page("Validasi Juleha", table, False)
         case 3:
-            validasi = db.query(models.Transaksi).filter(
-                models.Transaksi.penyelia_id == user.alias,
+            validasi = db.query(models.Ternak).filter(
+                models.Ternak.juleha_id == user.role.acting_as,
             ).all()
             table = validasi_tpl.validasi_table(validasi, "validasi_2")
             page = pages.table_page("Validasi Penyelia", table, False)
@@ -107,15 +108,24 @@ def validasi(
     user=Depends(_security.get_current_user),
     db=Depends(get_db)
 ):
-    validasi_ctrl = Crud(models.Transaksi, db)
+    validasi_ctrl = Crud(models.Ternak, db)
+    transaksi_ctrl = Crud(models.Transaksi, db)
     validasi = validasi_ctrl.get_by_id(validasi_id)
 
-    if user.role == 2:
+    if user.role.role == 2:
         validasi.validasi_1 = 1
-    elif user.role == 3:
+    elif user.role.role == 3:
         validasi.validasi_2 = 1
 
     validasi_ctrl.update(validasi)
+
+    if validasi.validasi_1 == validasi.validasi_2 == 1:
+        transaksi = transaksi_ctrl.get_by("ternak_id", validasi_id)
+        _bc = bc.Blockchain()
+        block = json.loads(_bc.get_by_transaction(transaksi.id)[0])
+        block["status_validasi"] = "Tervalidasi Halal"
+        print(block)
+        _bc.mine_block(block)
 
     return str(validasi_tpl.validated)
 

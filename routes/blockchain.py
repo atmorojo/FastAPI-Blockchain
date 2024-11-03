@@ -77,4 +77,4 @@ def read_blockchain(
     blockchain: _blockchain.Blockchain = Depends(get_blockchain),
 ):
     """ Returns a specific block from the blockchain. """
-    return json.loads(blockchain.query_block(transaksi_id)[0])
+    return json.loads(blockchain.get_by_transaction(transaksi_id)[0])

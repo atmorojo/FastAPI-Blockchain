@@ -37,3 +37,4 @@ x 2024-10-19 +blockchain Add juleha.name to transaction bc
 x 2024-10-19 +blockchain Blockchain waktu_kirim & tambah waktu_terima
 x 2024-10-19 +lapak +blockchain Add qrcode page
 x 2024-10-23 +master +user Make user master forms 
+x 2024-10-29 hapus transaksi pakai password

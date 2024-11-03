@@ -1,5 +1,6 @@
 from templates.components import (
     table_builder,
+    show_img
 )
 
 from htpy import (
@@ -19,21 +20,23 @@ def action_button(validasi):
              hx_put="/validasi/" + str(validasi.id),
              hx_target="this",
              hx_swap="outerHTML",
-             hx_confirm=f"""
-Apakah anda yakin untuk memvalidasi {validasi.ternak.name}?
-             """
+             hx_confirm="Apakah anda yakin untuk memvalidasi ternak ini?"
              )["Validasi"]
 
 
 def validasi_table(validasis, validator) -> Element:
-    col_headers = ["Tag Kambing", "Actions"]
+    col_headers = ["Kambing", "Actions"]
     rows = (tr[
-      td[validasi.ternak.name],
-      td[
-        div(".table-actions", role="group")[
-          (validated if getattr(validasi, validator) else action_button(validasi))
-        ]
-      ],
+        td(style="width: 50px;")[
+            show_img("img_ternak/" + (validasi.img if validasi.img else ""))
+        ],
+        td[
+            div(".table-actions", role="group")[
+                (validated if getattr(
+                    validasi, validator
+                ) else action_button(validasi))
+            ]
+        ],
     ] for validasi in validasis)
 
     return table_builder(

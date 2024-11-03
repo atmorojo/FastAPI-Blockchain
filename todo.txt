@@ -18,7 +18,6 @@
 (B) Turn the notes on the +models to tasks
 
 (C) +security remove drawer_menu from non-admin user
-hapus transaksi pakai password
 hapus masukin ke bc dgn keterangan deleted 
 HTTPException custom view?
 Form validation

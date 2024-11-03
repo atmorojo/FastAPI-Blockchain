@@ -64,7 +64,7 @@ class Blockchain:
              json.dumps(block["transaction"])).encode()
         ).hexdigest()
 
-    def query_block(self, id_transaksi):
+    def get_by_transaction(self, id_transaksi):
         query = """
         SELECT
             json_extract(value, '$.transaction') as value
@@ -76,6 +76,22 @@ class Blockchain:
         """
 
         item = self.chain.conn.select_one(query, (id_transaksi,))
+
+        return item
+
+    def get_by_ternak(self, id_ternak):
+        query = """
+        SELECT
+            key,
+            json_extract(value, '$.transaction') as value
+        FROM unnamed
+        WHERE
+            json_extract(value, '$.transaction.id_transaksi') = ?
+        ORDER BY json_extract(value, '$.timestamp') DESC
+        LIMIT 1
+        """
+
+        item = self.chain.conn.select_one(query, (id_ternak,))
 
         return item
 
