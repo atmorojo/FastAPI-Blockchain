@@ -1,5 +1,4 @@
 from sqlalchemy import (
-    Boolean,
     Column,
     ForeignKey,
     Integer,
@@ -67,7 +66,7 @@ class Ternak(Base):
     juleha_id = Column(Integer, ForeignKey("juleha.id"))
     penyelia_id = Column(Integer, ForeignKey("penyelia.id"))
     img = Column(String)
-    bobot = Column(Float, index=True)
+    karkas = Column(Float, index=True)
     jenis = Column(String, index=True)  # Kambing, domba, kerbau, sapi
     kesehatan = Column(String, index=True)  # sehat / layak
     waktu_sembelih = Column(String)

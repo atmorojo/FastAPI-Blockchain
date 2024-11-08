@@ -102,8 +102,8 @@ def ternak_form(
             small["Gambar"],
             picture
         ],
-        inlabel("Bobot", "number", "bobot",
-                (ternak.bobot if ternak else ""), lock, True),
+        inlabel("Karkas", "number", "karkas",
+                (ternak.karkas if ternak else ""), lock, True),
         jenis,
         kesehatan,
         juleha_combo,
@@ -119,13 +119,13 @@ def ternak_form(
 
 def ternaks_table(ternaks) -> Element:
     col_headers = [
-        "Foto", "Bobot", "Jenis",
+        "Foto", "Karkas", "Jenis",
         "Kesehatan", "Juleha", "Actions"
     ]
     rows = (tr[
         td(style="width: 50px;")[
             show_img("img_ternak/" + (ternak.img if ternak.img else ""))],
-        td[str(ternak.bobot) + "kg"],
+        td[str(ternak.karkas) + "kg"],
         td[ternak.jenis],
         td[ternak.kesehatan],
         td[ternak.juleha.name],

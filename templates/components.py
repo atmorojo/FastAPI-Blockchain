@@ -261,7 +261,7 @@ def combo_gen(
 def dropdown_gen(
     label_text, name, option_items,
     selected=None, placeholder=None,
-    displayed_options=None, hx=None,
+    displayed_options=None, hx="",
 ):
     return label[
         small[label_text],
