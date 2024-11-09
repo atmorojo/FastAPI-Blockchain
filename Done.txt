@@ -38,3 +38,6 @@ x 2024-10-19 +blockchain Blockchain waktu_kirim & tambah waktu_terima
 x 2024-10-19 +lapak +blockchain Add qrcode page
 x 2024-10-23 +master +user Make user master forms 
 x 2024-10-29 hapus transaksi pakai password
+x 2024-11-09 Update form labels in frontend interface
+x 2024-11-09 Modify form field label from 'nama peternak' to 'pemilik ternak'
+x 2024-11-09 default tanggal kirim di hari ini

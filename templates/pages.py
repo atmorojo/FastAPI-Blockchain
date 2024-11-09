@@ -38,11 +38,11 @@ def login_page() -> Element:
     )
 
 
-def dashboard_page(user) -> Element:
+def dashboard_page(user, is_admin=True) -> Element:
     return base_page(
         page_title="Dashboard",
         content=[
-            navbar,
+            navbar(is_admin),
             div(style="margin-top: 4em;")[
                 h1["Dashboard"],
                 p[f"Selamat datang, {user.username.title()}"],
@@ -51,7 +51,7 @@ def dashboard_page(user) -> Element:
     )
 
 
-def table_page(title, datatable, button=True) -> Element:
+def table_page(title, datatable, button=True, is_admin=True) -> Element:
     if button:
         add_button = a(
             "#tambah-button",
@@ -76,7 +76,7 @@ def table_page(title, datatable, button=True) -> Element:
             script(src="/static/simple-datatables.904.js"),
         ],
         content=[
-            navbar,
+            navbar(is_admin),
             div(style="margin-top: 4em;")[
                 div(style="""
                     display: flex;
@@ -96,11 +96,12 @@ def table_page(title, datatable, button=True) -> Element:
 def detail_page(
     title,
     detail_form,
+    is_admin=True
 ) -> Element:
     return base_page(
         page_title=title,
         content=[
-            navbar,
+            navbar(is_admin),
             div(style="margin: 4em 0;")[
                 a(style="""
                 text-decoration:none;

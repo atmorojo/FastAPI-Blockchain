@@ -1,52 +1,35 @@
-(A) Add button for consumer to open optional questionnaire after viewing product origin
-(A) Add date filter to query for selecting specific slaughter date
-(A) Add date range filter to query for custom summary periods
-(A) Add transaction completion check to trigger QR code creation
-(A) Build SQLAlchemy query for Admin slaughter report with group by pemilik ternak and day
-(A) Check CSA status when lapak user presses 'terima' button
-(A) Configure QR code generation logic
-(A) Create SQLAlchemy model query for fetching daily slaughter details by date
-(A) Create SQLAlchemy model query to fetch summary of animals slaughtered by date range
-(A) Create function to display product origin data accessed from QR code
-(A) Create output format for count of slaughtered animals and carcass data grouped by pemilik ternak and day
-(A) Develop slaughter summary report for Juleha, Penyelia, and Admin
-(A) Enable consumer access to product origin via QR code
-(A) Format results to display slaughter counts within selected range
-(A) Group query results by Juleha and date
-(A) Implement Admin slaughter report similar to Penyelia's report
-(A) Implement consumer questionnaire option
-(A) Implement function to render report details in app's frontend for Juleha, Penyelia, and Admin
-(A) Link questionnaire display to consumer QR code access page
-(A) Make QR data viewable on printed QR codes and on lapak mobile view
-x 2024-11-09 Update form labels in frontend interface
-x 2024-11-09 Modify form field label from 'nama peternak' to 'pemilik ternak'
-(A) Modify query to include carcass data in results
-(A) Organize delivery report output for easy viewing in Admin panel
-(A) Set CSA data to 0 upon QR code generation for lapak
-(A) Set up Admin report for meat delivery
-(A) Set up CSA data auto-update upon 'terima' action
-(A) Set up daily slaughter report for Juleha, Penyelia, and Admin roles
-(A) Write SQLAlchemy query to fetch meat delivery data, grouped by pelapak and day
-(A) Write update query to modify CSA data if current status is off
+(A) +lapak Add Lapak user
+(A) +lapak Add lapak dashboard to confirm received package
+(A) +lapak Pelapak bisa lihat kode qr dari sistem 
+(A) +lapak +blockchain Di halaman qr blockchain ada tombol isi quesioner
+(A) +lapak +blockchain Pelapak trigger kiriman selesai dari nomor telefon isi quesioner
+(A) +sensor Add CSA result of temp and humi to a table
+(A) +sensor Update CSA result to bc
+
+Untuk user juleha dan penyelia include admin ada report yang sama .. detail ternak yang disembelih perhari  (milih tanggal) dan rekap jumlah ternak yang disembelih (range waktu) group by juleha, tanggal
+
+Report penyembelihan untuk penyelia sama dengan report admin rph ( rekap jumlah ternak yang disembelih, karkas group by pemilik ternak dan hari )
+
+Report admin untuk data pengiriman daging group by pelapak dan hari
+
+Qr di lapak tercipta setelah adanya transaksi yang dilakukan admin, tetapi data csa = 0
+
+data CSA akan muncul otomatis saat lapak menekan tombol terima (dengan kondisi CSA off)
+
+Konsumen dapat melihat data asal produk dari QR (cetak ataupun HP pelapak) .. kemudian muncul tombol kusioner yang dapat dipilih jika ingin mengisi kusioner
+
 (B) +admin +transaksi Only show ternak slaughtered today at each rph
 (B) +admin +transaksi Only show ternak slaughtered today at transaksi list
 (B) +admin +transaksi Remove rph_id dropdown and use admin's rph id instead
 (B) +blockchain +lapak Contoh tampilan: lama kirim, temp: 29 - 30
 (B) +blockchain Download bc to users machines
-(B) +lapak +blockchain Di halaman qr blockchain ada tombol isi quesioner
-(B) +lapak +blockchain Pelapak trigger kiriman selesai dari nomor telefon isi quesioner
-(B) +lapak Add Lapak user
-(B) +lapak Add lapak dashboard to confirm received package
-(B) +lapak Pelapak bisa lihat kode qr dari sistem 
 (B) +report Report bulanan, harian, range waktu
 (B) +security Create guards so unauthorized users can't access certain pages
-(B) +sensor Add CSA result of temp and humi to a table
-(B) +sensor Update CSA result to bc
 (B) +ternak +blockchain Update validated ternak to bc (daging halal/dalam proses validasi)
 (B) +ternak +transaksi Move validasi to ternak table from transaksi
 (B) +transaksi status kirim (0 tidak ada pengiriman, 1 dikirim, 2 diterima)
 (B) Turn the notes on the +models to tasks
-(C) +security remove drawer_menu from non-admin user
+x 2024-11-09 +security remove drawer_menu from non-admin user
 Form validation
 HTTPException custom view?
 hapus masukin ke bc dgn keterangan deleted 

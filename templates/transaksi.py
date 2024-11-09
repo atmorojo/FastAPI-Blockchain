@@ -1,3 +1,6 @@
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
 from templates.components import (
     table_builder,
     edit_btn,
@@ -32,9 +35,13 @@ def transaksi_form(
     ternak=None,
     iot=None,
 ) -> Element:
+
+    if not transaksi:
+        tanggal =  datetime.now(ZoneInfo("Asia/Jakarta")).isoformat()[:16]
+
     waktu_kirim_input = inlabel(
         "Waktu Kirim", "datetime-local", "waktu_kirim",
-        (transaksi.waktu_kirim if transaksi else ""), lock)
+        (transaksi.waktu_kirim if transaksi else tanggal), lock)
     if lock:
         form_btn = edit_btn("/transaksi/", transaksi.id)
         lapak_input = inlabel(
