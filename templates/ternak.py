@@ -46,7 +46,7 @@ def ternak_form(
             ternak.juleha.name, lock
         )
         peternak_combo = inlabel(
-            "Peternak", "text", "peternak_id",
+            "Pemilik Ternak", "text", "peternak_id",
             ternak.peternak.name, lock
         )
         penyelia_combo = inlabel(
@@ -69,7 +69,7 @@ def ternak_form(
             (None if ternak else "Pilih Juleha")
         )
         peternak_combo = combo_gen(
-            "Peternak", "peternak_id", peternaks,
+            "Pemilik Ternak", "peternak_id", peternaks,
             (ternak.peternak_id if ternak else None),
             (None if ternak else "Pilih Peternak")
         )

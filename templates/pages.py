@@ -64,7 +64,7 @@ def table_page(title, datatable, button=True) -> Element:
             rect(".plus-sign",
                  x="10", y="40",
                  width="80", height="20")
-            ], span[f"tambah {title} baru".title()]
+            ], span[f"Tambah {title} baru"]
           ]
     else:
         add_button = ""
@@ -83,7 +83,7 @@ def table_page(title, datatable, button=True) -> Element:
                     justify-content: space-between;
                     margin: 2em 0;
                     """)[
-                    h1["Master " + title.title()],
+                    h1["Master " + title],
                     add_button,
                 ],
                 datatable,

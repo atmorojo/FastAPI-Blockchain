@@ -69,7 +69,7 @@ def new_juleha():
 def read_julehas(skip: int = 0, limit: int = 100):
     julehas = juleha_db.get(skip=skip, limit=limit)
     return str(pages.table_page(
-        "juleha",
+        "Juleha",
         tpl_juleha.julehas_table(julehas)
     ))
 

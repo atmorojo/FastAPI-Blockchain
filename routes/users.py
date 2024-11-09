@@ -45,7 +45,7 @@ def read_users(db: Session = Depends(get_db), skip: int = 0, limit: int = 100):
     }
     users = user_ctrl.get_users(skip=skip, limit=limit)
     return str(pages.table_page(
-        "users",
+        "Users",
         tpl_users.users_table(actors, users)
     ))
 
