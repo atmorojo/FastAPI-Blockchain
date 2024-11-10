@@ -1,6 +1,7 @@
 """This is a simple implementation of a blockchain. No proof required lol"""
 
 import datetime as _dt
+from zoneinfo import ZoneInfo
 import hashlib as _hashlib
 import json
 from sqlitedict import SqliteDict
@@ -76,6 +77,7 @@ class Blockchain:
         """
 
         item = self.chain.conn.select_one(query, (id_transaksi,))
+        print(self.chain)
 
         return item
 
@@ -95,6 +97,26 @@ class Blockchain:
 
         return item
 
+    def end_delivery(self, iot_id: int, _from):
+        query = """
+            SELECT
+                json_extract(value, '$.transaction') as value,
+            FROM unnamed
+            WHERE
+                json_extract(value, '$.transaction.node') = ?
+            AND
+                json_extract(value, '$.timestamp') BETWEEN ? and ?;
+        """
+
+        result = self.chain.conn.select(query, (
+            iot_id,
+            _from,
+            _dt.datetime.now(ZoneInfo("Asia/Jakarta")).strftime('%Y-%m-%d %H:%M'))
+        )
+        print(query)
+        print(iot_id, _from, _dt.datetime.now(ZoneInfo("Asia/Jakarta")).strftime('%Y-%m-%d %H:%M'))
+
+        return result
 
 # qrcode generator
 def qr_generator(url):

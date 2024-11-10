@@ -181,6 +181,18 @@ def insert(
     return chain.get_previous_block()
 
 
+@app.get("/sensor/end/{transaksi_id}")
+def end_sensor(
+    transaksi_id: int,
+    db = Depends(get_db),
+):
+    trans = Crud(models.Transaksi, db).get_by_id(transaksi_id)
+    iot_chain = bc.Blockchain("./data/iot.db")
+    if not trans:
+        return "Not found"
+    return iot_chain.end_delivery(trans.iot.node, trans.waktu_kirim.replace("T", " "))
+
+
 @app.get("/sensorbc")
 def sensorbc():
     """
@@ -201,3 +213,5 @@ def qr_gen(req: Request, transaksi_id: int):
 @app.get("/print/qr/{transaksi_id}", response_class=HTMLResponse)
 def qr_print(req: Request, transaksi_id: int):
     return str(tpl_print(f"{req.base_url}qr/{transaksi_id}"))
+
+
