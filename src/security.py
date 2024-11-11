@@ -9,7 +9,7 @@ from src.database import SessionLocal, engine
 from controllers.user_ctrl import UserCrud
 from src import schemas
 
-cookie_sec = APIKeyCookie(name="session")
+cookie_sec = APIKeyCookie(name="session", auto_error=False)
 secret_key = "ladadidadadida"
 
 
@@ -39,7 +39,7 @@ def check_user(
     if not hashed_password == db_user.password:
         raise HTTPException(
             status_code=302,
-            detail="DIncorect username or password",
+            detail="Incorect username or password",
             # headers={"location": "/login"}
         )
 
@@ -48,17 +48,14 @@ async def get_current_user(
     session: Annotated[str, Depends(cookie_sec)],
     db: Session = Depends(get_db),
 ):
-    try:
+    if session:
         user_ctrl = UserCrud(db)
         payload = jwt.decode(session, secret_key)
         user = user_ctrl.get_user_by_username(payload["sub"])
-        return user
-    except Exception:
-        raise HTTPException(
-            status_code=302,
-            detail="Invalid authentication credentials",
-            # headers={"location": "/login"},
-        )
+        if user:
+            return user
+
+    return False
 
 
 def current_user_validation(user, password):

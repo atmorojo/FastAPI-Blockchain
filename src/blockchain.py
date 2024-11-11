@@ -98,9 +98,10 @@ class Blockchain:
         return item
 
     def end_delivery(self, iot_id: int, _from):
+
         query = """
             SELECT
-                json_extract(value, '$.transaction') as value,
+                json_extract(value, '$.transaction') as value
             FROM unnamed
             WHERE
                 json_extract(value, '$.transaction.node') = ?
@@ -108,15 +109,14 @@ class Blockchain:
                 json_extract(value, '$.timestamp') BETWEEN ? and ?;
         """
 
-        result = self.chain.conn.select(query, (
+        result = list(self.chain.conn.select(query, (
             iot_id,
             _from,
-            _dt.datetime.now(ZoneInfo("Asia/Jakarta")).strftime('%Y-%m-%d %H:%M'))
-        )
-        print(query)
-        print(iot_id, _from, _dt.datetime.now(ZoneInfo("Asia/Jakarta")).strftime('%Y-%m-%d %H:%M'))
+            _dt.datetime.now(
+                ZoneInfo("Asia/Jakarta")).strftime('%Y-%m-%d %H:%M')
+        )))
+        return [json.loads(item) for sublist in result for item in sublist]
 
-        return result
 
 # qrcode generator
 def qr_generator(url):

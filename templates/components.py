@@ -110,11 +110,15 @@ def table_builder(headers, rows) -> Element:
     ]
 
 
-def navbar(is_admin) -> Element:
+def navbar(is_admin, logged_in=True) -> Element:
+    if logged_in:
+        tl_button = a("#logout_button", href="/logout")["Log out"]
+    else:
+        tl_button = a("#logout_button", href="/login")["Log In"]
     return div(".navbar.full")[
         div(style="height: 30px;")[
             (drawer_menu if is_admin else ""),
-            a("#logout_button", href="/logout")["Log out"]
+            tl_button
         ]
     ]
 

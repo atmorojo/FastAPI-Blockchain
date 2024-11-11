@@ -1,14 +1,18 @@
 from pydantic import BaseModel
 import src.blockchain as _blockchain
+from src.security import get_current_user
 import json
 import qrcode
 import io
+from templates import blockchain as tpl_bc
+from templates import base_template
 from fastapi import (
     APIRouter,
     Response,
     Request,
-    Depends
+    Depends,
 )
+from fastapi.responses import HTMLResponse
 
 
 routes = APIRouter(prefix="/blockchain")
@@ -71,10 +75,24 @@ def previous_block(
     return blockchain.get_previous_block()
 
 
-@routes.get("/{transaksi_id}")
+@routes.get("/{transaksi_id}", response_class=HTMLResponse)
 def read_blockchain(
     transaksi_id: int,
     blockchain: _blockchain.Blockchain = Depends(get_blockchain),
+    user = Depends(get_current_user)
 ):
     """ Returns a specific block from the blockchain. """
-    return json.loads(blockchain.get_by_transaction(transaksi_id)[0])
+    logged_in = False
+
+    if user:
+        logged_in = user.role.role == 4
+
+    data = blockchain.get_by_transaction(transaksi_id)[0]
+    if data:
+        data = json.loads(data)
+        return str(base_template.base_page(
+            page_title="Keterangan Daging",
+            content=tpl_bc.bc_detail(data, logged_in)
+        ))
+    else:
+        return { "error:" "Not Available" }
