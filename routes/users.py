@@ -89,7 +89,21 @@ async def create_user(
         acting_as=acting_as,
     )
     role_ctrl.create(role)
-    return RedirectResponse("/users", status_code=302)
+    rph_list = Crud(models.Rph, db).get()
+    penyelia_list = Crud(models.Penyelia, db).get()
+    juleha_list = Crud(models.Juleha, db).get()
+    lapak_list = Crud(models.Lapak, db).get()
+    actors = {
+        "rph": rph_list,
+        "penyelia": penyelia_list,
+        "juleha": juleha_list,
+        "lapak": lapak_list
+    }
+    users = user_ctrl.get_users(skip=0, limit=100)
+    return str(pages.table_page(
+        "Users",
+        tpl_users.users_table(actors, users)
+    ))
 
 
 # Edit Page
