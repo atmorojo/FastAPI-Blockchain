@@ -82,7 +82,7 @@ async def index(
             ).all()
             table = validasi_tpl.validasi_table(validasi, "validasi_1")
             page = pages.table_page(
-                title="Validasi Juleha",
+                title="Validasi Penyelia",
                 datatable=table,
                 button=False,
                 is_admin=False)
@@ -92,7 +92,7 @@ async def index(
             ).all()
             table = validasi_tpl.validasi_table(validasi, "validasi_2")
             page = pages.table_page(
-                title="Validasi Penyelia",
+                title="Validasi Juleha",
                 datatable=table,
                 button=False,
                 is_admin=False)
