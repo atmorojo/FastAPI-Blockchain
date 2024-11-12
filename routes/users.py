@@ -54,7 +54,7 @@ def read_users(db: Session = Depends(get_db), skip: int = 0, limit: int = 100):
 @routes.get("/new", response_class=HTMLResponse)
 def new_user():
     return str(pages.detail_page(
-        "user",
+        "users",
         tpl_users.user_form()
     ))
 
@@ -103,7 +103,7 @@ def edit_user(req: Request, username: str, db: Session = Depends(get_db)):
     if req.headers.get('HX-Request'):
         return str(form)
     else:
-        return str(pages.detail_page("user", form))
+        return str(pages.detail_page("users", form))
 
 
 # Actors dropdown
