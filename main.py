@@ -101,7 +101,11 @@ async def index(
                 models.Transaksi.lapak_id == user.role.acting_as
             ).all()
             table = bc_tpl.kiriman_table(transaksi)
-            page = pages.table_page("Konfirmasi pengiriman", table, False)
+            page = pages.table_page(
+                "Konfirmasi pengiriman", 
+                table, 
+                False, False
+            )
         case _:
             page = "Not allowed"
 
@@ -203,7 +207,6 @@ def end_sensor(
     trans.waktu_selesai_kirim = trans_block["waktu_selesai_kirim"]
     trans_db.update(trans)
     return {"success": "success"}
-
 
 
 @app.get("/sensorbc")
