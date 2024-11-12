@@ -13,7 +13,10 @@ import json
 import src.security as _security
 import templates.pages as pages
 import templates.validasi as validasi_tpl
+import templates.blockchain as bc_tpl
 from templates.components import tpl_print
+from datetime import datetime as dt
+from zoneinfo import ZoneInfo
 from routes import (
     users,
     juleha,
@@ -94,16 +97,11 @@ async def index(
                 button=False,
                 is_admin=False)
         case 4:
-            transaksi = db.query(
-                models.Transaksi, models.Pengiriman
-            ).filter(
-                models.Pengiriman.transaksi_id == models.Transaksi.id
-            ).filter(
-                models.Transaksi.lapak_id == user.alias
+            transaksi = db.query(models.Transaksi).filter(
+                models.Transaksi.lapak_id == user.role.acting_as
             ).all()
-#            table = validasi_tpl.lapak_table(transaksi, "validasi_2")
-#            page = pages.table_page("Validasi Penyelia", table, False)
-            page = vars(transaksi[0][1])
+            table = bc_tpl.kiriman_table(transaksi)
+            page = pages.table_page("Konfirmasi pengiriman", table, False)
         case _:
             page = "Not allowed"
 
@@ -184,13 +182,28 @@ def insert(
 @app.get("/sensor/end/{transaksi_id}")
 def end_sensor(
     transaksi_id: int,
-    db = Depends(get_db),
+    db=Depends(get_db),
 ):
-    trans = Crud(models.Transaksi, db).get_by_id(transaksi_id)
+    trans_db = Crud(models.Transaksi, db)
+    trans = trans_db.get_by_id(transaksi_id)
     iot_chain = bc.Blockchain("./data/iot.db")
+    trans_chain = bc.Blockchain()
     if not trans:
         return "Not found"
-    return iot_chain.end_delivery(trans.iot.node, trans.waktu_kirim.replace("T", " "))
+    csa = iot_chain.end_delivery(
+        trans.iot.node, trans.waktu_kirim.replace("T", " "))
+    trans_block = json.loads(trans_chain.get_by_transaction(trans.id)[0])
+    trans_block["waktu_selesai_kirim"] = dt.now(
+        ZoneInfo("Asia/Jakarta")).strftime("%Y-%m-%dT%H:%M")
+    trans_block["temp_min"] = csa[0][0]
+    trans_block["temp_max"] = csa[0][1]
+    trans_block["humi_min"] = csa[1][0]
+    trans_block["humi_max"] = csa[1][1]
+    trans_chain.mine_block(trans_block)
+    trans.waktu_selesai_kirim = trans_block["waktu_selesai_kirim"]
+    trans_db.update(trans)
+    return {"success": "success"}
+
 
 
 @app.get("/sensorbc")

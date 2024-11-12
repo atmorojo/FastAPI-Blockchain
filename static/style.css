@@ -194,3 +194,7 @@ td {
 
 .spoiler { display: none; }
 .show { display: block; }
+a[disabled] { 
+	background-color: grey;
+	pointer-events: none;
+}

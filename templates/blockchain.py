@@ -1,3 +1,4 @@
+from datetime import datetime as dt
 from templates.components import (
     table_builder,
     edit_btn,
@@ -33,20 +34,33 @@ def bc_detail(data, logged_in) -> Element:
         p[b["Juleha: "], data["juleha_name"]],
         p[b["Bobot: "], f"{data["jumlah"]} Kg"],
         p[b["Disembelih pada: "], data["waktu_sembelih"]],
-        a(href=f"/sensor/end/{data["id_transaksi"]}", role="button")["Sudah Sampai"]
+        (a(
+            role="button",
+            href=f"/sensor/end/{data["id_transaksi"]}",
+        )["Sudah Sampai"] if logged_in else "")
     ]
 
 
-def lapaks_table(lapaks) -> Element:
-    col_headers = ["Nama", "No Lapak", "Pasar", "Actions"]
+def kiriman_table(data) -> Element:
+    col_headers = ["Kiriman dari", "Jumlah", "Dikirim pada", "Actions"]
     rows = (tr[
-                td[lapak.name],
-                td[lapak.no_lapak],
-                td[lapak.pasar.name],
-                td[action_buttons("lapak", lapak.id, lapak.name)],
-            ] for lapak in lapaks)
+                td[d.ternak.penyelia.rph.name],
+                td[f"{d.jumlah} Kg"],
+                td[str_time(d.waktu_kirim)],
+                td[
+                    a(
+                        role="button",
+                        disabled=(False if d.waktu_selesai_kirim else True),
+                        href=f"/print/qr/{d.id}"
+                    )["Print QR"]
+                ],
+            ] for d in data)
 
     return table_builder(
         col_headers,
         rows
         )
+
+
+def str_time(time):
+    return dt.strptime(time, "%Y-%m-%dT%H:%M").strftime("%d %B %Y")

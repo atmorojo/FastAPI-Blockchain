@@ -83,7 +83,7 @@ def table_page(title, datatable, button=True, is_admin=True) -> Element:
                     justify-content: space-between;
                     margin: 2em 0;
                     """)[
-                    h1["Master " + title],
+                    h1[title],
                     add_button,
                 ],
                 datatable,

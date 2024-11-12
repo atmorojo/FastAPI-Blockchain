@@ -115,7 +115,13 @@ class Blockchain:
             _dt.datetime.now(
                 ZoneInfo("Asia/Jakarta")).strftime('%Y-%m-%d %H:%M')
         )))
-        return [json.loads(item) for sublist in result for item in sublist]
+        res = [json.loads(item) for sublist in result for item in sublist]
+        # get min value from res[index]["temp"] and res[index]["humi"]
+        humi_list = [entry['humi'] for entry in res]
+        temp_list = [entry['temp'] for entry in res]
+        humi = [min(humi_list), max(humi_list)]
+        temp = [min(temp_list), max(temp_list)]
+        return [temp, humi]
 
 
 # qrcode generator

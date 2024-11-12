@@ -1,7 +1,7 @@
-(A) +lapak Add Lapak user
+x 2024-11-12 +lapak Add Lapak user
 (A) +lapak Add lapak dashboard to confirm received package
 (A) +lapak Pelapak bisa lihat kode qr dari sistem 
-(A) +lapak +blockchain Di halaman qr blockchain ada tombol isi quesioner
+x 2024-11-12 +lapak +blockchain Di halaman qr blockchain ada tombol isi quesioner
 (A) +lapak +blockchain Pelapak trigger kiriman selesai dari nomor telefon isi quesioner
 (A) +sensor Add CSA result of temp and humi to a table
 (A) +sensor Update CSA result to bc
