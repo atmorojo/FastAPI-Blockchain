@@ -1,23 +1,8 @@
-x 2024-11-12 +lapak Add Lapak user
+(A) +lapak +blockchain Pelapak trigger kiriman selesai dari nomor telefon isi quesioner
 (A) +lapak Add lapak dashboard to confirm received package
 (A) +lapak Pelapak bisa lihat kode qr dari sistem 
-x 2024-11-12 +lapak +blockchain Di halaman qr blockchain ada tombol isi quesioner
-(A) +lapak +blockchain Pelapak trigger kiriman selesai dari nomor telefon isi quesioner
 (A) +sensor Add CSA result of temp and humi to a table
 (A) +sensor Update CSA result to bc
-
-Untuk user juleha dan penyelia include admin ada report yang sama .. detail ternak yang disembelih perhari  (milih tanggal) dan rekap jumlah ternak yang disembelih (range waktu) group by juleha, tanggal
-
-Report penyembelihan untuk penyelia sama dengan report admin rph ( rekap jumlah ternak yang disembelih, karkas group by pemilik ternak dan hari )
-
-Report admin untuk data pengiriman daging group by pelapak dan hari
-
-Qr di lapak tercipta setelah adanya transaksi yang dilakukan admin, tetapi data csa = 0
-
-data CSA akan muncul otomatis saat lapak menekan tombol terima (dengan kondisi CSA off)
-
-Konsumen dapat melihat data asal produk dari QR (cetak ataupun HP pelapak) .. kemudian muncul tombol kusioner yang dapat dipilih jika ingin mengisi kusioner
-
 (B) +admin +transaksi Only show ternak slaughtered today at each rph
 (B) +admin +transaksi Only show ternak slaughtered today at transaksi list
 (B) +admin +transaksi Remove rph_id dropdown and use admin's rph id instead
@@ -29,7 +14,15 @@ Konsumen dapat melihat data asal produk dari QR (cetak ataupun HP pelapak) .. ke
 (B) +ternak +transaksi Move validasi to ternak table from transaksi
 (B) +transaksi status kirim (0 tidak ada pengiriman, 1 dikirim, 2 diterima)
 (B) Turn the notes on the +models to tasks
-x 2024-11-09 +security remove drawer_menu from non-admin user
 Form validation
 HTTPException custom view?
+Konsumen dapat melihat data asal produk dari QR (cetak ataupun HP pelapak) .. kemudian muncul tombol kusioner yang dapat dipilih jika ingin mengisi kusioner
+Qr di lapak tercipta setelah adanya transaksi yang dilakukan admin, tetapi data csa = 0
+Report admin untuk data pengiriman daging group by pelapak dan hari
+Report penyembelihan untuk penyelia sama dengan report admin rph ( rekap jumlah ternak yang disembelih, karkas group by pemilik ternak dan hari )
+Untuk user juleha dan penyelia include admin ada report yang sama .. detail ternak yang disembelih perhari  (milih tanggal) dan rekap jumlah ternak yang disembelih (range waktu) group by juleha, tanggal
+data CSA akan muncul otomatis saat lapak menekan tombol terima (dengan kondisi CSA off)
 hapus masukin ke bc dgn keterangan deleted 
+x 2024-11-09 +security remove drawer_menu from non-admin user
+x 2024-11-12 +lapak +blockchain Di halaman qr blockchain ada tombol isi quesioner
+x 2024-11-12 +lapak Add Lapak user

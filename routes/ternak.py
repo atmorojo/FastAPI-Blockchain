@@ -10,6 +10,7 @@ from controllers.crud import Crud
 from src.database import SessionLocal, engine
 import templates.pages as pages
 import templates.ternak as ternak_view
+from templates.components import date_range
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -83,8 +84,18 @@ def read_ternaks(skip: int = 0, limit: int = 100):
     ternaks = ternak_db.get(skip=skip, limit=limit)
     return str(pages.table_page(
         "Ternak",
-        ternak_view.ternaks_table(ternaks)
+        ternak_view.ternaks_table(ternaks),
+        date_filter=date_range("/ternak/")
     ))
+
+
+@routes.put("/", response_class=HTMLResponse)
+def read_ternaks_by_date(
+    sejak = Form(...),
+    sampai = Form(...),
+):
+    ternaks = ternak_db.get_by_date('waktu_sembelih', sejak, sampai)
+    return str(ternak_view.ternaks_table(ternaks))
 
 
 @routes.get("/{ternak_id}", response_class=HTMLResponse)

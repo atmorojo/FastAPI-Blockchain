@@ -51,7 +51,7 @@ def dashboard_page(user, is_admin=True) -> Element:
     )
 
 
-def table_page(title, datatable, button=True, is_admin=True) -> Element:
+def table_page(title, datatable, button=True, is_admin=True, date_filter=False) -> Element:
     if button:
         add_button = a(
             "#tambah-button",
@@ -86,6 +86,7 @@ def table_page(title, datatable, button=True, is_admin=True) -> Element:
                     h1[title],
                     add_button,
                 ],
+                (date_filter if date_filter else ""),
                 datatable,
                 script(src="/static/script.js"),
             ]

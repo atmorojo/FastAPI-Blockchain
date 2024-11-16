@@ -7,6 +7,11 @@ class Crud:
     def get(self, skip: int = 0, limit: int = 100):
         return self.db.query(self.model).offset(skip).limit(limit).all()
 
+    def get_by_date(self, field, sejak, sampai):
+        return self.db.query(self.model).filter(
+            getattr(self.model, field).between(sejak, sampai)
+        ).all()
+
     def create(self, row):
         self.db.add(row)
         self.db.commit()

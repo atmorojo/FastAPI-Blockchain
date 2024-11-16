@@ -1,3 +1,4 @@
+from datetime import datetime
 from htpy import (
     Element,
     a,
@@ -332,11 +333,34 @@ def tpl_print(url):
     @media print {
         @page {
             margin: 0;
-            size: 58mm 58mm;
+            /*size: 58mm 58mm;*/
         }
     }
     """
     return div[
         style[css],
         img(".full", src=url, onload="window-print();")
+    ]
+
+def date_range(endpoint):
+    current_date = datetime.now().strftime("%Y-%m-%d")
+
+    return div[
+        small["Pilih rentan waktu:"],
+        form(
+            role="group",
+            hx_put=f"{endpoint}",
+            hx_trigger="change",
+            hx_target="#table-wrapper",
+            autocomplete="off"
+        )[
+            input(type="date",
+                  name="sejak",
+                  aria_label="Date",
+                  value=f"{current_date}"),
+            input(type="date",
+                  name="sampai",
+                  aria_label="Date",
+                  value=f"{current_date}")
+        ]
     ]
