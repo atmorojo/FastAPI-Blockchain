@@ -53,7 +53,7 @@ def user_form(user=None, role=None, actors=None, lock: bool = False) -> Element:
 
     return form(
         "#form",
-        action="/users",
+        action="/users/",
         method="post",
         enctype="multipart/form-data"
     )[

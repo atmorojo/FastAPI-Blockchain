@@ -21,7 +21,7 @@ def base_page(*,
               content: Node = None,
               body_class: str | None = None,
               ) -> Element:
-    return html(lang="en", data_theme="dark")[
+    return html(lang="en", data_theme="light")[
         head[
             meta(charset="utf-8"),
             meta(

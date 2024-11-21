@@ -89,7 +89,7 @@ async def create_user(
         acting_as=acting_as,
     )
     role = role_ctrl.create(role)
-    return RedirectResponse(url="/users", status_code=302)
+    return RedirectResponse(url="/users", status_code=303)
 
 
 # Edit Page
