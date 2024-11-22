@@ -33,7 +33,7 @@ def base_page(*,
             link(rel="stylesheet", href="/static/style.css"),
             link(rel="icon", href="/files/favicon.png", type_="image/png"),
             script(src="/static/htmx.min.js"),
-            script(src="/static/hyperscript.org@0.9.12", defer=True),
+            script(src="/static/hyperscript.org.0.9.12.js", defer=True),
             title[page_title],
             extra_head
         ],
