@@ -1,6 +1,4 @@
-from fastapi import (
-    APIRouter, HTTPException, UploadFile, Form, File, Request
-)
+from fastapi import APIRouter, HTTPException, UploadFile, Form, File, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 import aiofiles
 from datetime import datetime
@@ -13,9 +11,7 @@ import templates.rph as tpl_rph
 
 models.Base.metadata.create_all(bind=engine)
 
-routes = APIRouter(
-    prefix="/rph"
-)
+routes = APIRouter(prefix="/rph")
 
 
 # Dependency
@@ -47,8 +43,8 @@ async def create_rph(
     rph = rph_db.create(rph)
 
     if file_sertifikasi.filename != "":
-        out_file_path = './files/sert_rph/' + str(rph.id)
-        async with aiofiles.open(out_file_path, 'wb') as out_file:
+        out_file_path = "./files/sert_rph/" + str(rph.id)
+        async with aiofiles.open(out_file_path, "wb") as out_file:
             while content := await file_sertifikasi.read(1024):
                 await out_file.write(content)
 
@@ -60,19 +56,13 @@ async def create_rph(
 
 @routes.get("/new", response_class=HTMLResponse)
 def new_rph():
-    return str(pages.detail_page(
-        "RPH",
-        tpl_rph.rph_form()
-    ))
+    return str(pages.detail_page("RPH", tpl_rph.rph_form()))
 
 
 @routes.get("/", response_class=HTMLResponse)
 def read_rphs(skip: int = 0, limit: int = 100):
     rphs = rph_db.get(skip=skip, limit=limit)
-    return str(pages.table_page(
-        "RPH",
-        tpl_rph.rphs_table(rphs)
-    ))
+    return str(pages.table_page("RPH", tpl_rph.rphs_table(rphs)))
 
 
 @routes.get("/{rph_id}", response_class=HTMLResponse)
@@ -81,10 +71,7 @@ def read_rph(rph_id: int):
     rph = rph_db.get_by_id(rph_id)
     if rph is None:
         raise HTTPException(status_code=404, detail="User not found")
-    return str(pages.detail_page(
-        "RPH",
-        tpl_rph.rph_form(rph, lock)
-    ))
+    return str(pages.detail_page("RPH", tpl_rph.rph_form(rph, lock)))
 
 
 @routes.get("/edit/{rph_id}", response_class=HTMLResponse)
@@ -93,7 +80,7 @@ def edit_rph(req: Request, rph_id: int):
     if rph is None:
         raise HTTPException(status_code=404, detail="User not found")
     form = tpl_rph.rph_form(rph)
-    if req.headers.get('HX-Request'):
+    if req.headers.get("HX-Request"):
         return str(form)
     else:
         return str(pages.detail_page("RPH", form))
@@ -115,7 +102,7 @@ async def update_rph(
     alamat: str = Form(...),
     telepon: str = Form(...),
     status_sertifikasi: str = Form(...),
-    file_sertifikasi: UploadFile = File(None)  # Remember to give that None
+    file_sertifikasi: UploadFile = File(None),  # Remember to give that None
 ):
     lock = True
 
@@ -128,8 +115,8 @@ async def update_rph(
     if file_sertifikasi is not None:
         rph.file_sertifikasi = rph_id
         rph.waktu_upload = datetime.now()
-        out_file_path = './files/sert_rph/' + str(rph_id)
-        async with aiofiles.open(out_file_path, 'wb') as out_file:
+        out_file_path = "./files/sert_rph/" + str(rph_id)
+        async with aiofiles.open(out_file_path, "wb") as out_file:
             while content := await file_sertifikasi.read(1024):
                 await out_file.write(content)
     rph = rph_db.update(rph)

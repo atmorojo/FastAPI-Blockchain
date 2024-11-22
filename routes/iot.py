@@ -1,6 +1,4 @@
-from fastapi import (
-    APIRouter, HTTPException, Form, Request
-)
+from fastapi import APIRouter, HTTPException, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 
 from src import models
@@ -11,9 +9,7 @@ import templates.iot as iot_view
 
 models.Base.metadata.create_all(bind=engine)
 
-routes = APIRouter(
-    prefix="/iot"
-)
+routes = APIRouter(prefix="/iot")
 
 # Fields:
 # Int       id
@@ -35,10 +31,7 @@ iot_db = Crud(models.IoT, next(get_db()))
 
 @routes.get("/new", response_class=HTMLResponse)
 def new_iot():
-    return str(pages.detail_page(
-        "iot",
-        iot_view.iot_form()
-    ))
+    return str(pages.detail_page("iot", iot_view.iot_form()))
 
 
 @routes.post("/")
@@ -58,10 +51,7 @@ async def create_iot(
 @routes.get("/", response_class=HTMLResponse)
 def read_iots(skip: int = 0, limit: int = 100):
     iots = iot_db.get(skip=skip, limit=limit)
-    return str(pages.table_page(
-        "IoT",
-        iot_view.iots_table(iots)
-    ))
+    return str(pages.table_page("IoT", iot_view.iots_table(iots)))
 
 
 @routes.get("/{iot_id}", response_class=HTMLResponse)
@@ -70,10 +60,7 @@ def read_iot(iot_id: int):
     iot = iot_db.get_by_id(iot_id)
     if iot is None:
         raise HTTPException(status_code=404, detail="User not found")
-    return str(pages.detail_page(
-        "iot",
-        iot_view.iot_form(iot=iot, lock=lock)
-    ))
+    return str(pages.detail_page("iot", iot_view.iot_form(iot=iot, lock=lock)))
 
 
 # Update
@@ -86,7 +73,7 @@ def edit_iot(req: Request, iot_id: int):
         raise HTTPException(status_code=404, detail="User not found")
 
     form = iot_view.iot_form(iot=iot)
-    if req.headers.get('HX-Request'):
+    if req.headers.get("HX-Request"):
         return str(form)
     else:
         return str(pages.detail_page("IoT", form))

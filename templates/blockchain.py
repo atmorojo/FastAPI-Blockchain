@@ -7,21 +7,10 @@ from templates.components import (
     update_btn,
     submit_btn,
     action_buttons,
-    navbar
+    navbar,
 )
 
-from htpy import (
-    form,
-    div,
-    img,
-    Element,
-    tr,
-    td,
-    a,
-    p,
-    b,
-    h1
-)
+from htpy import form, div, img, Element, tr, td, a, p, b, h1
 
 
 def bc_detail(data, logged_in) -> Element:
@@ -34,32 +23,36 @@ def bc_detail(data, logged_in) -> Element:
         p[b["Juleha: "], data["juleha_name"]],
         p[b["Bobot: "], f"{data["jumlah"]} Kg"],
         p[b["Disembelih pada: "], data["waktu_sembelih"]],
-        (a(
-            role="button",
-            href=f"/sensor/end/{data["id_transaksi"]}",
-        )["Sudah Sampai"] if logged_in else "")
+        (
+            a(
+                role="button",
+                href=f"/sensor/end/{data["id_transaksi"]}",
+            )["Sudah Sampai"]
+            if logged_in
+            else ""
+        ),
     ]
 
 
 def kiriman_table(data) -> Element:
     col_headers = ["Kiriman dari", "Jumlah", "Dikirim pada", "Actions"]
-    rows = (tr[
-                td[d.ternak.penyelia.rph.name],
-                td[f"{d.jumlah} Kg"],
-                td[str_time(d.waktu_kirim)],
-                td[
-                    a(
-                        role="button",
-                        disabled=(False if d.waktu_selesai_kirim else True),
-                        href=f"/print/qr/{d.id}"
-                    )["Print QR"]
-                ],
-            ] for d in data)
+    rows = (
+        tr[
+            td[d.ternak.penyelia.rph.name],
+            td[f"{d.jumlah} Kg"],
+            td[str_time(d.waktu_kirim)],
+            td[
+                a(
+                    role="button",
+                    disabled=(False if d.waktu_selesai_kirim else True),
+                    href=f"/print/qr/{d.id}",
+                )["Print QR"]
+            ],
+        ]
+        for d in data
+    )
 
-    return table_builder(
-        col_headers,
-        rows
-        )
+    return table_builder(col_headers, rows)
 
 
 def str_time(time):

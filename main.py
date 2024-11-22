@@ -2,6 +2,7 @@
 Main module for handling FastAPI endpoints
 and dependencies related to the blockchain.
 """
+
 from pathlib import Path
 from typing import Annotated
 from sqlalchemy.orm import Session
@@ -63,6 +64,7 @@ def get_db():
     finally:
         db.close()
 
+
 @app.get("/", response_class=HTMLResponse)
 def landing():
     landing_file = Path("static/index.html").read_text()
@@ -71,10 +73,8 @@ def landing():
 
 @app.get("/dashboard", response_class=HTMLResponse)
 async def index(
-    user: Annotated[
-        schemas.User, Depends(_security.get_current_user)
-    ],
-    db=Depends(get_db)
+    user: Annotated[schemas.User, Depends(_security.get_current_user)],
+    db=Depends(get_db),
 ):
     match _security.get_role(user):
         case 0:
@@ -82,35 +82,37 @@ async def index(
         case 1:
             page = pages.dashboard_page(user)
         case 2:
-            validasi = db.query(models.Ternak).filter(
-                models.Ternak.penyelia_id == user.role.acting_as,
-            ).all()
+            validasi = (
+                db.query(models.Ternak)
+                .filter(
+                    models.Ternak.penyelia_id == user.role.acting_as,
+                )
+                .all()
+            )
             table = validasi_tpl.validasi_table(validasi, "validasi_1")
             page = pages.table_page(
-                title="Validasi Penyelia",
-                datatable=table,
-                button=False,
-                is_admin=False)
+                title="Validasi Penyelia", datatable=table, button=False, is_admin=False
+            )
         case 3:
-            validasi = db.query(models.Ternak).filter(
-                models.Ternak.juleha_id == user.role.acting_as,
-            ).all()
+            validasi = (
+                db.query(models.Ternak)
+                .filter(
+                    models.Ternak.juleha_id == user.role.acting_as,
+                )
+                .all()
+            )
             table = validasi_tpl.validasi_table(validasi, "validasi_2")
             page = pages.table_page(
-                title="Validasi Juleha",
-                datatable=table,
-                button=False,
-                is_admin=False)
-        case 4:
-            transaksi = db.query(models.Transaksi).filter(
-                models.Transaksi.lapak_id == user.role.acting_as
-            ).all()
-            table = bc_tpl.kiriman_table(transaksi)
-            page = pages.table_page(
-                "Konfirmasi pengiriman", 
-                table, 
-                False, False
+                title="Validasi Juleha", datatable=table, button=False, is_admin=False
             )
+        case 4:
+            transaksi = (
+                db.query(models.Transaksi)
+                .filter(models.Transaksi.lapak_id == user.role.acting_as)
+                .all()
+            )
+            table = bc_tpl.kiriman_table(transaksi)
+            page = pages.table_page("Konfirmasi pengiriman", table, False, False)
         case _:
             page = "Not allowed"
 
@@ -119,9 +121,7 @@ async def index(
 
 @app.put("/validasi/{validasi_id}", response_class=HTMLResponse)
 def validasi(
-    validasi_id: int,
-    user=Depends(_security.get_current_user),
-    db=Depends(get_db)
+    validasi_id: int, user=Depends(_security.get_current_user), db=Depends(get_db)
 ):
     validasi_ctrl = Crud(models.Ternak, db)
     transaksi_ctrl = Crud(models.Transaksi, db)
@@ -147,9 +147,7 @@ def validasi(
 
 @app.get("/login", response_class=HTMLResponse)
 def login_get():
-    return HTMLResponse(
-        str(pages.login_page())
-    )
+    return HTMLResponse(str(pages.login_page()))
 
 
 @app.post("/login")
@@ -173,11 +171,7 @@ async def logout():
 
 
 @app.get("/insert")
-def insert(
-    node=None,
-    humi=None,
-    temp=None
-):
+def insert(node=None, humi=None, temp=None):
     """
     TODO:
     * Filter node. Do not accept unregistered nodes
@@ -199,11 +193,11 @@ def end_sensor(
     trans_chain = bc.Blockchain()
     if not trans:
         return "Not found"
-    csa = iot_chain.end_delivery(
-        trans.iot.node, trans.waktu_kirim.replace("T", " "))
+    csa = iot_chain.end_delivery(trans.iot.node, trans.waktu_kirim.replace("T", " "))
     trans_block = json.loads(trans_chain.get_by_transaction(trans.id)[0])
-    trans_block["waktu_selesai_kirim"] = dt.now(
-        ZoneInfo("Asia/Jakarta")).strftime("%Y-%m-%dT%H:%M")
+    trans_block["waktu_selesai_kirim"] = dt.now(ZoneInfo("Asia/Jakarta")).strftime(
+        "%Y-%m-%dT%H:%M"
+    )
     trans_block["temp_min"] = csa[0][0]
     trans_block["temp_max"] = csa[0][1]
     trans_block["humi_min"] = csa[1][0]
@@ -234,5 +228,3 @@ def qr_gen(req: Request, transaksi_id: int):
 @app.get("/print/qr/{transaksi_id}", response_class=HTMLResponse)
 def qr_print(req: Request, transaksi_id: int):
     return str(tpl_print(f"{req.base_url}qr/{transaksi_id}"))
-
-

@@ -1,11 +1,4 @@
-from sqlalchemy import (
-    Column,
-    ForeignKey,
-    Integer,
-    Float,
-    String,
-    DateTime
-)
+from sqlalchemy import Column, ForeignKey, Integer, Float, String, DateTime
 from sqlalchemy.orm import relationship
 
 from src.database import Base
@@ -21,10 +14,7 @@ class User(Base):
     phone = Column(Integer, nullable=True)
     tgl_update = Column(Integer, nullable=True)
     role = relationship(
-        "Role",
-        back_populates="user",
-        uselist=False,
-        cascade="all, delete-orphan"
+        "Role", back_populates="user", uselist=False, cascade="all, delete-orphan"
     )
 
 

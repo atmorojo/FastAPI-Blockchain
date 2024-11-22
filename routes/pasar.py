@@ -1,6 +1,4 @@
-from fastapi import (
-    APIRouter, HTTPException, Form, Request
-)
+from fastapi import APIRouter, HTTPException, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 
 from src import models
@@ -11,9 +9,7 @@ import templates.pasar as pasar_view
 
 models.Base.metadata.create_all(bind=engine)
 
-routes = APIRouter(
-    prefix="/pasar"
-)
+routes = APIRouter(prefix="/pasar")
 
 
 # Dependency
@@ -30,10 +26,7 @@ pasar_db = Crud(models.Pasar, next(get_db()))
 
 @routes.get("/new", response_class=HTMLResponse)
 def new_pasar():
-    return str(pages.detail_page(
-        "Pasar",
-        pasar_view.pasar_form(None)
-    ))
+    return str(pages.detail_page("Pasar", pasar_view.pasar_form(None)))
 
 
 @routes.post("/")
@@ -55,10 +48,7 @@ async def create_pasar(
 @routes.get("/", response_class=HTMLResponse)
 def read_pasars(skip: int = 0, limit: int = 100):
     pasars = pasar_db.get(skip=skip, limit=limit)
-    return str(pages.table_page(
-        "Pasar",
-        pasar_view.pasars_table(pasars)
-    ))
+    return str(pages.table_page("Pasar", pasar_view.pasars_table(pasars)))
 
 
 @routes.get("/{pasar_id}", response_class=HTMLResponse)
@@ -67,10 +57,7 @@ def read_pasar(pasar_id: int):
     pasar = pasar_db.get_by_id(pasar_id)
     if pasar is None:
         raise HTTPException(status_code=404, detail="User not found")
-    return str(pages.detail_page(
-        "Pasar",
-        pasar_view.pasar_form(pasar, lock)
-    ))
+    return str(pages.detail_page("Pasar", pasar_view.pasar_form(pasar, lock)))
 
 
 # Update
@@ -83,7 +70,7 @@ def edit_pasar(req: Request, pasar_id: int):
         raise HTTPException(status_code=404, detail="User not found")
 
     form = pasar_view.pasar_form(pasar)
-    if req.headers.get('HX-Request'):
+    if req.headers.get("HX-Request"):
         return str(form)
     else:
         return str(pages.detail_page("Pasar", form))

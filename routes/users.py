@@ -6,18 +6,14 @@ from datetime import date
 from controllers.user_ctrl import UserCrud
 from controllers.crud import Crud
 from src import models, schemas
-from src.security import (
-    current_user_validation, get_current_user, hash_password
-)
+from src.security import current_user_validation, get_current_user, hash_password
 from src.database import SessionLocal, engine
 import templates.pages as pages
 import templates.users as tpl_users
 
 models.Base.metadata.create_all(bind=engine)
 
-routes = APIRouter(
-    prefix="/users"
-)
+routes = APIRouter(prefix="/users")
 
 
 # Dependency
@@ -41,22 +37,16 @@ def read_users(db: Session = Depends(get_db), skip: int = 0, limit: int = 100):
         "rph": rph_list,
         "penyelia": penyelia_list,
         "juleha": juleha_list,
-        "lapak": lapak_list
+        "lapak": lapak_list,
     }
     users = user_ctrl.get_users(skip=skip, limit=limit)
-    return str(pages.table_page(
-        "Users",
-        tpl_users.users_table(actors, users)
-    ))
+    return str(pages.table_page("Users", tpl_users.users_table(actors, users)))
 
 
 # New Page
 @routes.get("/new", response_class=HTMLResponse)
 def new_user():
-    return str(pages.detail_page(
-        "users",
-        tpl_users.user_form()
-    ))
+    return str(pages.detail_page("users", tpl_users.user_form()))
 
 
 # Post Endpoint
@@ -68,7 +58,7 @@ async def create_user(
     phone: str = Form(...),
     role: int = Form(...),
     acting_as: int = Form(...),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     user = models.User(
         username=username,
@@ -100,7 +90,7 @@ def edit_user(req: Request, username: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User not found")
 
     form = tpl_users.user_form(user=user)
-    if req.headers.get('HX-Request'):
+    if req.headers.get("HX-Request"):
         return str(form)
     else:
         return str(pages.detail_page("users", form))
@@ -128,7 +118,7 @@ def get_actors(role: int, db: Session = Depends(get_db)):
 def read_user(username: str, db: Session = Depends(get_db)):
     lock = True
     user = UserCrud(db).get_user_by_username(username)
-    role = Crud(models.Role, db).get_by('user_id', user.id)
+    role = Crud(models.Role, db).get_by("user_id", user.id)
     rph_list = Crud(models.Rph, db).get()
     penyelia_list = Crud(models.Penyelia, db).get()
     juleha_list = Crud(models.Juleha, db).get()
@@ -137,14 +127,15 @@ def read_user(username: str, db: Session = Depends(get_db)):
         "rph": rph_list,
         "penyelia": penyelia_list,
         "juleha": juleha_list,
-        "lapak": lapak_list
+        "lapak": lapak_list,
     }
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
-    return str(pages.detail_page(
-        "users",
-        tpl_users.user_form(user=user, role=role, actors=actors, lock=lock)
-    ))
+    return str(
+        pages.detail_page(
+            "users", tpl_users.user_form(user=user, role=role, actors=actors, lock=lock)
+        )
+    )
 
 
 # Update Endpoint
@@ -155,7 +146,7 @@ async def update_user(
     phone: str = Form(...),
     role: int = Form(...),
     acting_as: int = Form(...),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     lock = True
     user_ctrl = UserCrud(db)
@@ -179,7 +170,7 @@ async def update_user(
         "rph": rph_list,
         "penyelia": penyelia_list,
         "juleha": juleha_list,
-        "lapak": lapak_list
+        "lapak": lapak_list,
     }
     return str(tpl_users.user_form(user_db, actors=actors, lock=lock))
 
@@ -194,7 +185,7 @@ async def update_password(
     username: str,
     password: str = Form(...),
     password_new: str = Form(...),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     lock = True
     user_ctrl = UserCrud(db)
@@ -214,7 +205,7 @@ async def update_password(
         "rph": rph_list,
         "penyelia": penyelia_list,
         "juleha": juleha_list,
-        "lapak": lapak_list
+        "lapak": lapak_list,
     }
     return str(tpl_users.user_form(user_db, actors=actors, lock=lock))
 
@@ -225,7 +216,7 @@ def remove_user(
     rm_username: str,
     password: str = Form(...),
     db: Session = Depends(get_db),
-    current_user=Depends(get_current_user)
+    current_user=Depends(get_current_user),
 ):
     rph_list = Crud(models.Rph, db).get()
     penyelia_list = Crud(models.Penyelia, db).get()
@@ -235,7 +226,7 @@ def remove_user(
         "rph": rph_list,
         "penyelia": penyelia_list,
         "juleha": juleha_list,
-        "lapak": lapak_list
+        "lapak": lapak_list,
     }
     if not current_user_validation(current_user, password):
         return str(tpl_users.unauthorized("/users/"))
@@ -245,4 +236,3 @@ def remove_user(
         raise HTTPException(status_code=404, detail="User not found")
     users = user_ctrl.remove(user_db)
     return str(tpl_users.users_table(actors, users))
-

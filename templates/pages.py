@@ -27,14 +27,11 @@ def login_page() -> Element:
                     h1["Sign In"],
                     input(type_="text", name="username"),
                     input(type_="password", name="password"),
-                    button(".full")["Sign in"]
+                    button(".full")["Sign in"],
                 ]
             ],
-            div("#footer")[
-                "© Copyright 2024 by ",
-                a(href="#")["me"]
-            ]
-        ]
+            div("#footer")["© Copyright 2024 by ", a(href="#")["me"]],
+        ],
     )
 
 
@@ -47,25 +44,23 @@ def dashboard_page(user, is_admin=True) -> Element:
                 h1["Dashboard"],
                 p[f"Selamat datang, {user.username.title()}"],
             ],
-        ]
+        ],
     )
 
 
-def table_page(title, datatable, button=True, is_admin=True, date_filter=False) -> Element:
+def table_page(
+    title, datatable, button=True, is_admin=True, date_filter=False
+) -> Element:
     if button:
         add_button = a(
-            "#tambah-button",
-            role="button",
-            href="/" + title.lower() + "/new"
-        )[svg(".plus", viewBox="0 0 100 100")[
-            rect(".plus-sign",
-                 x="40", y="10",
-                 width="20", height="80"),
-            rect(".plus-sign",
-                 x="10", y="40",
-                 width="80", height="20")
-            ], span[f"Tambah {title} baru"]
-          ]
+            "#tambah-button", role="button", href="/" + title.lower() + "/new"
+        )[
+            svg(".plus", viewBox="0 0 100 100")[
+                rect(".plus-sign", x="40", y="10", width="20", height="80"),
+                rect(".plus-sign", x="10", y="40", width="80", height="20"),
+            ],
+            span[f"Tambah {title} baru"],
+        ]
     else:
         add_button = ""
 
@@ -78,41 +73,41 @@ def table_page(title, datatable, button=True, is_admin=True, date_filter=False) 
         content=[
             navbar(is_admin),
             div(style="margin-top: 4em;")[
-                div(style="""
+                div(
+                    style="""
                     display: flex;
                     justify-content: space-between;
                     margin: 2em 0;
-                    """)[
+                    """
+                )[
                     h1[title],
                     add_button,
                 ],
                 (date_filter if date_filter else ""),
                 datatable,
                 script(src="/static/script.js"),
-            ]
-        ]
+            ],
+        ],
     )
 
 
-def detail_page(
-    title,
-    detail_form,
-    is_admin=True
-) -> Element:
+def detail_page(title, detail_form, is_admin=True) -> Element:
     return base_page(
         page_title=title,
         content=[
             navbar(is_admin),
             div(style="margin: 4em 0;")[
-                a(style="""
+                a(
+                    style="""
                 text-decoration:none;
                 margin: 1em 0;
                 display: inline-block;
                 """,
-                  href=f"/{title.lower()}/")[f"← Kembali ke daftar {title}"],
+                    href=f"/{title.lower()}/",
+                )[f"← Kembali ke daftar {title}"],
                 h1[title.title()],
                 img(".my-indicator", src="/static/indicator.gif"),
                 detail_form,
-            ]
-        ]
+            ],
+        ],
     )

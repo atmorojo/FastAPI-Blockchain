@@ -12,7 +12,9 @@ class UserCrud(Crud):
         return self.db.query(self.model).filter(models.User.id == user_id).first()
 
     def get_user_by_username(self, username: str):
-        return self.db.query(self.model).filter(models.User.username == username).first()
+        return (
+            self.db.query(self.model).filter(models.User.username == username).first()
+        )
 
     def get_user_by_email(self, email: str):
         return self.db.query(self.model).filter(models.User.email == email).first()

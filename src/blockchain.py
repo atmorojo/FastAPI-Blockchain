@@ -9,7 +9,7 @@ import qrcode
 import io
 
 # Constants
-DATABASE_URL = './data/production.sqlite'
+DATABASE_URL = "./data/production.sqlite"
 
 
 class Blockchain:
@@ -20,10 +20,7 @@ class Blockchain:
         Use sqlitedict to store blockchain data
         """
         self.chain = SqliteDict(
-            db,
-            autocommit=True,
-            encode=json.dumps,
-            decode=json.loads
+            db, autocommit=True, encode=json.dumps, decode=json.loads
         )
 
         if len(self.chain) == 0:
@@ -35,20 +32,16 @@ class Blockchain:
 
         previous_block = self.get_previous_block()
         new_index = len(self.chain) + 1
-        block = self._create_block(
-            new_index, data, previous_block["current_hash"]
-        )
+        block = self._create_block(new_index, data, previous_block["current_hash"])
         self.chain[new_index] = block
         return block
 
-    def _create_block(
-        self, index: int, transaction: dict, previous_hash: str
-    ) -> dict:
+    def _create_block(self, index: int, transaction: dict, previous_hash: str) -> dict:
         """Create a new block."""
         new_block = {
             "index": index,
             "previous_hash": previous_hash,
-            "timestamp":  str(_dt.datetime.now()),
+            "timestamp": str(_dt.datetime.now()),
             "transaction": transaction,
         }
         new_block["current_hash"] = self.calculate_hash(new_block)
@@ -60,9 +53,11 @@ class Blockchain:
 
     def calculate_hash(self, block: dict):
         return _hashlib.sha256(
-            (block["previous_hash"] +
-             block["timestamp"] +
-             json.dumps(block["transaction"])).encode()
+            (
+                block["previous_hash"]
+                + block["timestamp"]
+                + json.dumps(block["transaction"])
+            ).encode()
         ).hexdigest()
 
     def get_by_transaction(self, id_transaksi):
@@ -98,7 +93,6 @@ class Blockchain:
         return item
 
     def end_delivery(self, iot_id: int, _from):
-
         query = """
             SELECT
                 json_extract(value, '$.transaction') as value
@@ -109,16 +103,22 @@ class Blockchain:
                 json_extract(value, '$.timestamp') BETWEEN ? and ?;
         """
 
-        result = list(self.chain.conn.select(query, (
-            iot_id,
-            _from,
-            _dt.datetime.now(
-                ZoneInfo("Asia/Jakarta")).strftime('%Y-%m-%d %H:%M')
-        )))
+        result = list(
+            self.chain.conn.select(
+                query,
+                (
+                    iot_id,
+                    _from,
+                    _dt.datetime.now(ZoneInfo("Asia/Jakarta")).strftime(
+                        "%Y-%m-%d %H:%M"
+                    ),
+                ),
+            )
+        )
         res = [json.loads(item) for sublist in result for item in sublist]
         # get min value from res[index]["temp"] and res[index]["humi"]
-        humi_list = [entry['humi'] for entry in res]
-        temp_list = [entry['temp'] for entry in res]
+        humi_list = [entry["humi"] for entry in res]
+        temp_list = [entry["temp"] for entry in res]
         humi = [min(humi_list), max(humi_list)]
         temp = [min(temp_list), max(temp_list)]
         return [temp, humi]
@@ -126,7 +126,7 @@ class Blockchain:
 
 # qrcode generator
 def qr_generator(url):
-    """ Returns a qrcode image. """
+    """Returns a qrcode image."""
     img_bytes = io.BytesIO()
     img = qrcode.make(url)
     img.save(img_bytes)

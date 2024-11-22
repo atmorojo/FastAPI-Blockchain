@@ -1,6 +1,4 @@
-from fastapi import (
-    APIRouter, HTTPException, Form, Request
-)
+from fastapi import APIRouter, HTTPException, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 
 from src import models
@@ -11,9 +9,7 @@ import templates.lapak as lapak_view
 
 models.Base.metadata.create_all(bind=engine)
 
-routes = APIRouter(
-    prefix="/lapak"
-)
+routes = APIRouter(prefix="/lapak")
 
 
 # Dependency
@@ -31,10 +27,7 @@ lapak_db = Crud(models.Lapak, next(get_db()))
 @routes.get("/new", response_class=HTMLResponse)
 def new_lapak():
     pasar = Crud(models.Pasar, next(get_db())).get()
-    return str(pages.detail_page(
-        "lapak",
-        lapak_view.lapak_form(pasar=pasar)
-    ))
+    return str(pages.detail_page("lapak", lapak_view.lapak_form(pasar=pasar)))
 
 
 @routes.post("/")
@@ -58,10 +51,7 @@ async def create_lapak(
 @routes.get("/", response_class=HTMLResponse)
 def read_lapaks(skip: int = 0, limit: int = 100):
     lapaks = lapak_db.get(skip=skip, limit=limit)
-    return str(pages.table_page(
-        "Lapak",
-        lapak_view.lapaks_table(lapaks)
-    ))
+    return str(pages.table_page("Lapak", lapak_view.lapaks_table(lapaks)))
 
 
 @routes.get("/{lapak_id}", response_class=HTMLResponse)
@@ -70,10 +60,9 @@ def read_lapak(lapak_id: int):
     lapak = lapak_db.get_by_id(lapak_id)
     if lapak is None:
         raise HTTPException(status_code=404, detail="User not found")
-    return str(pages.detail_page(
-        "lapak",
-        lapak_view.lapak_form(lapak=lapak, lock=lock)
-    ))
+    return str(
+        pages.detail_page("lapak", lapak_view.lapak_form(lapak=lapak, lock=lock))
+    )
 
 
 # Update
@@ -87,7 +76,7 @@ def edit_lapak(req: Request, lapak_id: int):
         raise HTTPException(status_code=404, detail="User not found")
 
     form = lapak_view.lapak_form(lapak=lapak, pasar=pasar)
-    if req.headers.get('HX-Request'):
+    if req.headers.get("HX-Request"):
         return str(form)
     else:
         return str(pages.detail_page("Lapak", form))

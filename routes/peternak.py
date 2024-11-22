@@ -1,25 +1,15 @@
-from fastapi import (
-    APIRouter, HTTPException, Form, Request
-)
+from fastapi import APIRouter, HTTPException, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 
 from src import models
 from controllers.crud import Crud
 from src.database import SessionLocal, engine
-from templates.pages import (
-    detail_page as tpl_detail,
-    table_page as tpl_list
-)
-from templates.peternak import (
-    peternak_form as tpl_form,
-    peternak_table as tpl_table
-)
+from templates.pages import detail_page as tpl_detail, table_page as tpl_list
+from templates.peternak import peternak_form as tpl_form, peternak_table as tpl_table
 
 models.Base.metadata.create_all(bind=engine)
 
-routes = APIRouter(
-    prefix="/peternak"
-)
+routes = APIRouter(prefix="/peternak")
 
 
 # Dependency
@@ -40,16 +30,12 @@ peternak_db = Crud(models.Peternak, next(get_db()))
 @routes.get("/", response_class=HTMLResponse)
 def read_peternaks(skip: int = 0, limit: int = 100):
     peternaks = peternak_db.get(skip=skip, limit=limit)
-    return str(
-        tpl_list("Peternak", tpl_table(peternaks))
-    )
+    return str(tpl_list("Peternak", tpl_table(peternaks)))
 
 
 @routes.get("/new", response_class=HTMLResponse)
 def new_peternak():
-    return str(
-        tpl_detail("Peternak", tpl_form(lock=False))
-    )
+    return str(tpl_detail("Peternak", tpl_form(lock=False)))
 
 
 @routes.get("/{peternak_id}", response_class=HTMLResponse)
@@ -58,9 +44,7 @@ def read_peternak(peternak_id: int):
     peternak = peternak_db.get_by_id(peternak_id)
     if peternak is None:
         raise HTTPException(status_code=404, detail="User not found")
-    return str(
-        tpl_detail("Peternak", tpl_form(peternak, lock))
-    )
+    return str(tpl_detail("Peternak", tpl_form(peternak, lock)))
 
 
 @routes.get("/edit/{peternak_id}", response_class=HTMLResponse)
@@ -70,7 +54,7 @@ def edit_peternak(req: Request, peternak_id: int):
     if peternak is None:
         raise HTTPException(status_code=404, detail="User not found")
     form = tpl_form(peternak, lock)
-    if req.headers.get('HX-Request'):
+    if req.headers.get("HX-Request"):
         return str(form)
     else:
         return str(tpl_detail("Peternak", form))

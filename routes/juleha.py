@@ -1,6 +1,4 @@
-from fastapi import (
-    APIRouter, HTTPException, UploadFile, Form, File, Request
-)
+from fastapi import APIRouter, HTTPException, UploadFile, Form, File, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 import aiofiles
 from datetime import datetime
@@ -13,9 +11,7 @@ import templates.juleha as tpl_juleha
 
 models.Base.metadata.create_all(bind=engine)
 
-routes = APIRouter(
-    prefix="/juleha"
-)
+routes = APIRouter(prefix="/juleha")
 
 
 # Dependency
@@ -41,15 +37,15 @@ async def create_juleha(
         name=name,
         nomor_sertifikat=nomor_sertifikat,
         masa_sertifikat=masa_sertifikat,
-        waktu_upload=datetime.now()
+        waktu_upload=datetime.now(),
     )
 
     juleha = juleha_db.create(juleha)
 
     if file_sertifikat.filename != "":
         juleha.upload_sertifikat = juleha.id
-        out_file_path = './files/sertifikat/' + str(juleha.id)
-        async with aiofiles.open(out_file_path, 'wb') as out_file:
+        out_file_path = "./files/sertifikat/" + str(juleha.id)
+        async with aiofiles.open(out_file_path, "wb") as out_file:
             while content := await file_sertifikat.read(1024):
                 await out_file.write(content)
         juleha_db.update(juleha)
@@ -59,19 +55,13 @@ async def create_juleha(
 
 @routes.get("/new", response_class=HTMLResponse)
 def new_juleha():
-    return str(pages.detail_page(
-        "juleha",
-        tpl_juleha.juleha_form()
-    ))
+    return str(pages.detail_page("juleha", tpl_juleha.juleha_form()))
 
 
 @routes.get("/", response_class=HTMLResponse)
 def read_julehas(skip: int = 0, limit: int = 100):
     julehas = juleha_db.get(skip=skip, limit=limit)
-    return str(pages.table_page(
-        "Juleha",
-        tpl_juleha.julehas_table(julehas)
-    ))
+    return str(pages.table_page("Juleha", tpl_juleha.julehas_table(julehas)))
 
 
 @routes.get("/{juleha_id}", response_class=HTMLResponse)
@@ -80,10 +70,7 @@ def read_juleha(juleha_id: int):
     lock = True
     if juleha is None:
         raise HTTPException(status_code=404, detail="User not found")
-    return str(pages.detail_page(
-        "juleha",
-        tpl_juleha.juleha_form(juleha, lock)
-    ))
+    return str(pages.detail_page("juleha", tpl_juleha.juleha_form(juleha, lock)))
 
 
 @routes.get("/edit/{juleha_id}", response_class=HTMLResponse)
@@ -92,7 +79,7 @@ def edit_juleha(req: Request, juleha_id: int):
     if juleha is None:
         raise HTTPException(status_code=404, detail="User not found")
     form = tpl_juleha.juleha_form(juleha)
-    if req.headers.get('HX-Request'):
+    if req.headers.get("HX-Request"):
         return str(form)
     else:
         return str(pages.detail_page("juleha", form))
@@ -124,8 +111,8 @@ async def update_juleha(
     if file_sertifikat is not None:
         juleha.upload_sertifikat = juleha.id
         juleha.waktu_upload = datetime.now()
-        out_file_path = './files/sertifikat/' + str(juleha.id)
-        async with aiofiles.open(out_file_path, 'wb') as out_file:
+        out_file_path = "./files/sertifikat/" + str(juleha.id)
+        async with aiofiles.open(out_file_path, "wb") as out_file:
             while content := await file_sertifikat.read(1024):
                 await out_file.write(content)
 

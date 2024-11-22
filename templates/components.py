@@ -39,19 +39,21 @@ from htpy import (
 def action_buttons(route, id, name, extra_1=None):
     return div(".table-actions.full", role="group")[
         extra_1,
-        a(".outline.secondary", role="button",
-          href="/" + route + "/" + str(id)
-          )["Detail"],
-        a(".outline.secondary", role="button",
-          href="/" + route + "/edit/" + str(id)
-          )["Edit"],
-        a(".outline.warning", role="button",
-          hx_delete="/" + route + "/" + str(id),
-          hx_confirm=f"""
+        a(".outline.secondary", role="button", href="/" + route + "/" + str(id))[
+            "Detail"
+        ],
+        a(".outline.secondary", role="button", href="/" + route + "/edit/" + str(id))[
+            "Edit"
+        ],
+        a(
+            ".outline.warning",
+            role="button",
+            hx_delete="/" + route + "/" + str(id),
+            hx_confirm=f"""
 Apakah anda yakin mau menghapus data {name}?
           """,
-          hx_target="#table-wrapper"
-          )["Hapus"],
+            hx_target="#table-wrapper",
+        )["Hapus"],
     ]
 
 
@@ -61,54 +63,52 @@ def secure_action_buttons(route, id, name, extra_1=None):
             form(
                 autocomplete="off",
                 hx_post="/" + route + "/" + str(id),
-                hx_target="#table-wrapper"
+                hx_target="#table-wrapper",
             )[
                 article[
                     h2["Konfirmasi Penghapusan Data"],
                     p["Masukkan password untuk menghapus data ini:"],
                     input(type_="password", name="password"),
                     footer[
-                        button(".secondary", type_="button",
-                               _=f"on click toggle @open on #confirm_hapus_{str(id)}"
-                               )["Cancel"],
-                        button(type_="submit", style="width: auto;")["Confirm"]
-                    ]]]
+                        button(
+                            ".secondary",
+                            type_="button",
+                            _=f"on click toggle @open on #confirm_hapus_{str(id)}",
+                        )["Cancel"],
+                        button(type_="submit", style="width: auto;")["Confirm"],
+                    ],
+                ]
+            ]
         ],
         div(".table-actions.full", role="group")[
             extra_1,
-            a(".outline.secondary", role="button",
-              href="/" + route + "/" + str(id)
-              )["Detail"],
-            a(".outline.secondary", role="button",
-              href="/" + route + "/edit/" + str(id)
-              )["Edit"],
-            a(".outline.warning", role="button",
-              _=f"on click toggle @open on #confirm_hapus_{str(id)}"
-              )["Hapus"],
-        ]]
+            a(".outline.secondary", role="button", href="/" + route + "/" + str(id))[
+                "Detail"
+            ],
+            a(
+                ".outline.secondary",
+                role="button",
+                href="/" + route + "/edit/" + str(id),
+            )["Edit"],
+            a(
+                ".outline.warning",
+                role="button",
+                _=f"on click toggle @open on #confirm_hapus_{str(id)}",
+            )["Hapus"],
+        ],
+    ]
 
 
 def nav_link(path: str, menu: str) -> Element:
-    return li(role="button")[
-        a(href=path)[menu]
-    ]
+    return li(role="button")[a(href=path)[menu]]
 
 
 def table_header(headers) -> Element:
-    return thead[tr[
-            (th[i] for i in headers)
-    ]]
+    return thead[tr[(th[i] for i in headers)]]
 
 
 def table_builder(headers, rows) -> Element:
-    return div("#table-wrapper")[
-        table("#table")[
-            table_header(headers),
-            tbody[
-                rows
-            ]
-        ]
-    ]
+    return div("#table-wrapper")[table("#table")[table_header(headers), tbody[rows]]]
 
 
 def navbar(is_admin, logged_in=True) -> Element:
@@ -117,10 +117,7 @@ def navbar(is_admin, logged_in=True) -> Element:
     else:
         tl_button = a("#logout_button", href="/login")["Log In"]
     return div(".navbar.full")[
-        div(style="height: 30px;")[
-            (drawer_menu if is_admin else ""),
-            tl_button
-        ]
+        div(style="height: 30px;")[(drawer_menu if is_admin else ""), tl_button]
     ]
 
 
@@ -130,7 +127,7 @@ def drawer_menu() -> Element:
         _="""
         on click from elsewhere
         set #burger-btn.checked to false
-        """
+        """,
     )[
         input(
             "#burger-btn.burger-btn",
@@ -149,20 +146,24 @@ def drawer_menu() -> Element:
         ],
         aside(
             ".nav-drawer",
-        )[nav[ul[
-            li[a(href="/dashboard")["Dashboard"]],
-            li[a(href="/users")["Users"]],
-            li[a(href="/rph")["RPH"]],
-            li[a(href="/juleha")["Juleha"]],
-            li[a(href="/penyelia")["Penyelia"]],
-            li[a(href="/peternak")["Peternak"]],
-            li[a(href="/iot")["IoT"]],
-            li[hr],
-            li[a(href="/ternak")["Ternak"]],
-            li[a(href="/pasar")["Pasar"]],
-            li[a(href="/lapak")["Lapak"]],
-            li[a(href="/transaksi")["Transaksi"]],
-        ]]]
+        )[
+            nav[
+                ul[
+                    li[a(href="/dashboard")["Dashboard"]],
+                    li[a(href="/users")["Users"]],
+                    li[a(href="/rph")["RPH"]],
+                    li[a(href="/juleha")["Juleha"]],
+                    li[a(href="/penyelia")["Penyelia"]],
+                    li[a(href="/peternak")["Peternak"]],
+                    li[a(href="/iot")["IoT"]],
+                    li[hr],
+                    li[a(href="/ternak")["Ternak"]],
+                    li[a(href="/pasar")["Pasar"]],
+                    li[a(href="/lapak")["Lapak"]],
+                    li[a(href="/transaksi")["Transaksi"]],
+                ]
+            ]
+        ],
     ]
 
 
@@ -173,7 +174,7 @@ def update_btn(parent_route, id):
         hx_target="#form",
         hx_indicator="#form",
         hx_encoding="multipart/form-data",
-        hx_push_url="true"
+        hx_push_url="true",
     )["Simpan Perubahan"]
 
 
@@ -197,14 +198,11 @@ def edit_btn(parent_route, id):
         style="margin-top: 2em;",
         hx_get=parent_route + "edit/" + str(id),
         hx_target="#form",
-        hx_push_url="true"
+        hx_push_url="true",
     )["Edit"]
 
 
-submit_btn = input(
-    style="margin-top: 2em;",
-    type_="submit", value="Simpan"
-)
+submit_btn = input(style="margin-top: 2em;", type_="submit", value="Simpan")
 
 
 def show_img(url):
@@ -224,87 +222,97 @@ def spoiler(url):
                     toggle .show on next .spoiler
             """,
         )["Toggle Image"],
-        img(".spoiler.full", src="/files/" + url)
+        img(".spoiler.full", src="/files/" + url),
     ]
 
 
-def inlabel(_label, _type, _name, _value="", lock=False,
-            focus=False, ro=False, hs=None):
+def inlabel(
+    _label, _type, _name, _value="", lock=False, focus=False, ro=False, hs=None
+):
     return label[
         small[_label],
-        input(autofocus=focus,
-              type_=_type,
-              name=_name,
-              disabled=lock,
-              value=_value,
-              readonly=ro,
-              _=hs,
-              ),
+        input(
+            autofocus=focus,
+            type_=_type,
+            name=_name,
+            disabled=lock,
+            value=_value,
+            readonly=ro,
+            _=hs,
+        ),
     ]
 
 
 def combo_gen(
-        label_text, name, items,
-        selected=None, placeholder=None, custom_name=None
+    label_text, name, items, selected=None, placeholder=None, custom_name=None
 ):
     return label[
         small[label_text],
         select(name=name)[
-            (option(
-                value="", disabled=True, selected=True, hidden=True
-            )[placeholder] if placeholder else None),
-            (option(
-                value=item.id,
-                selected=(item.id == selected)
-            )[
-                (getattr(
-                    item, custom_name
-                )) if custom_name else item.name
-            ] for item in items)
-        ]
+            (
+                option(value="", disabled=True, selected=True, hidden=True)[placeholder]
+                if placeholder
+                else None
+            ),
+            (
+                option(value=item.id, selected=(item.id == selected))[
+                    (getattr(item, custom_name)) if custom_name else item.name
+                ]
+                for item in items
+            ),
+        ],
     ]
 
 
 def dropdown_gen(
-    label_text, name, option_items,
-    selected=None, placeholder=None,
-    displayed_options=None, hx="",
+    label_text,
+    name,
+    option_items,
+    selected=None,
+    placeholder=None,
+    displayed_options=None,
+    hx="",
 ):
     return label[
         small[label_text],
         select(hx, name=name)[
-            option(
-                value="", disabled=True, selected=True, hidden=True
-            )[(placeholder if placeholder else f"Pilih {label_text}")],
-            (option(
-                value=item, selected=(item == selected)
-            )[
-                (displayed_options[index] if displayed_options else item)
-            ] for index, item in enumerate(option_items))
-        ]
+            option(value="", disabled=True, selected=True, hidden=True)[
+                (placeholder if placeholder else f"Pilih {label_text}")
+            ],
+            (
+                option(value=item, selected=(item == selected))[
+                    (displayed_options[index] if displayed_options else item)
+                ]
+                for index, item in enumerate(option_items)
+            ),
+        ],
     ]
 
 
 def img_dropdown(
-    label_text, field_name,
-    img_dir, items,
+    label_text,
+    field_name,
+    img_dir,
+    items,
     selected=None,
     extra_li=None,
-    extra_text=None
+    extra_text=None,
 ):
     return div[
         small[label_text],
         details(".dropdown")[
             summary[label_text],
             ul[
-                (li[label[
-                    input(type_="radio",
-                          name=field_name,
-                          value=item.id,
-                          data_helper=(
-                              extra_text if extra_text else ""
-                          ) + item.peternak.name,
-                          _="""
+                (
+                    li[
+                        label[
+                            input(
+                                type_="radio",
+                                name=field_name,
+                                value=item.id,
+                                data_helper=(extra_text if extra_text else "")
+                                + item.peternak.name,
+                                _="""
                             set :grandpa to the closest <details/>
                             init
                                 log my @checked
@@ -318,14 +326,21 @@ def img_dropdown(
                                 put my @data-helper into
                                     the first <summary/> in :grandpa
                           """,
-                          checked=(item.id == selected)
-                          ),
-                    img(style="height: 4em; margin-right: 2em;",
-                        src=img_dir + item.img),
-                    (extra_text if extra_text else "") + item.peternak.name
-                ]] for item in items),
-                extra_li
-            ]]]
+                                checked=(item.id == selected),
+                            ),
+                            img(
+                                style="height: 4em; margin-right: 2em;",
+                                src=img_dir + item.img,
+                            ),
+                            (extra_text if extra_text else "") + item.peternak.name,
+                        ]
+                    ]
+                    for item in items
+                ),
+                extra_li,
+            ],
+        ],
+    ]
 
 
 def tpl_print(url):
@@ -337,10 +352,8 @@ def tpl_print(url):
         }
     }
     """
-    return div[
-        style[css],
-        img(".full", src=url, onload="window-print();")
-    ]
+    return div[style[css], img(".full", src=url, onload="window-print();")]
+
 
 def date_range(endpoint):
     current_date = datetime.now().strftime("%Y-%m-%d")
@@ -352,15 +365,13 @@ def date_range(endpoint):
             hx_put=f"{endpoint}",
             hx_trigger="change",
             hx_target="#table-wrapper",
-            autocomplete="off"
+            autocomplete="off",
         )[
-            input(type="date",
-                  name="sejak",
-                  aria_label="Date",
-                  value=f"{current_date}"),
-            input(type="date",
-                  name="sampai",
-                  aria_label="Date",
-                  value=f"{current_date}")
-        ]
+            input(
+                type="date", name="sejak", aria_label="Date", value=f"{current_date}"
+            ),
+            input(
+                type="date", name="sampai", aria_label="Date", value=f"{current_date}"
+            ),
+        ],
     ]

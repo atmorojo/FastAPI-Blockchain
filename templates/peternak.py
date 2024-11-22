@@ -18,14 +18,21 @@ from htpy import (
 def peternak_form(peternak=None, lock: bool = False) -> Element:
     if lock:
         form_btn = edit_btn("/peternak/", peternak.id)
-        status_usaha = inlabel("Status Usaha", "text", "status_usaha",
-                               (peternak.status_usaha if peternak else ""),
-                               lock),
+        status_usaha = (
+            inlabel(
+                "Status Usaha",
+                "text",
+                "status_usaha",
+                (peternak.status_usaha if peternak else ""),
+                lock,
+            ),
+        )
     else:
         status_usaha = dropdown_gen(
-            "Status Usaha", "status_usaha",
+            "Status Usaha",
+            "status_usaha",
             ["Mandiri", "Badan Usaha"],
-            (peternak.status_usaha if peternak else None)
+            (peternak.status_usaha if peternak else None),
         )
         if peternak is not None:
             form_btn = update_btn("/peternak/", peternak.id)
@@ -37,24 +44,29 @@ def peternak_form(peternak=None, lock: bool = False) -> Element:
         method="post",
         action="/peternak",
         autocomplete="off",
-        enctype="multipart/form-data"
+        enctype="multipart/form-data",
     )[
-        inlabel("Nama", "text", "name",
-                (peternak.name if peternak else ""), lock),
-        inlabel("Alamat", "text", "alamat",
-                (peternak.alamat if peternak else ""), lock),
+        inlabel("Nama", "text", "name", (peternak.name if peternak else ""), lock),
+        inlabel(
+            "Alamat", "text", "alamat", (peternak.alamat if peternak else ""), lock
+        ),
         status_usaha,
-        form_btn
+        form_btn,
     ]
 
 
 def peternak_table(peternaks) -> Element:
     tbl_headers = ["Nama", "Alamat", "Status Usaha", "Actions"]
-    rows = ([tr[
-        td[peternak.name],
-        td[peternak.alamat],
-        td[peternak.status_usaha],
-        td[action_buttons("peternak", peternak.id, peternak.name)],
-    ]] for peternak in peternaks)
+    rows = (
+        [
+            tr[
+                td[peternak.name],
+                td[peternak.alamat],
+                td[peternak.status_usaha],
+                td[action_buttons("peternak", peternak.id, peternak.name)],
+            ]
+        ]
+        for peternak in peternaks
+    )
 
     return table_builder(tbl_headers, rows)
