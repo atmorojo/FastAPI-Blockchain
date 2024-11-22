@@ -2,7 +2,7 @@
 Main module for handling FastAPI endpoints
 and dependencies related to the blockchain.
 """
-
+from pathlib import Path
 from typing import Annotated
 from sqlalchemy.orm import Session
 from fastapi import FastAPI, Form, Depends, HTTPException, Request, Response
@@ -62,6 +62,11 @@ def get_db():
         yield db
     finally:
         db.close()
+
+@app.get("/", response_class=HTMLResponse)
+def landing():
+    landing_file = Path("static/index.html").read_text()
+    return landing_file
 
 
 @app.get("/dashboard", response_class=HTMLResponse)
