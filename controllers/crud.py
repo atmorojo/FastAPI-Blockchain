@@ -1,3 +1,5 @@
+from sqlalchemy import desc
+
 class Crud:
     def __init__(self, model, db):
         self.model = model
@@ -11,6 +13,14 @@ class Crud:
             self.db.query(self.model)
             .filter(getattr(self.model, field).between(sejak, sampai))
             .all()
+        )
+
+    def get_latest_field(self, field, date_field, date):
+        return (
+            self.db.query(self.model)
+            .filter(getattr(self.model, date_field) == date)
+            .order_by(desc(getattr(self.model, field)))
+            .first()
         )
 
     def create(self, row):
