@@ -56,10 +56,13 @@ class Ternak(Base):
     juleha_id = Column(Integer, ForeignKey("juleha.id"))
     penyelia_id = Column(Integer, ForeignKey("penyelia.id"))
     img = Column(String)
-    karkas = Column(Float, index=True)
+    bobot = Column(Float, index=True)
     jenis = Column(String, index=True)  # Kambing, domba, kerbau, sapi
+    waktu_daftar = Column(String)
+    no_antri = Column(String)
     kesehatan = Column(String, index=True)  # sehat / layak
     waktu_sembelih = Column(String)
+    karkas = Column(Float, index=True)
     validasi_1 = Column(Integer)
     validasi_2 = Column(Integer)
     peternak = relationship("Peternak", back_populates="ternak")
