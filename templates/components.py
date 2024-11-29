@@ -1,5 +1,8 @@
 from datetime import datetime
+
+from templates import nested_menu
 from htpy import (
+    i,
     Element,
     a,
     article,
@@ -149,18 +152,45 @@ def drawer_menu() -> Element:
         )[
             nav[
                 ul[
-                    li[a(href="/dashboard")["Dashboard"]],
-                    li[a(href="/users")["Users"]],
-                    li[a(href="/rph")["RPH"]],
-                    li[a(href="/juleha")["Juleha"]],
-                    li[a(href="/penyelia")["Penyelia"]],
-                    li[a(href="/peternak")["Peternak"]],
-                    li[a(href="/iot")["IoT"]],
-                    li[hr],
-                    li[a(href="/ternak")["Ternak"]],
-                    li[a(href="/pasar")["Pasar"]],
-                    li[a(href="/lapak")["Lapak"]],
-                    li[a(href="/transaksi")["Transaksi"]],
+                    li[
+                        a(href="/dashboard")[
+                            i(".bi-house"),
+                            "Dashboard"]],
+                    li[
+                        a(href="/users")[
+                            i(".bi-people"),
+                            "Users"]],
+                    li[nested_menu(
+                        [
+                            i(".bi-journals"),
+                            "Master"
+                        ],
+                        ul[
+                            li[a(href="/rph")["RPH"]],
+                            li[a(href="/juleha")["Juleha"]],
+                            li[a(href="/penyelia")[
+                                i(".bi-p-square"),
+                                "Penyelia"]],
+                            li[a(href="/peternak")["Peternak"]],
+                            li[a(href="/lapak")[
+                                i(".bi-shop"),
+                                "Lapak"]],
+                            li[a(href="/pasar")[
+                                i(".bi-globe-asia-australia"),
+                                "Pasar"]],
+                            li[a(href="/iot")[
+                                i(".bi-gpu-card"),
+                                "IoT"]],
+                        ]
+                    )],
+                    li[
+                        a(href="/ternak")[
+                            i(".bi-pencil"),
+                            "Registrasi Ternak"]],
+                    li[
+                        a(href="/transaksi")[
+                            i(".bi-send"),
+                            "Transaksi"]],
                 ]
             ]
         ],
@@ -227,7 +257,7 @@ def spoiler(url):
 
 
 def inlabel(
-    _label, _type, _name, _value="", lock=False, focus=False, ro=False, hs=None
+    _label, _type, _name, _value="", lock=False, focus=False, ro=False, hs=None, placeholder=""
 ):
     return label[
         small[_label],
@@ -238,6 +268,7 @@ def inlabel(
             disabled=lock,
             value=_value,
             readonly=ro,
+            placeholder=placeholder,
             _=hs,
         ),
     ]
@@ -359,9 +390,9 @@ def date_range(endpoint):
     current_date = datetime.now().strftime("%Y-%m-%d")
 
     return div[
-        small["Pilih rentan waktu:"],
+        small["Pilih rentang waktu:"],
         form(
-            role="group",
+            role="search",
             hx_put=f"{endpoint}",
             hx_trigger="change",
             hx_target="#table-wrapper",

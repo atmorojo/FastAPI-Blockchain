@@ -57,16 +57,19 @@ html, body {
 }
 
 .burger-btn:checked~.burger-icon span:nth-child(1) {
+	background-color: wheat;
 	transform: rotate(45deg);
 	position: relative;
 	top: 10px;
 }
 
 .burger-btn:checked~.burger-icon span:nth-child(2) {
+	background-color: wheat;
 	opacity: 0;
 }
 
 .burger-btn:checked~.burger-icon span:nth-child(3) {
+	background-color: wheat;
 	transform: rotate(-45deg);
 	position: relative;
 	top: -10px;
@@ -75,8 +78,8 @@ html, body {
 .nav-drawer {
 	position: fixed;
 	top: 0;
-	left: -250px;
-	width: 250px;
+	left: -300px;
+	width: 300px;
 	height: 100%;
 	background-color: var(--pico-primary-background);
 	color: white;
@@ -86,21 +89,48 @@ html, body {
 	padding-top: 5em;
 }
 
+.nav-drawer i {
+	margin-right: 10px;
+}
+
 .burger-btn:checked~.nav-drawer {
 	left: 0;
 }
 
-.nav-drawer a {
+.burger-btn:checked~.burger-icon h1 {
+	color: wheat !important;
+}
+
+.nav-drawer a, .nav-drawer summary {
 	display: block;
 	padding-left: 2em;
-	color: wheat;
+	color: wheat !important;
+}
+
+
+.nav-drawer details {
+	margin: 0;
 }
 
 .nav-drawer hr {
 	border-color: var(--pico-primary-focus);
 }
 
-.nav-drawer a:hover {
+.nav-drawer details[open] ul {
+	padding-left: 2em;
+}
+
+.nav-drawer details[open] summary {
+	margin-bottom: 0;
+}
+.nav-drawer summary {
+	line-height: 1.5em;	
+}
+
+.nav-drawer a:hover, 
+.nav-drawer summary:hover,
+.nav-drawer details[open] summary,
+.nav-drawer details[open] ul {
 	background-color: var(--pico-primary-focus);
 	text-decoration: none;
 }
