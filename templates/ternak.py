@@ -12,54 +12,31 @@ from templates.components import (
 )
 
 from htpy import (
-    select,
-    option,
+    a,
     form,
-    div,
-    img,
-    h1,
-    button,
-    input,
     Element,
     tr,
     td,
-    link,
     script,
-    a,
     label,
     small,
 )
 
 
 def ternak_form(
-    ternak=None, julehas=None, peternaks=None, penyelias=None, lock: bool = False
+    ternak=None, peternaks=None, lock: bool = False
 ) -> Element:
     if lock:
         form_btn = edit_btn("/ternak/", ternak.id)
         picture = show_img("img_ternak/" + ternak.img)
-        juleha_combo = inlabel("Juleha", "text", "juleha_id", ternak.juleha.name, lock)
         peternak_combo = inlabel(
             "Pemilik Ternak", "text", "peternak_id", ternak.peternak.name, lock
         )
-        penyelia_combo = inlabel(
-            "penyelia", "text", "penyelia_id", ternak.penyelia.name, lock
-        )
-
         jenis = inlabel(
             "Jenis", "text", "jenis", (ternak.jenis if ternak else ""), lock
         )
-        kesehatan = inlabel(
-            "kesehatan", "text", "kesehatan", (ternak.kesehatan if ternak else ""), lock
-        )
     else:
         picture = file_input((ternak.img if ternak else ""), "img", lock)
-        juleha_combo = combo_gen(
-            "Juleha",
-            "juleha_id",
-            julehas,
-            (ternak.juleha_id if ternak else None),
-            (None if ternak else "Pilih Juleha"),
-        )
         peternak_combo = combo_gen(
             "Pemilik Ternak",
             "peternak_id",
@@ -67,24 +44,11 @@ def ternak_form(
             (ternak.peternak_id if ternak else None),
             (None if ternak else "Pilih Peternak"),
         )
-        penyelia_combo = combo_gen(
-            "Penyelia",
-            "penyelia_id",
-            penyelias,
-            (ternak.penyelia_id if ternak else None),
-            (None if ternak else "Pilih penyelia"),
-        )
         jenis = dropdown_gen(
             "Jenis Ternak",
             "jenis",
             ["Kambing", "Sapi", "Domba", "Kerbau"],
             (ternak.jenis if ternak else None),
-        )
-        kesehatan = dropdown_gen(
-            "Kesehatan",
-            "kesehatan",
-            ["Sehat", "Layak"],
-            (ternak.kesehatan if ternak else None),
         )
         if ternak is not None:
             form_btn = update_btn("/ternak/", ternak.id)
@@ -100,37 +64,103 @@ def ternak_form(
     )[
         label[small["Gambar"], picture],
         inlabel(
-            "Karkas", "number", "karkas", (ternak.karkas if ternak else ""), lock, True
+            "Bobot", "number", "bobot", (ternak.bobot if ternak else ""), lock, True, placeholder="Kg"
         ),
         jenis,
-        kesehatan,
-        juleha_combo,
-        penyelia_combo,
         peternak_combo,
-        inlabel(
-            "Waktu Disembelih",
-            "datetime-local",
-            "waktu_sembelih",
-            (ternak.waktu_sembelih if ternak else ""),
-            lock,
-        ),
         form_btn,
         script(src="/static/compress_logic.js", type_="module", defer=True),
     ]
 
 
+def sembelih_form(
+    ternak=None, julehas=None, penyelias=None, lock: bool = False
+) -> Element:
+    """
+    TODO: Tambah field waktu_sembelih jika waktu_sembelih sudah ter-set
+    """
+
+    if ternak.waktu_sembelih is not None:
+        waktu_sembelih = inlabel(
+            "Disembelih pada", "date", "waktu_sembelih",
+            ternak.waktu_sembelih, lock, True,
+        ),
+    else:
+        waktu_sembelih = ""
+    picture = show_img("img_ternak/" + ternak.img)
+    if lock:
+        form_btn = edit_btn("/ternak/proses/", ternak.id)
+        juleha_combo = inlabel("Juleha", "text", "juleha_id", ternak.juleha.name, lock)
+        penyelia_combo = inlabel(
+            "penyelia", "text", "penyelia_id", ternak.penyelia.name, lock
+        )
+        kesehatan = inlabel(
+            "Kesehatan", "text", "kesehatan", ternak.kesehatan, lock
+        )
+    else:
+        juleha_combo = combo_gen(
+            "Juleha",
+            "juleha_id",
+            julehas,
+            (ternak.juleha_id if ternak.juleha_id else None),
+            (None if ternak.juleha_id else "Pilih Juleha"),
+        )
+        penyelia_combo = combo_gen(
+            "Penyelia",
+            "penyelia_id",
+            penyelias,
+            (ternak.penyelia_id if ternak.penyelia_id else None),
+            (None if ternak.penyelia_id else "Pilih penyelia"),
+        )
+        kesehatan = dropdown_gen(
+            "Kesehatan",
+            "kesehatan",
+            ["Sehat", "Layak"],
+            (ternak.kesehatan if ternak.kesehatan else None),
+            placeholder=(None if ternak.kesehatan else "Status kesehatan")
+        )
+        if ternak is not None:
+            form_btn = update_btn("/ternak/proses/", ternak.id)
+        else:
+            form_btn = submit_btn
+
+    return form(
+        "#form",
+        action=f"/ternak/proses/{(ternak.id or "")}",
+        method="post",
+        enctype="multipart/form-data",
+        autocomplete="off",
+    )[
+        label[small["Gambar"], picture],
+        inlabel(
+            "Karkas", "number", "karkas", (ternak.karkas if ternak else ""), lock, True, placeholder="Kg"
+        ),
+        kesehatan,
+        juleha_combo,
+        penyelia_combo,
+        waktu_sembelih,
+        form_btn,
+    ]
+
+
 def ternaks_table(ternaks) -> Element:
-    col_headers = ["Foto", "Karkas", "Jenis", "Kesehatan", "Juleha", "Actions"]
+    col_headers = ["Foto", "Bobot", "Karkas", "Jenis", "Antrian", "Actions"]
     rows = (
         tr[
             td(style="width: 50px;")[
                 show_img("img_ternak/" + (ternak.img if ternak.img else ""))
             ],
-            td[str(ternak.karkas) + "kg"],
+            td[str(ternak.bobot) + " Kg"],
+            td[str(ternak.karkas or "-") + " Kg"],
             td[ternak.jenis],
-            td[ternak.kesehatan],
-            td[ternak.juleha.name],
-            td[action_buttons("ternak", ternak.id, "ini")],
+            td[f"{ternak.waktu_daftar[5:]} {(int(ternak.no_antri or 0)):03}"],
+            td[action_buttons(
+                "ternak", ternak.id, "ini",
+                extra_1=a(
+                    disabled=(True if ternak.waktu_sembelih else False),
+                    role="button",
+                    href=f"/ternak/proses/edit/{ternak.id}")[("Sudah disembelih" if ternak.waktu_sembelih else "Sembelih")]
+            )],
         ]
         for ternak in ternaks
     )
