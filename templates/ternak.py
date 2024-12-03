@@ -87,7 +87,7 @@ def sembelih_form(
         ),
     else:
         waktu_sembelih = ""
-    picture = show_img("img_ternak/" + ternak.img)
+    picture = show_img("img_ternak/" + (ternak.img or ""))
     if lock:
         form_btn = edit_btn("/ternak/proses/", ternak.id)
         juleha_combo = inlabel("Juleha", "text", "juleha_id", ternak.juleha.name, lock)
@@ -126,7 +126,7 @@ def sembelih_form(
 
     return form(
         "#form",
-        action=f"/ternak/proses/{(ternak.id or "")}",
+        action=f"/ternak/proses/{(ternak.id or '')}",
         method="post",
         enctype="multipart/form-data",
         autocomplete="off",

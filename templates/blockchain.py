@@ -21,12 +21,12 @@ def bc_detail(data, logged_in) -> Element:
         p[b["Nama Lapak: "], data["lapak_name"]],
         p[b["Pemilik Ternak: "], data["peternak_name"]],
         p[b["Juleha: "], data["juleha_name"]],
-        p[b["Bobot: "], f"{data["jumlah"]} Kg"],
+        p[b["Bobot: "], f"{data['jumlah']} Kg"],
         p[b["Disembelih pada: "], data["waktu_sembelih"]],
         (
             a(
                 role="button",
-                href=f"/sensor/end/{data["id_transaksi"]}",
+                href=f"/sensor/end/{data['id_transaksi']}",
             )["Sudah Sampai"]
             if logged_in
             else ""
