@@ -40,9 +40,12 @@ def dashboard_page(user, is_admin=True) -> Element:
         page_title="Dashboard",
         content=[
             navbar(is_admin),
-            div(style="margin-top: 4em;")[
+            div(style="margin-top: 4em; height: 400px;")[
                 h1["Dashboard"],
                 p[f"Selamat datang, {user.username.title()}"],
+                div(style="display: grid; height: 100%; width: 100%;")[
+                    p(style="justify-self: center; align-self: center;")["Metrics features are coming soon"]
+                ]
             ],
         ],
     )

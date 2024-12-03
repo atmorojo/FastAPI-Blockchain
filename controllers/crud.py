@@ -15,6 +15,14 @@ class Crud:
             .all()
         )
 
+    def get_by_field_and_date(self, field, date_field, sejak, sampai):
+        return (
+            self.db.query(self.model)
+            .filter(getattr(self.model, field) != null)
+            .filter(getattr(self.model, date_field).between(sejak, sampai))
+            .all()
+        )
+
     def get_latest_field(self, field, date_field, date):
         return (
             self.db.query(self.model)

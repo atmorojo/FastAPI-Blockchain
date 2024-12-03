@@ -79,7 +79,10 @@ def is_super_admin(user=Depends(get_current_user)):
 
 
 def get_role(user):
-    return user.role.role
+    if user:
+        return user.role.role
+    else:
+        return user
 
 
 def hash_password(password):

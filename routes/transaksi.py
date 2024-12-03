@@ -77,7 +77,7 @@ def table_transaksis(skip: int = 0, limit: int = 100, db: Session = Depends(get_
 @routes.get("/new", response_class=HTMLResponse)
 def new_transaksi(db: Session = Depends(get_db)):
     lapak = Crud(models.Lapak, db).get()
-    ternak = Crud(models.Ternak, db).get()
+    ternak = Crud(models.Ternak, db).get_by_date()
     iot = Crud(models.IoT, db).get()
 
     return str(
