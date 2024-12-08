@@ -39,7 +39,7 @@ def dashboard_page(user, is_admin=True) -> Element:
     return base_page(
         page_title="Dashboard",
         content=[
-            navbar(is_admin),
+            navbar(is_admin, user=user),
             div(style="margin-top: 4em; height: 400px;")[
                 h1["Dashboard"],
                 p[f"Selamat datang, {user.username.title()}"],

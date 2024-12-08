@@ -65,24 +65,23 @@ def current_user_validation(user, password):
 
 
 def is_admin(user=Depends(get_current_user)):
-    if get_role(user) > 1:
-        return False
-    else:
+    if get_role(user) == 1:
         return user
+    else:
+        return False
 
 
 def is_super_admin(user=Depends(get_current_user)):
-    if get_role(user) > 0:
-        return False
-    else:
+    if get_role(user) == 0:
         return user
+    else:
+        return False
 
 
 def get_role(user):
-    if user:
-        return user.role.role
-    else:
-        return user
+    if not user:
+        return False
+    return user.role.role
 
 
 def hash_password(password):

@@ -76,6 +76,10 @@ async def index(
     user: Annotated[schemas.User, Depends(_security.get_current_user)],
     db=Depends(get_db),
 ):
+    print(user.role.role)
+    if not user:
+        return RedirectResponse("/login")
+
     match _security.get_role(user):
         case 0:
             page = pages.dashboard_page(user)
