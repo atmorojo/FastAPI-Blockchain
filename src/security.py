@@ -77,6 +77,9 @@ def is_super_admin(user=Depends(get_current_user)):
     else:
         return False
 
+def super_or_back(user=Depends(is_super_admin)):
+    if not user:
+        return 
 
 def get_role(user):
     if not user:
