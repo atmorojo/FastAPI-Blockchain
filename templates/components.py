@@ -130,7 +130,7 @@ def drawer_menu(is_admin=False, user=False) -> Element:
     reg_ternak = ""
     transaksi = ""
     rph = li[a(href="/rph")[i(".bi-house-check-fill"), "RPH"]],
-    if security.is_admin(user=user):
+    if security.is_rph_admin(user=user):
         rph = ""
         reg_ternak = li[a(href="/ternak")[i(".bi-pencil-fill"), "Registrasi Ternak"]],
         transaksi = li[a(href="/transaksi")[i(".bi-send-fill"), "Transaksi"]],

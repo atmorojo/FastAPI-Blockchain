@@ -2,6 +2,7 @@ import hashlib
 from typing import Annotated
 
 from fastapi import Depends, HTTPException
+from fastapi.responses import RedirectResponse
 from fastapi.security import APIKeyCookie
 from jose import jwt
 from sqlalchemy.orm import Session
@@ -64,7 +65,7 @@ def current_user_validation(user, password):
     return hashed_password == user.password
 
 
-def is_admin(user=Depends(get_current_user)):
+def is_rph_admin(user=Depends(get_current_user)):
     if get_role(user) == 1:
         return user
     else:
@@ -77,9 +78,18 @@ def is_super_admin(user=Depends(get_current_user)):
     else:
         return False
 
-def super_or_back(user=Depends(is_super_admin)):
+
+def auth_super(user=Depends(is_super_admin)):
     if not user:
-        return 
+        print(user)
+        return RedirectResponse(url="/403", status_code=303)
+    pass
+
+
+def auth_rph(user=Depends(is_rph_admin)):
+    if not user:
+        return RedirectResponse(url="/403", status_code=303)
+    pass
 
 def get_role(user):
     if not user:

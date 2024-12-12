@@ -14,7 +14,7 @@ models.Base.metadata.create_all(bind=engine)
 
 routes = APIRouter(
     prefix="/rph",
-    dependencies=[Depends(security.is_super_admin)]
+    dependencies=[Depends(security.auth_super)]
 )
 
 
