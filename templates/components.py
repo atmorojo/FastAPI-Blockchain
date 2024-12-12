@@ -355,7 +355,7 @@ def img_dropdown(
                             (extra_text if extra_text else "") + item.peternak.name,
                         ]
                     ]
-                    for item in items
+                    for item in items or ""
                 ),
                 extra_li,
             ],

@@ -9,6 +9,7 @@ import templates.pages as pages
 import templates.transaksi as tpl_transaksi
 from sqlalchemy.orm import Session
 from src.security import current_user_validation, get_current_user
+from datetime import datetime
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -76,8 +77,9 @@ def table_transaksis(skip: int = 0, limit: int = 100, db: Session = Depends(get_
 # NEW PAGE
 @routes.get("/new", response_class=HTMLResponse)
 def new_transaksi(db: Session = Depends(get_db)):
+    tgl = datetime.now().strftime("%Y-%m-%d")
     lapak = Crud(models.Lapak, db).get()
-    ternak = Crud(models.Ternak, db).get_by_date()
+    ternak = Crud(models.Ternak, db).get_by_date("waktu_sembelih", tgl, tgl)
     iot = Crud(models.IoT, db).get()
 
     return str(
