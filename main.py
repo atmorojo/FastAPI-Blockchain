@@ -122,6 +122,12 @@ async def index(
     return str(page)
 
 
+@app.get("/403", response_class=HTMLResponse)
+def not_authorized():
+    not_authorized_page = Path("static/403.html").read_text()
+    return not_authorized_page
+
+
 @app.put("/validasi/{validasi_id}", response_class=HTMLResponse)
 def validasi(
     validasi_id: int, user=Depends(_security.get_current_user), db=Depends(get_db)
