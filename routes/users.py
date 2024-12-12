@@ -10,10 +10,14 @@ from src.security import current_user_validation, get_current_user, hash_passwor
 from src.database import SessionLocal, engine
 import templates.pages as pages
 import templates.users as tpl_users
+from src import security
 
 models.Base.metadata.create_all(bind=engine)
 
-routes = APIRouter(prefix="/users")
+routes = APIRouter(
+    prefix="/users",
+    # dependencies=[Depends(security.auth_super)]
+)
 
 
 # Dependency

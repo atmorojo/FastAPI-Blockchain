@@ -82,14 +82,18 @@ def is_super_admin(user=Depends(get_current_user)):
 def auth_super(user=Depends(is_super_admin)):
     if not user:
         print(user)
-        return RedirectResponse(url="/403", status_code=303)
-    pass
+        raise HTTPException(
+            status_code=302,
+            headers={"Location": "/403"}
+        )
 
 
 def auth_rph(user=Depends(is_rph_admin)):
     if not user:
-        return RedirectResponse(url="/403", status_code=303)
-    pass
+        raise HTTPException(
+            status_code=302,
+            headers={"Location": "/403"}
+        )
 
 def get_role(user):
     if not user:

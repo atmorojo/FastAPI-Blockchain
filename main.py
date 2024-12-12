@@ -81,9 +81,11 @@ async def index(
 
     match _security.get_role(user):
         case 0:
-            page = pages.dashboard_page(user)
+            page = pages.dashboard_page(
+                role=_security.get_role(user), user=user)
         case 1:
-            page = pages.dashboard_page(user)
+            page = pages.dashboard_page(
+                role=_security.get_role(user), user=user)
         case 2:
             validasi = (
                 db.query(models.Ternak)

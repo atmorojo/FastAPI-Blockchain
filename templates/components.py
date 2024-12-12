@@ -115,22 +115,23 @@ def table_builder(headers, rows) -> Element:
     return div("#table-wrapper")[table("#table")[table_header(headers), tbody[rows]]]
 
 
-def navbar(is_admin, logged_in=True, user=False) -> Element:
+def navbar(role, logged_in=True) -> Element:
     if logged_in:
         tl_button = a("#logout_button", href="/logout")["Log out"]
     else:
         tl_button = a("#logout_button", href="/login")["Log In"]
     return div(".navbar.full")[
-        div(style="height: 30px;")[(drawer_menu(user=user) if is_admin else ""), tl_button]
+        div(style="height: 30px;")[(drawer_menu(role) if logged_in else ""), tl_button]
     ]
 
 
-def drawer_menu(is_admin=False, user=False) -> Element:
+def drawer_menu(role=None) -> Element:
+    print(role)
     master = ""
     reg_ternak = ""
     transaksi = ""
     rph = li[a(href="/rph")[i(".bi-house-check-fill"), "RPH"]],
-    if security.is_rph_admin(user=user):
+    if role == 1:
         rph = ""
         reg_ternak = li[a(href="/ternak")[i(".bi-pencil-fill"), "Registrasi Ternak"]],
         transaksi = li[a(href="/transaksi")[i(".bi-send-fill"), "Transaksi"]],
