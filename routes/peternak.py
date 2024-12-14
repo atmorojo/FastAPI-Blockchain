@@ -1,7 +1,7 @@
-from fastapi import APIRouter, HTTPException, Form, Request
+from fastapi import APIRouter, HTTPException, Form, Request, Depends
 from fastapi.responses import HTMLResponse, RedirectResponse
 
-from src import models
+from src import models, security
 from controllers.crud import Crud
 from src.database import SessionLocal, engine
 from templates.pages import detail_page as tpl_detail, table_page as tpl_list
@@ -9,7 +9,10 @@ from templates.peternak import peternak_form as tpl_form, peternak_table as tpl_
 
 models.Base.metadata.create_all(bind=engine)
 
-routes = APIRouter(prefix="/peternak")
+routes = APIRouter(
+    prefix="/peternak",
+    dependencies=[Depends(security.auth_rph)]
+)
 
 
 # Dependency

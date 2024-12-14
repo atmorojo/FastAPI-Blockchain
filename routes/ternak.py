@@ -3,7 +3,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 import aiofiles
 
 from sqlalchemy.orm import Session
-from src import models
+from src import models, security
 from controllers.crud import Crud
 from src.database import SessionLocal, engine
 import templates.pages as pages
@@ -13,7 +13,10 @@ from datetime import datetime
 
 models.Base.metadata.create_all(bind=engine)
 
-routes = APIRouter(prefix="/ternak")
+routes = APIRouter(
+    prefix="/ternak",
+    dependencies=[Depends(security.auth_rph)]
+)
 
 
 # Dependency

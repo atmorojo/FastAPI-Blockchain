@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Form, Request, Depends
 from fastapi.responses import HTMLResponse, RedirectResponse
 
-from src import models
+from src import models, security
 from controllers.crud import Crud
 from src.database import SessionLocal, engine
 import src.blockchain as bc
@@ -13,7 +13,9 @@ from datetime import datetime
 
 models.Base.metadata.create_all(bind=engine)
 
-routes = APIRouter(prefix="/transaksi")
+routes = APIRouter(prefix="/transaksi",
+    dependencies=[Depends(security.auth_rph)]
+)
 
 
 # Dependency
