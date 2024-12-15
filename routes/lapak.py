@@ -1,7 +1,7 @@
-from fastapi import APIRouter, HTTPException, Form, Request
+from fastapi import APIRouter, HTTPException, Form, Request, Depends
 from fastapi.responses import HTMLResponse, RedirectResponse
 
-from src import models
+from src import models, security
 from controllers.crud import Crud
 from src.database import SessionLocal, engine
 import templates.pages as pages
@@ -9,7 +9,10 @@ import templates.lapak as lapak_view
 
 models.Base.metadata.create_all(bind=engine)
 
-routes = APIRouter(prefix="/lapak")
+routes = APIRouter(
+    prefix="/lapak",
+    dependencies=[Depends(security.auth_rph)]
+)
 
 
 # Dependency

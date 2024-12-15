@@ -1,9 +1,9 @@
-from fastapi import APIRouter, HTTPException, UploadFile, Form, File, Request
+from fastapi import APIRouter, HTTPException, UploadFile, Form, File, Request, Depends
 from fastapi.responses import HTMLResponse, RedirectResponse
 import aiofiles
 from datetime import datetime
 
-from src import models
+from src import models, security
 from controllers.crud import Crud
 from src.database import SessionLocal, engine
 import templates.pages as pages
@@ -11,7 +11,10 @@ import templates.juleha as tpl_juleha
 
 models.Base.metadata.create_all(bind=engine)
 
-routes = APIRouter(prefix="/juleha")
+routes = APIRouter(
+    prefix="/juleha",
+    dependencies=[Depends(security.auth_rph)]
+)
 
 
 # Dependency

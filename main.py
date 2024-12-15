@@ -76,11 +76,16 @@ async def index(
     user: Annotated[schemas.User, Depends(_security.get_current_user)],
     db=Depends(get_db),
 ):
+    if not user:
+        return RedirectResponse("/login")
+
     match _security.get_role(user):
         case 0:
-            page = pages.dashboard_page(user)
+            page = pages.dashboard_page(
+                role=_security.get_role(user), user=user)
         case 1:
-            page = pages.dashboard_page(user)
+            page = pages.dashboard_page(
+                role=_security.get_role(user), user=user)
         case 2:
             validasi = (
                 db.query(models.Ternak)
@@ -117,6 +122,12 @@ async def index(
             page = "Not allowed"
 
     return str(page)
+
+
+@app.get("/403", response_class=HTMLResponse)
+def not_authorized():
+    not_authorized_page = Path("static/403.html").read_text()
+    return not_authorized_page
 
 
 @app.put("/validasi/{validasi_id}", response_class=HTMLResponse)

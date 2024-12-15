@@ -1,4 +1,5 @@
 from datetime import datetime
+import src.security as security
 
 from templates import nested_menu
 from htpy import (
@@ -114,17 +115,43 @@ def table_builder(headers, rows) -> Element:
     return div("#table-wrapper")[table("#table")[table_header(headers), tbody[rows]]]
 
 
-def navbar(is_admin, logged_in=True) -> Element:
+def navbar(role, logged_in=True) -> Element:
     if logged_in:
         tl_button = a("#logout_button", href="/logout")["Log out"]
     else:
         tl_button = a("#logout_button", href="/login")["Log In"]
     return div(".navbar.full")[
-        div(style="height: 30px;")[(drawer_menu if is_admin else ""), tl_button]
+        div(style="height: 30px;")[(drawer_menu(role) if logged_in else ""), tl_button]
     ]
 
 
-def drawer_menu() -> Element:
+def drawer_menu(role=None) -> Element:
+    print(role)
+    master = ""
+    reg_ternak = ""
+    transaksi = ""
+    rph = li[a(href="/rph")[i(".bi-house-check-fill"), "RPH"]],
+    if role == 1:
+        rph = ""
+        reg_ternak = li[a(href="/ternak")[i(".bi-pencil-fill"), "Registrasi Ternak"]],
+        transaksi = li[a(href="/transaksi")[i(".bi-send-fill"), "Transaksi"]],
+        master = li[nested_menu(
+            [i(".bi-folder-fill"), "Master"],
+            ul[
+                li[a(href="/penyelia")[i(".bi-person-fill-check"), "Penyelia"]],
+                li[a(href="/juleha")[i(".bi-person-arms-up"), "Juleha"]],
+                li[a(href="/peternak")[i(".bi-p-square-fill"), "Peternak"]],
+                li[a(href="/lapak")[
+                    i(".bi-basket-fill"),
+                    "Lapak"]],
+                li[a(href="/pasar")[
+                    i(".bi-globe-asia-australia"),
+                    "Pasar"]],
+                li[a(href="/iot")[
+                    i(".bi-gpu-card"),
+                    "IoT"]],
+            ])],
+
     return div(
         ".drawer-wrapper",
         _="""
@@ -149,51 +176,14 @@ def drawer_menu() -> Element:
         ],
         aside(
             ".nav-drawer",
-        )[
-            nav[
-                ul[
-                    li[
-                        a(href="/dashboard")[
-                            i(".bi-house"),
-                            "Dashboard"]],
-                    li[
-                        a(href="/users")[
-                            i(".bi-people"),
-                            "Users"]],
-                    li[nested_menu(
-                        [
-                            i(".bi-journals"),
-                            "Master"
-                        ],
-                        ul[
-                            li[a(href="/rph")["RPH"]],
-                            li[a(href="/juleha")["Juleha"]],
-                            li[a(href="/penyelia")[
-                                i(".bi-p-square"),
-                                "Penyelia"]],
-                            li[a(href="/peternak")["Peternak"]],
-                            li[a(href="/lapak")[
-                                i(".bi-shop"),
-                                "Lapak"]],
-                            li[a(href="/pasar")[
-                                i(".bi-globe-asia-australia"),
-                                "Pasar"]],
-                            li[a(href="/iot")[
-                                i(".bi-gpu-card"),
-                                "IoT"]],
-                        ]
-                    )],
-                    li[
-                        a(href="/ternak")[
-                            i(".bi-pencil"),
-                            "Registrasi Ternak"]],
-                    li[
-                        a(href="/transaksi")[
-                            i(".bi-send"),
-                            "Transaksi"]],
-                ]
-            ]
-        ],
+        )[nav[ul[
+            li[a(href="/dashboard")[i(".bi-house-fill"), "Dashboard"]],
+            li[a(href="/users")[i(".bi-people-fill"), "Users"]],
+            master,
+            rph,
+            reg_ternak,
+            transaksi,
+        ] ] ],
     ]
 
 
@@ -366,7 +356,7 @@ def img_dropdown(
                             (extra_text if extra_text else "") + item.peternak.name,
                         ]
                     ]
-                    for item in items
+                    for item in items or ""
                 ),
                 extra_li,
             ],

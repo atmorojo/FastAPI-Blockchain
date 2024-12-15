@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Form, Request, Depends
 from fastapi.responses import HTMLResponse, RedirectResponse
 
-from src import models
+from src import models, security
 from controllers.crud import Crud
 from src.database import SessionLocal, engine
 import src.blockchain as bc
@@ -9,10 +9,13 @@ import templates.pages as pages
 import templates.transaksi as tpl_transaksi
 from sqlalchemy.orm import Session
 from src.security import current_user_validation, get_current_user
+from datetime import datetime
 
 models.Base.metadata.create_all(bind=engine)
 
-routes = APIRouter(prefix="/transaksi")
+routes = APIRouter(prefix="/transaksi",
+    dependencies=[Depends(security.auth_rph)]
+)
 
 
 # Dependency
@@ -76,8 +79,9 @@ def table_transaksis(skip: int = 0, limit: int = 100, db: Session = Depends(get_
 # NEW PAGE
 @routes.get("/new", response_class=HTMLResponse)
 def new_transaksi(db: Session = Depends(get_db)):
+    tgl = datetime.now().strftime("%Y-%m-%d")
     lapak = Crud(models.Lapak, db).get()
-    ternak = Crud(models.Ternak, db).get_by_date()
+    ternak = Crud(models.Ternak, db).get_by_date("waktu_sembelih", tgl, tgl)
     iot = Crud(models.IoT, db).get()
 
     return str(
