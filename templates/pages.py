@@ -44,7 +44,8 @@ def dashboard_page(user, role=None) -> Element:
                 h1["Dashboard"],
                 p[f"Selamat datang, {user.username.title()}"],
                 div(style="display: grid; height: 100%; width: 100%;")[
-                    p(style="justify-self: center; align-self: center;")["Metrics features are coming soon"]
+                    # p(style="justify-self: center; align-self: center;")["Metrics features are coming soon"],
+                    img(src="/files/dash.jpg")
                 ]
             ],
         ],
