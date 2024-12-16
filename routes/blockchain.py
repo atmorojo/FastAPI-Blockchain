@@ -2,14 +2,10 @@ from pydantic import BaseModel
 import src.blockchain as _blockchain
 from src.security import get_current_user
 import json
-import qrcode
-import io
 from templates import blockchain as tpl_bc
 from templates import base_template
 from fastapi import (
     APIRouter,
-    Response,
-    Request,
     Depends,
 )
 from fastapi.responses import HTMLResponse

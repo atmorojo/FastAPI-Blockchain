@@ -5,12 +5,11 @@ from datetime import date
 
 from controllers.user_ctrl import UserCrud
 from controllers.crud import Crud
-from src import models, schemas
+from src import models
 from src.security import current_user_validation, get_current_user, hash_password
 from src.database import SessionLocal, engine
 import templates.pages as pages
 import templates.users as tpl_users
-from src import security
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -196,7 +195,7 @@ async def update_password(
     user_db = user_ctrl.get_user_by_username(username)
 
     if not current_user_validation(user_db, password):
-        return tpl_users.unauthorized()
+        return str(tpl_users.unauthorized("/users/"))
     user_db.password = hash_password(password_new)
     user_db.tgl_update = date.today()
 

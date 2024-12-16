@@ -2,13 +2,11 @@ import hashlib
 from typing import Annotated
 
 from fastapi import Depends, HTTPException
-from fastapi.responses import RedirectResponse
 from fastapi.security import APIKeyCookie
 from jose import jwt
 from sqlalchemy.orm import Session
-from src.database import SessionLocal, engine
+from src.database import SessionLocal
 from controllers.user_ctrl import UserCrud
-from src import schemas
 
 cookie_sec = APIKeyCookie(name="session", auto_error=False)
 secret_key = "ladadidadadida"
@@ -34,14 +32,14 @@ def check_user(
         raise HTTPException(
             status_code=302,
             detail="Incorect username or password",
-            # headers={"location": "/login"}
+            headers={"location": "/login"}
         )
     hashed_password = hash_password(password)
     if not hashed_password == db_user.password:
         raise HTTPException(
             status_code=302,
             detail="Incorect username or password",
-            # headers={"location": "/login"}
+            headers={"location": "/login"}
         )
 
 

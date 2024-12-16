@@ -1,5 +1,4 @@
 from datetime import datetime
-import src.security as security
 
 from templates import nested_menu
 from htpy import (
@@ -16,8 +15,6 @@ from htpy import (
     form,
     h1,
     h2,
-    header,
-    hr,
     img,
     input,
     label,
@@ -25,7 +22,6 @@ from htpy import (
     nav,
     option,
     p,
-    script,
     select,
     small,
     span,
@@ -126,7 +122,6 @@ def navbar(role, logged_in=True) -> Element:
 
 
 def drawer_menu(role=None) -> Element:
-    print(role)
     master = ""
     reg_ternak = ""
     transaksi = ""
@@ -151,6 +146,8 @@ def drawer_menu(role=None) -> Element:
                     i(".bi-gpu-card"),
                     "IoT"]],
             ])],
+    elif role != 0:
+        return None
 
     return div(
         ".drawer-wrapper",

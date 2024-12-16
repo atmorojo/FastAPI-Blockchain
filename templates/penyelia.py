@@ -12,12 +12,9 @@ from templates.components import (
 
 from htpy import (
     form,
-    div,
-    img,
     Element,
     tr,
     td,
-    a,
     label,
     small,
 )

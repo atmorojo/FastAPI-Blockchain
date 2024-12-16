@@ -5,11 +5,9 @@ and dependencies related to the blockchain.
 
 from pathlib import Path
 from typing import Annotated
-from sqlalchemy.orm import Session
-from fastapi import FastAPI, Form, Depends, HTTPException, Request, Response
+from fastapi import FastAPI, Depends, Request, Response
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
-from jose import jwt
 import json
 import src.security as _security
 import templates.pages as pages
@@ -19,17 +17,18 @@ from templates.components import tpl_print
 from datetime import datetime as dt
 from zoneinfo import ZoneInfo
 from routes import (
-    users,
-    juleha,
+    auth,
     blockchain,
-    peternak,
-    ternak,
-    rph,
-    penyelia,
-    pasar,
-    lapak,
-    transaksi,
     iot,
+    juleha,
+    lapak,
+    pasar,
+    penyelia,
+    peternak,
+    rph,
+    ternak,
+    transaksi,
+    users,
 )
 from src import models, schemas
 from src.database import engine
@@ -40,6 +39,7 @@ from controllers.crud import Crud
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+app.include_router(auth.routes)
 app.include_router(users.routes)
 app.include_router(juleha.routes)
 app.include_router(peternak.routes)
@@ -76,19 +76,19 @@ async def index(
     user: Annotated[schemas.User, Depends(_security.get_current_user)],
     db=Depends(get_db),
 ):
+    today = dt.now().strftime("%Y-%m-%d")
     if not user:
         return RedirectResponse("/login")
 
     match _security.get_role(user):
         case 0:
-            page = pages.dashboard_page(
-                role=_security.get_role(user), user=user)
+            page = pages.dashboard_page(role=_security.get_role(user), user=user)
         case 1:
-            page = pages.dashboard_page(
-                role=_security.get_role(user), user=user)
+            page = pages.dashboard_page(role=_security.get_role(user), user=user)
         case 2:
             validasi = (
                 db.query(models.Ternak)
+                .filter(models.Ternak.waktu_sembelih == today)
                 .filter(
                     models.Ternak.penyelia_id == user.role.acting_as,
                 )
@@ -96,11 +96,12 @@ async def index(
             )
             table = validasi_tpl.validasi_table(validasi, "validasi_1")
             page = pages.table_page(
-                title="Validasi Penyelia", datatable=table, button=False, is_admin=False
+                title="Validasi Penyelia", datatable=table, button=False, role=user.role.role
             )
         case 3:
             validasi = (
                 db.query(models.Ternak)
+                .filter(models.Ternak.waktu_sembelih == today)
                 .filter(
                     models.Ternak.juleha_id == user.role.acting_as,
                 )
@@ -108,7 +109,7 @@ async def index(
             )
             table = validasi_tpl.validasi_table(validasi, "validasi_2")
             page = pages.table_page(
-                title="Validasi Juleha", datatable=table, button=False, is_admin=False
+                title="Validasi Juleha", datatable=table, button=False, role=user.role.role
             )
         case 4:
             transaksi = (
@@ -154,31 +155,6 @@ def validasi(
         _bc.mine_block(block)
 
     return str(validasi_tpl.validated)
-
-
-@app.get("/login", response_class=HTMLResponse)
-def login_get():
-    return HTMLResponse(str(pages.login_page()))
-
-
-@app.post("/login")
-async def login_post(
-    username: str = Form(...),
-    password: str = Form(...),
-    db: Session = Depends(get_db),
-):
-    _security.check_user(username, password, db)
-    token = jwt.encode({"sub": username}, _security.secret_key)
-    response = RedirectResponse("/dashboard", status_code=302)
-    response.set_cookie("session", token)
-    return response
-
-
-@app.get("/logout", response_class=RedirectResponse)
-async def logout():
-    response = RedirectResponse("/login")
-    response.delete_cookie("session")
-    return response
 
 
 @app.get("/insert")
