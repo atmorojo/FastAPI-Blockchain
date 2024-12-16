@@ -2,7 +2,6 @@ from templates.components import (
     table_builder,
     edit_btn,
     inlabel,
-    combo_gen,
     update_btn,
     submit_btn,
     action_buttons,
@@ -10,12 +9,10 @@ from templates.components import (
 
 from htpy import (
     form,
-    div,
     img,
     Element,
     tr,
     td,
-    a,
 )
 
 

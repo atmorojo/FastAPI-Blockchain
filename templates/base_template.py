@@ -5,12 +5,9 @@ from htpy import (
     link,
     title,
     body,
-    div,
     main,
-    a,
     Node,
     Element,
-    style,
     script,
 )
 

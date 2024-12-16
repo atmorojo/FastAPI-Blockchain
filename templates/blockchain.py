@@ -1,16 +1,10 @@
 from datetime import datetime as dt
 from templates.components import (
     table_builder,
-    edit_btn,
-    inlabel,
-    combo_gen,
-    update_btn,
-    submit_btn,
-    action_buttons,
     navbar,
 )
 
-from htpy import form, div, img, Element, tr, td, a, p, b, h1
+from htpy import div, Element, tr, td, a, p, b, h1
 
 
 def bc_detail(data, logged_in) -> Element:
