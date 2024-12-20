@@ -1,21 +1,13 @@
 (A) +lapak +blockchain Pelapak trigger kiriman selesai dari nomor telefon isi quesioner
-(A) +lapak Add lapak dashboard to confirm received package
-(A) +lapak Pelapak bisa lihat kode qr dari sistem 
 (A) +sensor Add CSA result of temp and humi to a table
-(A) +sensor Update CSA result to bc
-(B) +admin +transaksi Only show ternak slaughtered today at each rph
-(B) +admin +transaksi Only show ternak slaughtered today at transaksi list
 (B) +admin +transaksi Remove rph_id dropdown and use admin's rph id instead
 (B) +blockchain +lapak Contoh tampilan: lama kirim, temp: 29 - 30
 (B) +blockchain Download bc to users machines
 (B) +report Report bulanan, harian, range waktu
-(B) +security Create guards so unauthorized users can't access certain pages
 (B) +ternak +blockchain Update validated ternak to bc (daging halal/dalam proses validasi)
-(B) +ternak +transaksi Move validasi to ternak table from transaksi
 (B) +transaksi status kirim (0 tidak ada pengiriman, 1 dikirim, 2 diterima)
 (B) Turn the notes on the +models to tasks
 Form validation
-HTTPException custom view?
 Konsumen dapat melihat data asal produk dari QR (cetak ataupun HP pelapak) .. kemudian muncul tombol kusioner yang dapat dipilih jika ingin mengisi kusioner
 Qr di lapak tercipta setelah adanya transaksi yang dilakukan admin, tetapi data csa = 0
 Report admin untuk data pengiriman daging group by pelapak dan hari
@@ -26,3 +18,11 @@ hapus masukin ke bc dgn keterangan deleted
 x 2024-11-09 +security remove drawer_menu from non-admin user
 x 2024-11-12 +lapak +blockchain Di halaman qr blockchain ada tombol isi quesioner
 x 2024-11-12 +lapak Add Lapak user
+x 2024-12-21 +admin +transaksi Only show ternak slaughtered today at each rph
+x 2024-12-21 +admin +transaksi Only show ternak slaughtered today at transaksi list
+x 2024-12-21 +lapak Add lapak dashboard to confirm received package
+x 2024-12-21 +lapak Pelapak bisa lihat kode qr dari sistem 
+x 2024-12-21 +security Create guards so unauthorized users can't access certain pages
+x 2024-12-21 +sensor Update CSA result to bc
+x 2024-12-21 +ternak +transaksi Move validasi to ternak table from transaksi
+x 2024-12-21 HTTPException custom view?
