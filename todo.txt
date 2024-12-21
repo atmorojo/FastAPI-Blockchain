@@ -1,8 +1,10 @@
-(A) +lapak +blockchain Pelapak trigger kiriman selesai dari nomor telefon isi quesioner
-(A) +sensor Add CSA result of temp and humi to a table
+(A) Report admin untuk data pengiriman daging **group by** pelapak dan hari
+(A) Report penyembelihan untuk penyelia sama dengan report admin rph (rekap jumlah ternak yang disembelih, karkas **group by** pemilik ternak dan hari)
+(A) Untuk user juleha dan penyelia include admin ada report yang sama. detail ternak yang disembelih perhari (milih tanggal) dan rekap jumlah ternak yang disembelih (range waktu) **group by** juleha, tanggal
 (B) +admin +transaksi Remove rph_id dropdown and use admin's rph id instead
 (B) +blockchain +lapak Contoh tampilan: lama kirim, temp: 29 - 30
 (B) +blockchain Download bc to users machines
+(B) +lapak +blockchain Pelapak trigger kiriman selesai dari nomor telefon isi quesioner
 (B) +report Report bulanan, harian, range waktu
 (B) +ternak +blockchain Update validated ternak to bc (daging halal/dalam proses validasi)
 (B) +transaksi status kirim (0 tidak ada pengiriman, 1 dikirim, 2 diterima)
@@ -10,9 +12,6 @@
 Form validation
 Konsumen dapat melihat data asal produk dari QR (cetak ataupun HP pelapak) .. kemudian muncul tombol kusioner yang dapat dipilih jika ingin mengisi kusioner
 Qr di lapak tercipta setelah adanya transaksi yang dilakukan admin, tetapi data csa = 0
-Report admin untuk data pengiriman daging group by pelapak dan hari
-Report penyembelihan untuk penyelia sama dengan report admin rph ( rekap jumlah ternak yang disembelih, karkas group by pemilik ternak dan hari )
-Untuk user juleha dan penyelia include admin ada report yang sama .. detail ternak yang disembelih perhari  (milih tanggal) dan rekap jumlah ternak yang disembelih (range waktu) group by juleha, tanggal
 data CSA akan muncul otomatis saat lapak menekan tombol terima (dengan kondisi CSA off)
 hapus masukin ke bc dgn keterangan deleted 
 x 2024-11-09 +security remove drawer_menu from non-admin user
@@ -23,6 +22,7 @@ x 2024-12-21 +admin +transaksi Only show ternak slaughtered today at transaksi l
 x 2024-12-21 +lapak Add lapak dashboard to confirm received package
 x 2024-12-21 +lapak Pelapak bisa lihat kode qr dari sistem 
 x 2024-12-21 +security Create guards so unauthorized users can't access certain pages
+x 2024-12-21 +sensor Add CSA result of temp and humi to a table
 x 2024-12-21 +sensor Update CSA result to bc
 x 2024-12-21 +ternak +transaksi Move validasi to ternak table from transaksi
 x 2024-12-21 HTTPException custom view?

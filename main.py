@@ -33,7 +33,7 @@ from routes import (
 from src import models, schemas
 from src.database import engine
 import src.blockchain as bc
-from src.database import SessionLocal
+from src.database import SessionLocal, get_db
 from controllers.crud import Crud
 
 models.Base.metadata.create_all(bind=engine)
@@ -54,15 +54,6 @@ app.include_router(blockchain.routes)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/files", StaticFiles(directory="files"), name="files")
-
-
-# Dependency
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -129,6 +120,12 @@ async def index(
 def not_authorized():
     not_authorized_page = Path("static/403.html").read_text()
     return not_authorized_page
+
+
+@app.get("/404", response_class=HTMLResponse)
+def not_found():
+    not_found_page = Path("static/404.html").read_text()
+    return not_found_page
 
 
 @app.put("/validasi/{validasi_id}", response_class=HTMLResponse)

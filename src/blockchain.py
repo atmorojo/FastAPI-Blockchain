@@ -7,6 +7,7 @@ import json
 from sqlitedict import SqliteDict
 import qrcode
 import io
+from src.csa import min_function, max_function
 
 # Constants
 DATABASE_URL = "./data/production.sqlite"
@@ -119,8 +120,8 @@ class Blockchain:
         # get min value from res[index]["temp"] and res[index]["humi"]
         humi_list = [entry["humi"] for entry in res]
         temp_list = [entry["temp"] for entry in res]
-        humi = [min(humi_list), max(humi_list)]
-        temp = [min(temp_list), max(temp_list)]
+        humi = [min_function(humi_list), max_function(humi_list)]
+        temp = [min_function(temp_list), max_function(temp_list)]
         return [temp, humi]
 
 
