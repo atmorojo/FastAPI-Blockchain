@@ -1,6 +1,9 @@
-(A) Report admin untuk data pengiriman daging **group by** pelapak dan hari
-(A) Report penyembelihan untuk penyelia sama dengan report admin rph (rekap jumlah ternak yang disembelih, karkas **group by** pemilik ternak dan hari)
-(A) Untuk user juleha dan penyelia include admin ada report yang sama. detail ternak yang disembelih perhari (milih tanggal) dan rekap jumlah ternak yang disembelih (range waktu) **group by** juleha, tanggal
+(A) Beri akses laporan sembelih per juleha untuk user juleha, penyelia, admin
+(A) Beri akses laporan pengiriman per lapak untuk admin
+(A) Beri akses laporan sembelih per pemilik ternak untuk admin, penyelia
+
+(A) Report data pengiriman daging **group by** pelapak dan hari
+(A) Report penyembelihan rekap jumlah ternak yang disembelih, karkas **group by** pemilik ternak dan hari
 (B) +admin +transaksi Remove rph_id dropdown and use admin's rph id instead
 (B) +blockchain +lapak Contoh tampilan: lama kirim, temp: 29 - 30
 (B) +blockchain Download bc to users machines
@@ -26,3 +29,4 @@ x 2024-12-21 +sensor Add CSA result of temp and humi to a table
 x 2024-12-21 +sensor Update CSA result to bc
 x 2024-12-21 +ternak +transaksi Move validasi to ternak table from transaksi
 x 2024-12-21 HTTPException custom view?
+x 2024-12-22 Untuk user juleha, penyelia, admin ada report yang sama. detail ternak yang disembelih perhari (milih tanggal) dan rekap jumlah ternak yang disembelih (range waktu) **group by** juleha, tanggal
