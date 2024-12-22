@@ -5,7 +5,7 @@ import aiofiles
 from sqlalchemy.orm import Session
 from src import models, security
 from controllers.crud import Crud
-from src.database import SessionLocal, engine
+from src.database import SessionLocal, engine, get_db
 import templates.pages as pages
 import templates.ternak as ternak_view
 from templates.components import date_range
@@ -17,15 +17,6 @@ routes = APIRouter(
     prefix="/ternak",
     dependencies=[Depends(security.auth_rph)]
 )
-
-
-# Dependency
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 ternak_db = Crud(models.Ternak, next(get_db()))

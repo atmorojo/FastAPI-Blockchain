@@ -17,6 +17,7 @@ from templates.components import tpl_print
 from datetime import datetime as dt
 from zoneinfo import ZoneInfo
 from routes import (
+    report,
     auth,
     blockchain,
     iot,
@@ -44,6 +45,7 @@ app.include_router(users.routes)
 app.include_router(juleha.routes)
 app.include_router(peternak.routes)
 app.include_router(rph.routes)
+app.include_router(report.routes)
 app.include_router(ternak.routes)
 app.include_router(penyelia.routes)
 app.include_router(pasar.routes)

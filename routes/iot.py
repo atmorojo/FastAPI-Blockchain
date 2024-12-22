@@ -3,7 +3,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 
 from src import models, security
 from controllers.crud import Crud
-from src.database import SessionLocal, engine
+from src.database import SessionLocal, engine, get_db
 import templates.pages as pages
 import templates.iot as iot_view
 
@@ -18,15 +18,6 @@ routes = APIRouter(
 # Int       id
 # Int       rph_id
 # String    node
-
-
-# Dependency
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 iot_db = Crud(models.IoT, next(get_db()))
