@@ -9,7 +9,7 @@ from htpy import div, Element, tr, td, a, p, b, h1
 
 def bc_detail(data, logged_in) -> Element:
     return div[
-        navbar(is_admin=False, logged_in=logged_in),
+        navbar(role=None, logged_in=logged_in),
         h1(style="margin-top: 4em; margin-bottom: 1em;")["Keterangan daging"],
         p[b["Nama RPH: "], data["rph_name"]],
         p[b["Nama Lapak: "], data["lapak_name"]],

@@ -207,7 +207,7 @@ def sensorbc():
 @app.get("/qr/{transaksi_id}")
 def qr_gen(req: Request, transaksi_id: int):
     root = str(req.base_url)
-    img = bc.qr_generator(f"{root}/blockchain/{transaksi_id}")
+    img = bc.qr_generator(f"{root}blockchain/{transaksi_id}")
     return Response(content=img, media_type="image/png")
 
 
