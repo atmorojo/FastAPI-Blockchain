@@ -31,5 +31,9 @@ class Report(Crud):
         self.query = self.query.group_by(self.model.peternak)
         return self
 
+    def group_by_date(self):
+        self.query = self.query.group_by(self.model.waktu_sembelih)
+        return self
+
     def get_all(self):
         return self.query.all()

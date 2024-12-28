@@ -228,3 +228,15 @@ a[disabled] {
 	background-color: grey;
 	pointer-events: none;
 }
+
+.login { margin-top: 4em; }
+
+.logo {
+	display: flex;
+	align-items: center;
+}
+.logo img { width: 100px; }
+.logo h2 {
+	position: relative;
+	left: 24px;
+}

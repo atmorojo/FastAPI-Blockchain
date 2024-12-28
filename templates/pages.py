@@ -8,6 +8,7 @@ from htpy import (
     form,
     div,
     h1,
+    h2,
     button,
     p,
     input,
@@ -22,12 +23,18 @@ def login_page() -> Element:
     return base_page(
         page_title="Login",
         content=[
-            div(style="margin-top: 4em;")[
-                form(action="/login", method="post")[
-                    h1["Sign In"],
-                    input(type_="text", name="username"),
-                    input(type_="password", name="password"),
-                    button(".full")["Sign in"],
+            div(".login")[
+                div(".logo")[
+                    img(src="/static/index_files/anothawa.png"),
+                    h2["Halal Fresh Meat Traceability System"]
+                ],
+                div(style="margin-top: 2em;")[
+                    form(action="/login", method="post")[
+                        h1["Sign In"],
+                        input(type_="text", name="username"),
+                        input(type_="password", name="password"),
+                        button(".full")["Sign in"],
+                    ]
                 ]
             ],
             div("#footer")["© Copyright 2024 by ", a(href="#")["me"]],
