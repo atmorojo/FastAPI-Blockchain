@@ -15,8 +15,8 @@ class Report(Crud):
 
     def kiriman_range_report(self, since, until):
         self.query = self.db.query(
-            self.transaksi, func.count(self.transaksi.waktu_kirim)
-        ).filter(self.transaksi.waktu_kirim.between(since, until))
+            self.trans, func.count(self.trans.waktu_kirim)
+        ).filter(self.trans.waktu_kirim.between(since, until))
         return self
 
     def group_by_juleha(self):
@@ -24,7 +24,7 @@ class Report(Crud):
         return self
 
     def group_by_lapak(self):
-        self.query = self.query.group_by(self.transaksi.lapak_id)
+        self.query = self.query.group_by(self.trans.lapak_id)
         return self
 
     def group_by_peternak(self):
@@ -33,6 +33,10 @@ class Report(Crud):
 
     def group_by_date(self):
         self.query = self.query.group_by(self.model.waktu_sembelih)
+        return self
+
+    def group_by_waktu_kirim(self):
+        self.query = self.query.group_by(self.trans.waktu_kirim)
         return self
 
     def get_all(self):

@@ -1,44 +1,46 @@
 from templates.components import (
     table_builder,
-    edit_btn,
-    inlabel,
-    update_btn,
-    submit_btn,
-    action_buttons,
 )
 
 from htpy import (
-    form,
-    img,
     Element,
+    b,
     tr,
     td,
 )
 
 
 def report_juleha_table(report_data) -> Element:
-    col_headers = ["Name", "Jumlah"]
-    rows = (
-        tr[
+    col_headers = ["Nama Juleha", "Jumlah"]
+    date = ""
+    rows = []
+
+    for row in report_data:
+        if row[0].waktu_sembelih != date:
+            date = row[0].waktu_sembelih
+            rows.append(tr[td[b[date]], td[""]])
+
+        rows.append(tr[
             td[row[0].juleha.name],
             td[str(row[1])],
-            # td[action_buttons("iot", iot.id, iot.node)],
-        ]
-        for row in report_data
-    )
+        ])
 
     return table_builder(col_headers, rows)
 
 
 def report_kiriman_table(report_data) -> Element:
-    col_headers = ["Name", "Jumlah"]
-    rows = (
-        tr[
-            td[row[0].juleha.name],
+    col_headers = ["Nama Lapak", "Jumlah"]
+    date = ""
+    rows = []
+
+    for row in report_data:
+        if row[0].waktu_kirim != date:
+            date = row[0].waktu_kirim
+            rows.append(tr[td[b[date]], td[""]])
+
+        rows.append(tr[
+            td[row[0].lapak.name],
             td[str(row[1])],
-            # td[action_buttons("iot", iot.id, iot.node)],
-        ]
-        for row in report_data
-    )
+        ])
 
     return table_builder(col_headers, rows)

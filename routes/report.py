@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends, Form
+from fastapi import APIRouter, Depends, Form
 from fastapi.responses import HTMLResponse
 
 from repositories.report import Report
@@ -19,7 +19,7 @@ def juleha_sembelih_report(db=Depends(get_db)):
     today = datetime.now().strftime("%Y-%m-%d")
     report = Report(db, models.Ternak, models.Transaksi)
     report_data = report.ternak_range_report(
-        today, today).group_by_juleha().get_all()
+        today, today).group_by_juleha().group_by_date().get_all()
     return str(
         pages.table_page(
             "Laporan Sembelihan per Juleha",
@@ -38,7 +38,7 @@ def juleha_sembelih_by_date(
 ):
     report = Report(db, models.Ternak, models.Transaksi)
     report_data = report.ternak_range_report(
-        sejak, sampai).group_by_juleha().get_all()
+        sejak, sampai).group_by_juleha().group_by_date().get_all()
     return str(report_view.report_juleha_table(report_data))
 
 
@@ -46,13 +46,13 @@ def juleha_sembelih_by_date(
 def kiriman_lapak_report(db=Depends(get_db)):
     today = datetime.now().strftime("%Y-%m-%d")
     report = Report(db, models.Ternak, models.Transaksi)
-    report_data = report.ternak_range_report(
-        today, today).group_by_juleha().get_all()
+    report_data = report.kiriman_range_report(
+        today, today).group_by_lapak().group_by_waktu_kirim().get_all()
     return str(
         pages.table_page(
-            "Laporan Pengiriman per Juleha",
-            report_view.report_juleha_table(report_data),
-            date_filter=date_range("/report/kiriman"),
+            "Laporan Pengiriman per Lapak",
+            report_view.report_kiriman_table(report_data),
+            date_filter=date_range("/report/pengiriman"),
             button=False
         )
     )
@@ -65,8 +65,8 @@ def kiriman_lapak_by_date(
     sampai=Form(...),
 ):
     report = Report(db, models.Ternak, models.Transaksi)
-    report_data = report.ternak_range_report(
-        sejak, sampai).group_by_juleha().get_all()
-    return str(report_view.report_juleha_table(report_data))
+    report_data = report.kiriman_range_report(
+        sejak, sampai).group_by_lapak().group_by_waktu_kirim().get_all()
+    return str(report_view.report_kiriman_table(report_data))
 
 
