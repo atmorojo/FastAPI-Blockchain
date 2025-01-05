@@ -1,0 +1,103 @@
+/* General Reset */
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background-color: white;
+  color: black;
+}
+
+/* Header */
+header {
+  text-align: center;
+  margin: 1rem 0;
+}
+
+header h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+/* Date Range */
+.date-range {
+  text-align: center;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.date-range span {
+  font-weight: bold;
+}
+
+/* Table */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem auto;
+  font-size: 1rem;
+}
+
+table th,
+table td {
+  padding: 0.5rem;
+  border: 1px solid black;
+  text-align: center;
+}
+
+table thead th {
+  background-color: #e0e0e0;
+  font-weight: bold;
+}
+
+table tbody tr:nth-child(odd) {
+  background-color: #f9f9f9;
+}
+
+table tbody tr:nth-child(even) {
+  background-color: white;
+}
+
+table tfoot {
+  background-color: #e0e0e0;
+  font-weight: bold;
+}
+
+/* Print Styles */
+@media print {
+  body {
+    margin: 0;
+    font-size: 12pt;
+  }
+
+  header h1 {
+    font-size: 16pt;
+  }
+
+  .date-range {
+    font-size: 12pt;
+  }
+
+  table {
+    font-size: 10pt;
+    width: 100%;
+  }
+
+  table th,
+  table td {
+    padding: 4px;
+  }
+
+  table tfoot {
+    font-size: 11pt;
+  }
+
+  table thead th {
+    background-color: #f0f0f0 !important;
+    color: black;
+  }
+
+  table tbody tr {
+    background-color: white !important;
+  }
+}
+
