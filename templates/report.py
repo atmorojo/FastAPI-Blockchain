@@ -2,20 +2,33 @@ from datetime import datetime
 from templates.components import (
     table_builder,
 )
-from htpy import style, table, header, thead, th, tr, td, h1, tbody
+
+from htpy import (
+    Element,
+    b,
+    div,
+    form,
+    h1,
+    header,
+    input,
+    small,
+    style,
+    table,
+    tbody,
+    td,
+    th,
+    thead,
+    tr,
+)
 
 def date_formatter(input_date):
     months_indonesian = [
         "Januari", "Februari", "Maret", "April", "Mei", "Juni",
         "Juli", "Agustus", "September", "Oktober", "November", "Desember"
     ]
-
     date_obj = datetime.strptime(input_date, "%Y-%m-%d")
-
     month_name = months_indonesian[date_obj.month - 1]  # Adjust for 0-based index
-
     formatted_date = f"{month_name[:3]}/{date_obj.day:02d}/{date_obj.year}" # Format date as Des/12/2012
-
     return formatted_date  # Output: Des/12/2012
 
 
@@ -50,7 +63,7 @@ header h1 {
 }
 
 .content {
-padding: 1.5cm;
+    padding: .75cm;
 }
 
 /* Table */
@@ -87,6 +100,11 @@ table tfoot {
 .kanan { text-align: right; }
 .kiri { text-align: left; }
 .tengah { text-align: center; }
+.total { border-top: 1pt solid black; }
+.pala {
+  border-bottom: 1pt solid black;
+  border-top: 1pt solid black;
+}
 .date {
     padding-top: 1em;
 }
@@ -129,51 +147,56 @@ table tfoot {
   table tbody tr {
     background-color: white !important;
   }
+  .total { border-top: 1pt solid black; }
+  .pala {
+    border-bottom: 1pt solid black;
+    border-top: 1pt solid black;
+  }
 }
 
 """
-from htpy import (
-    Element,
-    small,
-    form,
-    div,
-    b,
-    tr,
-    td,
-    input,
-)
 
-
-def report_juleha_table(rph, periode, report_data) -> Element:
+def juleha_table(report_data):
     col_headers = ["No", "Tanggal", "Nama Juleha", "Jumlah"]
-    headers = thead[tr[
+    headers = thead[tr(".pala")[
         th(".tengah", style="width: 2em;")[col_headers[0]],
-        th(".tengah", style="width: 12em;")[col_headers[1]],
+        th(".kiri", style="width: 12em;")[col_headers[1]],
         th(".kiri")[col_headers[2]],
         th(".kanan")[col_headers[3]]
     ]]
-    date = ""
     rows = []
     no = 0
     total = 0
 
     for row in report_data:
+        total += row[1]
         no = no + 1
         rows.append(tr[
             td(".tengah")[str(no)],
-            td(".tengah")[date_formatter(row[0].waktu_sembelih)],
+            td[date_formatter(row[0].waktu_sembelih)],
             td[row[0].juleha.name],
-            td(".kanan")[str(row[1])],
+            td(".kanan")[f"{row[1]} ekor"],
         ])
+    rows.append(tr(".total")[
+        td,
+        td(colspan="2")[b["Total"]],
+        td(".kanan")[b[f"{total:,} ekor"]],
+    ])
+
+    return [headers, tbody[rows]]
 
 
+
+def report_juleha_table(rph, periode, report_data) -> Element:
     return div(".content")[
         header(".center")[
             h1["Laporan Penyembelihan"],
             h1[f"RPH {rph}"],
             h1(".date-range")[f"Tanggal {periode}"]
         ],
-        table[headers, tbody[rows]]
+        table[
+            juleha_table(report_data)
+        ]
     ]
 
 

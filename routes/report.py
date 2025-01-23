@@ -32,6 +32,10 @@ def juleha_sembelih_by_date(
     # sejak=Form(...),
     # sampai=Form(...),
 ):
+    """
+    TODO:
+    * Ambil nama RPH!
+    """
     sejak="1991-02-01"
     sampai = datetime.now().strftime("%Y-%m-%d")
     report = Report(db, models.Ternak, models.Transaksi)
