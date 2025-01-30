@@ -17,8 +17,12 @@ penyelia_db = Crud(models.Penyelia, get_db())
 
 
 @routes.get("/new", response_class=HTMLResponse)
-def new_penyelia():
-    rph = Crud(models.Rph, get_db()).get()
+def new_penyelia(db=Depends(get_db)):
+    """
+    TODO:
+    * Auto pilih RPH berdasarkan admin
+    """
+    rph = Crud(models.Rph, db).get()
     return str(pages.detail_page("Penyelia", penyelia.penyelia_form(None, rph, False)))
 
 
@@ -83,9 +87,13 @@ def read_penyelia(penyelia_id: int):
 
 
 @routes.get("/edit/{penyelia_id}", response_class=HTMLResponse)
-def edit_penyelia(req: Request, penyelia_id: int):
+def edit_penyelia(req: Request, penyelia_id: int, db=Depends(get_db)):
+    """
+    TODO:
+    * Auto pilih RPH berdasarkan admin
+    """
     dt_penyelia = penyelia_db.get_by_id(penyelia_id)
-    list_rph = Crud(models.Rph, get_db()).get()
+    list_rph = Crud(models.Rph, db).get()
     lock = False
 
     if dt_penyelia is None:
@@ -108,6 +116,7 @@ async def update_penyelia(
     tgl_berlaku: str = Form(...),
     rph_id: int = Form(...),
     file_sk: UploadFile = File(None),  # Remember to give that None
+    db=Depends(get_db),
 ):
     dt_penyelia = penyelia_db.get_by_id(penyelia_id)
     dt_penyelia.nip = nip
@@ -124,7 +133,7 @@ async def update_penyelia(
                 await out_file.write(content)
 
     dt_penyelia = penyelia_db.update(dt_penyelia)
-    list_rph = Crud(models.Rph, get_db()).get()
+    list_rph = Crud(models.Rph, db).get()
 
     return str(penyelia.penyelia_form(dt_penyelia, list_rph, True))
 
