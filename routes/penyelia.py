@@ -4,32 +4,21 @@ import aiofiles
 
 from src import models, security
 from controllers.crud import Crud
-from src.database import SessionLocal, engine
+from repositories.penyelia import Penyelia_Repo
+from src.database import engine, get_db
 from templates import pages, penyelia
 
 models.Base.metadata.create_all(bind=engine)
 
-routes = APIRouter(
-    prefix="/penyelia",
-    dependencies=[Depends(security.auth_rph)]
-)
+routes = APIRouter(prefix="/penyelia", dependencies=[Depends(security.auth_rph)])
 
 
-# Dependency
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-
-penyelia_db = Crud(models.Penyelia, next(get_db()))
+penyelia_db = Crud(models.Penyelia, get_db())
 
 
 @routes.get("/new", response_class=HTMLResponse)
 def new_penyelia():
-    rph = Crud(models.Rph, next(get_db())).get()
+    rph = Crud(models.Rph, get_db()).get()
     return str(pages.detail_page("Penyelia", penyelia.penyelia_form(None, rph, False)))
 
 
@@ -67,8 +56,16 @@ async def create_penyelia(
 
 
 @routes.get("/", response_class=HTMLResponse)
-def read_penyelias(skip: int = 0, limit: int = 100):
-    penyelias = penyelia_db.get(skip=skip, limit=limit)
+def read_penyelias(
+    skip: int = 0,
+    limit: int = 100,
+    user=Depends(security.get_current_user),
+    db=Depends(get_db),
+):
+    # penyelias = penyelia_db.get(skip=skip, limit=limit)
+    print(user.role.acting_as)
+    filtered = Penyelia_Repo(db).get_rph_filtered(user.role.acting_as)
+    penyelias = [penyelia for penyelia, _, _ in filtered]
     return str(pages.table_page("Penyelia", penyelia.penyelias_table(penyelias)))
 
 
@@ -88,7 +85,7 @@ def read_penyelia(penyelia_id: int):
 @routes.get("/edit/{penyelia_id}", response_class=HTMLResponse)
 def edit_penyelia(req: Request, penyelia_id: int):
     dt_penyelia = penyelia_db.get_by_id(penyelia_id)
-    list_rph = Crud(models.Rph, next(get_db())).get()
+    list_rph = Crud(models.Rph, get_db()).get()
     lock = False
 
     if dt_penyelia is None:
@@ -127,7 +124,7 @@ async def update_penyelia(
                 await out_file.write(content)
 
     dt_penyelia = penyelia_db.update(dt_penyelia)
-    list_rph = Crud(models.Rph, next(get_db())).get()
+    list_rph = Crud(models.Rph, get_db()).get()
 
     return str(penyelia.penyelia_form(dt_penyelia, list_rph, True))
 
