@@ -101,12 +101,21 @@ async def create_user(
 
 # Edit Page
 @routes.get("/edit/{username}", response_class=HTMLResponse)
-def edit_user(req: Request, username: str, db: Session = Depends(get_db)):
+def edit_user(
+    req: Request,
+    username: str,
+    db: Session = Depends(get_db),
+    sadmin=Depends(is_super_admin),
+):
+    if not sadmin:
+        pass
+    else:
+        sadmin = True
     user = UserCrud(db).get_user_by_username(username)
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
 
-    form = tpl_users.user_form(user=user)
+    form = tpl_users.user_form(user=user, sadmin=sadmin)
     if req.headers.get("HX-Request"):
         return str(form)
     else:
