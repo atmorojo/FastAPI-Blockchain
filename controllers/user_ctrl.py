@@ -19,8 +19,19 @@ class UserCrud(Crud):
     def get_user_by_email(self, email: str):
         return self.db.query(self.model).filter(models.User.email == email).first()
 
-    def get_users(self, skip: int = 0, limit: int = 100):
-        return self.db.query(self.model).offset(skip).limit(limit).all()
+    def get_users(self, skip: int = 0, limit: int = 100, sadmin=False):
+        if not sadmin:
+            result = (
+                self.db.query(self.model)
+                .join(models.Role, models.Role.user_id == models.User.id)
+                .filter(models.Role.role != 0)
+                .offset(skip)
+                .limit(limit)
+                .all()
+            )
+        else:
+            result = self.db.query(self.model).offset(skip).limit(limit).all()
+        return result
 
     def create_user(self, user):
         hashed_password = hashlib.sha256(user.password.encode()).hexdigest()

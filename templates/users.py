@@ -29,9 +29,12 @@ from htpy import (
 )
 
 role_list = ["Super Admin", "Admin RPH", "Penyelia", "Juleha", "Lapak"]
+role_idx = ["0", "1", "2", "3", "4"]
 
 
-def user_form(user=None, role=None, actors=None, lock: bool = False) -> Element:
+def user_form(
+    user=None, role=None, actors=None, sadmin=False, lock: bool = False
+) -> Element:
     if lock:
         form_btn = edit_btn("/users/", user.username)
         role = inlabel(
@@ -48,10 +51,10 @@ def user_form(user=None, role=None, actors=None, lock: bool = False) -> Element:
         role = dropdown_gen(
             "Role",
             "role",
-            ["0", "1", "2", "3", "4"],
+            (role_idx if sadmin else role_idx[1:]),
             (user.role.role if user else None),
             "Pilih role",
-            role_list,
+            (role_list if sadmin else role_list[1:]),
             hx={
                 "hx-target": "next <label/>",
                 "hx-get": "/users/acting_as",

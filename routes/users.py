@@ -6,7 +6,12 @@ from datetime import date
 from controllers.user_ctrl import UserCrud
 from controllers.crud import Crud
 from src import models
-from src.security import current_user_validation, get_current_user, hash_password
+from src.security import (
+    is_super_admin,
+    current_user_validation,
+    get_current_user,
+    hash_password,
+)
 from src.database import SessionLocal, engine
 import templates.pages as pages
 import templates.users as tpl_users
@@ -30,7 +35,12 @@ def get_db():
 
 # Table Page
 @routes.get("/", response_class=HTMLResponse)
-def read_users(db: Session = Depends(get_db), skip: int = 0, limit: int = 100):
+def read_users(
+    db: Session = Depends(get_db),
+    skip: int = 0,
+    limit: int = 100,
+    sadmin=Depends(is_super_admin),
+):
     user_ctrl = UserCrud(db)
     rph_list = Crud(models.Rph, db).get()
     penyelia_list = Crud(models.Penyelia, db).get()
@@ -42,14 +52,18 @@ def read_users(db: Session = Depends(get_db), skip: int = 0, limit: int = 100):
         "juleha": juleha_list,
         "lapak": lapak_list,
     }
-    users = user_ctrl.get_users(skip=skip, limit=limit)
+    users = user_ctrl.get_users(skip=skip, limit=limit, sadmin=sadmin)
     return str(pages.table_page("Users", tpl_users.users_table(actors, users)))
 
 
 # New Page
 @routes.get("/new", response_class=HTMLResponse)
-def new_user():
-    return str(pages.detail_page("users", tpl_users.user_form()))
+def new_user(sadmin=Depends(is_super_admin)):
+    if not sadmin:
+        pass
+    else:
+        sadmin = True
+    return str(pages.detail_page("users", tpl_users.user_form(sadmin=sadmin)))
 
 
 # Post Endpoint
