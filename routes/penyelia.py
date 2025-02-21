@@ -20,7 +20,6 @@ penyelia_db = Crud(models.Penyelia, get_db())
 def new_penyelia(user=Depends(security.get_current_user), db=Depends(get_db)):
     """
     TODO:
-    * Auto pilih RPH berdasarkan admin
     """
     rph = Crud(models.Rph, db).get()
     return str(

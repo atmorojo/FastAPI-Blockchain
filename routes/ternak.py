@@ -163,7 +163,7 @@ async def update_ternak(
             while content := await img.read(1024):
                 await out_file.write(content)
     ternak = ternak_db.update(ternak)
-    return str(ternak_view.ternak_form(ternak, lock=True))
+    return RedirectResponse("/ternak/", status_code=302)
 
 
 @routes.put("/proses/{ternak_id}", response_class=HTMLResponse)

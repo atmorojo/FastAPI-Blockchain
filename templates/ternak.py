@@ -26,7 +26,7 @@ from htpy import (
 def ternak_form(ternak=None, peternaks=None, lock: bool = False) -> Element:
     if lock:
         form_btn = edit_btn("/ternak/", ternak.id)
-        picture = show_img("img_ternak/" + ternak.img)
+        picture = show_img("img_ternak/" + (ternak.img or ""))
         peternak_combo = inlabel(
             "Pemilik Ternak", "text", "peternak_id", ternak.peternak.name, lock
         )
@@ -73,7 +73,7 @@ def ternak_form(ternak=None, peternaks=None, lock: bool = False) -> Element:
         jenis,
         peternak_combo,
         form_btn,
-        script(src="/static/compress_logic.js", type_="module", defer=True),
+        script(src="/static/compress_logic.js", type_="module"),
     ]
 
 

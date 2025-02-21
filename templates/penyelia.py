@@ -34,6 +34,7 @@ def penyelia_form(penyelia, rph, admin, lock: bool = False) -> Element:
             admin,
             # (penyelia.rph_id if penyelia else None),
             (None if penyelia else "Pilih RPH"),
+            disable=True,
         )
         if penyelia is not None:
             form_btn = update_btn("/penyelia/", penyelia.id)

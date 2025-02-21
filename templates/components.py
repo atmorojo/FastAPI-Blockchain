@@ -125,27 +125,26 @@ def drawer_menu(role=None) -> Element:
     master = ""
     reg_ternak = ""
     transaksi = ""
-    rph = li[a(href="/rph")[i(".bi-house-check-fill"), "RPH"]],
+    rph = (li[a(href="/rph")[i(".bi-house-check-fill"), "RPH"]],)
     if role == 1:
         rph = ""
-        reg_ternak = li[a(href="/ternak")[i(".bi-pencil-fill"), "Registrasi Ternak"]],
-        transaksi = li[a(href="/transaksi")[i(".bi-send-fill"), "Transaksi"]],
-        master = li[nested_menu(
-            [i(".bi-folder-fill"), "Master"],
-            ul[
-                li[a(href="/penyelia")[i(".bi-person-fill-check"), "Penyelia"]],
-                li[a(href="/juleha")[i(".bi-person-arms-up"), "Juleha"]],
-                li[a(href="/peternak")[i(".bi-p-square-fill"), "Peternak"]],
-                li[a(href="/lapak")[
-                    i(".bi-basket-fill"),
-                    "Lapak"]],
-                li[a(href="/pasar")[
-                    i(".bi-globe-asia-australia"),
-                    "Pasar"]],
-                li[a(href="/iot")[
-                    i(".bi-gpu-card"),
-                    "IoT"]],
-            ])],
+        reg_ternak = (li[a(href="/ternak")[i(".bi-pencil-fill"), "Registrasi Ternak"]],)
+        transaksi = (li[a(href="/transaksi")[i(".bi-send-fill"), "Transaksi"]],)
+        master = (
+            li[
+                nested_menu(
+                    [i(".bi-folder-fill"), "Master"],
+                    ul[
+                        li[a(href="/penyelia")[i(".bi-person-fill-check"), "Penyelia"]],
+                        li[a(href="/juleha")[i(".bi-person-arms-up"), "Juleha"]],
+                        li[a(href="/peternak")[i(".bi-p-square-fill"), "Peternak"]],
+                        li[a(href="/lapak")[i(".bi-basket-fill"), "Lapak"]],
+                        li[a(href="/pasar")[i(".bi-globe-asia-australia"), "Pasar"]],
+                        li[a(href="/iot")[i(".bi-gpu-card"), "IoT"]],
+                    ],
+                )
+            ],
+        )
     elif role != 0:
         return None
 
@@ -173,14 +172,18 @@ def drawer_menu(role=None) -> Element:
         ],
         aside(
             ".nav-drawer",
-        )[nav[ul[
-            li[a(href="/dashboard")[i(".bi-house-fill"), "Dashboard"]],
-            li[a(href="/users")[i(".bi-people-fill"), "Users"]],
-            master,
-            rph,
-            reg_ternak,
-            transaksi,
-        ] ] ],
+        )[
+            nav[
+                ul[
+                    li[a(href="/dashboard")[i(".bi-house-fill"), "Dashboard"]],
+                    li[a(href="/users")[i(".bi-people-fill"), "Users"]],
+                    master,
+                    rph,
+                    reg_ternak,
+                    transaksi,
+                ]
+            ]
+        ],
     ]
 
 
@@ -244,7 +247,15 @@ def spoiler(url):
 
 
 def inlabel(
-    _label, _type, _name, _value="", lock=False, focus=False, ro=False, hs=None, placeholder=""
+    _label,
+    _type,
+    _name,
+    _value="",
+    lock=False,
+    focus=False,
+    ro=False,
+    hs=None,
+    placeholder="",
 ):
     return label[
         small[_label],
@@ -262,11 +273,17 @@ def inlabel(
 
 
 def combo_gen(
-    label_text, name, items, selected=None, placeholder=None, custom_name=None
+    label_text,
+    name,
+    items,
+    selected=None,
+    placeholder=None,
+    custom_name=None,
+    disable=False,
 ):
     return label[
         small[label_text],
-        select(name=name)[
+        select(name=name, disabled=disable)[
             (
                 option(value="", disabled=True, selected=True, hidden=True)[placeholder]
                 if placeholder
