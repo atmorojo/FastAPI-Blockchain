@@ -17,13 +17,20 @@ penyelia_db = Crud(models.Penyelia, get_db())
 
 
 @routes.get("/new", response_class=HTMLResponse)
-def new_penyelia(db=Depends(get_db)):
+def new_penyelia(user=Depends(security.get_current_user), db=Depends(get_db)):
     """
     TODO:
     * Auto pilih RPH berdasarkan admin
     """
     rph = Crud(models.Rph, db).get()
-    return str(pages.detail_page("Penyelia", penyelia.penyelia_form(None, rph, False)))
+    return str(
+        pages.detail_page(
+            "Penyelia",
+            penyelia.penyelia_form(
+                penyelia=None, rph=rph, admin=user.role.acting_as, lock=False
+            ),
+        )
+    )
 
 
 @routes.post("/")
@@ -32,15 +39,15 @@ async def create_penyelia(
     name: str = Form(...),
     status: str = Form(...),
     tgl_berlaku: str = Form(...),
-    rph_id: int = Form(None),
     file_sk: UploadFile = File(...),
+    user=Depends(security.get_current_user),
 ):
     penyelia = models.Penyelia(
         nip=nip,
         name=name,
         status=status,
         tgl_berlaku=tgl_berlaku,
-        rph_id=rph_id,
+        rph_id=user.role.acting_as,
     )
     penyelia = penyelia_db.create(penyelia)
 

@@ -20,7 +20,7 @@ from htpy import (
 )
 
 
-def penyelia_form(penyelia, rph, lock: bool = False) -> Element:
+def penyelia_form(penyelia, rph, admin, lock: bool = False) -> Element:
     if lock:
         file_sk = show_img("sk_penyelia/" + penyelia.file_sk)
         form_btn = edit_btn("/penyelia/", penyelia.id)
@@ -31,7 +31,8 @@ def penyelia_form(penyelia, rph, lock: bool = False) -> Element:
             "RPH",
             "rph_id",
             rph,
-            (penyelia.rph_id if penyelia else None),
+            admin,
+            # (penyelia.rph_id if penyelia else None),
             (None if penyelia else "Pilih RPH"),
         )
         if penyelia is not None:
