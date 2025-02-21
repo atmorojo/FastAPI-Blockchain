@@ -5,18 +5,16 @@ import aiofiles
 from sqlalchemy.orm import Session
 from src import models, security
 from controllers.crud import Crud
-from src.database import SessionLocal, engine, get_db
+from src.database import engine, get_db
 import templates.pages as pages
 import templates.ternak as ternak_view
 from templates.components import date_range
 from datetime import datetime
+from repositories.ternak import Ternak_Repo
 
 models.Base.metadata.create_all(bind=engine)
 
-routes = APIRouter(
-    prefix="/ternak",
-    dependencies=[Depends(security.auth_rph)]
-)
+routes = APIRouter(prefix="/ternak", dependencies=[Depends(security.auth_rph)])
 
 
 ternak_db = Crud(models.Ternak, next(get_db()))
@@ -36,9 +34,9 @@ async def create_ternak(
         jenis=jenis,
         peternak_id=peternak_id,
         waktu_daftar=waktu_daftar,
-        no_antri=((int(last_no_antri.no_antri)
-                   if last_no_antri is not None
-                   else 0) + 1)
+        no_antri=(
+            (int(last_no_antri.no_antri) if last_no_antri is not None else 0) + 1
+        ),
     )
     ternak = ternak_db.create(ternak)
 
@@ -58,17 +56,16 @@ def new_ternak(db: Session = Depends(get_db)):
     return str(
         pages.detail_page(
             "Ternak",
-            ternak_view.ternak_form(
-                peternaks=peternaks, lock=False
-            ),
+            ternak_view.ternak_form(peternaks=peternaks, lock=False),
         )
     )
 
 
 @routes.get("/", response_class=HTMLResponse)
-def read_ternaks(skip: int = 0, limit: int = 100):
+def read_ternaks(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     tgl = datetime.now().strftime("%Y-%m-%d")
-    ternaks = ternak_db.get_by_date("waktu_daftar", tgl, tgl)
+    ternak_repo = Ternak_Repo(db)
+    ternaks = ternak_repo.get_by_date("waktu_daftar", tgl, tgl)
     return str(
         pages.table_page(
             "Ternak",
@@ -109,15 +106,14 @@ def edit_ternak(
     if ternak is None:
         raise HTTPException(status_code=404, detail="User not found")
     peternaks = Crud(models.Peternak, db).get()
-    form = ternak_view.ternak_form(
-        ternak, peternaks=peternaks, lock=False
-    )
+    form = ternak_view.ternak_form(ternak, peternaks=peternaks, lock=False)
     if req.headers.get("HX-Request"):
         return str(form)
     else:
         return str(pages.detail_page("Ternak", form))
 
 
+# Route halaman proses penyembelihan
 @routes.get("/proses/edit/{ternak_id}", response_class=HTMLResponse)
 def proses_ternak(
     req: Request,
@@ -136,8 +132,6 @@ def proses_ternak(
         return str(form)
     else:
         return str(pages.detail_page("Ternak", form))
-
-
 
 
 @routes.delete("/{ternak_id}", response_class=HTMLResponse)

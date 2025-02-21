@@ -23,9 +23,7 @@ from htpy import (
 )
 
 
-def ternak_form(
-    ternak=None, peternaks=None, lock: bool = False
-) -> Element:
+def ternak_form(ternak=None, peternaks=None, lock: bool = False) -> Element:
     if lock:
         form_btn = edit_btn("/ternak/", ternak.id)
         picture = show_img("img_ternak/" + ternak.img)
@@ -64,7 +62,13 @@ def ternak_form(
     )[
         label[small["Gambar"], picture],
         inlabel(
-            "Bobot", "number", "bobot", (ternak.bobot if ternak else ""), lock, True, placeholder="Kg"
+            "Bobot",
+            "number",
+            "bobot",
+            (ternak.bobot if ternak else ""),
+            lock,
+            True,
+            placeholder="Kg",
         ),
         jenis,
         peternak_combo,
@@ -81,10 +85,16 @@ def sembelih_form(
     """
 
     if ternak.waktu_sembelih is not None:
-        waktu_sembelih = inlabel(
-            "Disembelih pada", "date", "waktu_sembelih",
-            ternak.waktu_sembelih, lock, True,
-        ),
+        waktu_sembelih = (
+            inlabel(
+                "Disembelih pada",
+                "date",
+                "waktu_sembelih",
+                ternak.waktu_sembelih,
+                lock,
+                True,
+            ),
+        )
     else:
         waktu_sembelih = ""
     picture = show_img("img_ternak/" + (ternak.img or ""))
@@ -94,9 +104,7 @@ def sembelih_form(
         penyelia_combo = inlabel(
             "penyelia", "text", "penyelia_id", ternak.penyelia.name, lock
         )
-        kesehatan = inlabel(
-            "Kesehatan", "text", "kesehatan", ternak.kesehatan, lock
-        )
+        kesehatan = inlabel("Kesehatan", "text", "kesehatan", ternak.kesehatan, lock)
     else:
         juleha_combo = combo_gen(
             "Juleha",
@@ -117,7 +125,7 @@ def sembelih_form(
             "kesehatan",
             ["Sehat", "Layak"],
             (ternak.kesehatan if ternak.kesehatan else None),
-            placeholder=(None if ternak.kesehatan else "Status kesehatan")
+            placeholder=(None if ternak.kesehatan else "Status kesehatan"),
         )
         if ternak is not None:
             form_btn = update_btn("/ternak/proses/", ternak.id)
@@ -133,7 +141,13 @@ def sembelih_form(
     )[
         label[small["Gambar"], picture],
         inlabel(
-            "Karkas", "number", "karkas", (ternak.karkas if ternak else ""), lock, True, placeholder="Kg"
+            "Karkas",
+            "number",
+            "karkas",
+            (ternak.karkas if ternak else ""),
+            lock,
+            True,
+            placeholder="Kg",
         ),
         kesehatan,
         juleha_combo,
@@ -154,13 +168,18 @@ def ternaks_table(ternaks) -> Element:
             td[str(ternak.karkas or "-") + " Kg"],
             td[ternak.jenis],
             td[f"{ternak.waktu_daftar[5:]} {(int(ternak.no_antri or 0)):03}"],
-            td[action_buttons(
-                "ternak", ternak.id, "ini",
-                extra_1=a(
-                    disabled=(True if ternak.waktu_sembelih else False),
-                    role="button",
-                    href=f"/ternak/proses/edit/{ternak.id}")[("Sudah disembelih" if ternak.waktu_sembelih else "Sembelih")]
-            )],
+            td[
+                action_buttons(
+                    "ternak",
+                    ternak.id,
+                    "ini",
+                    extra_1=a(
+                        disabled=(True if ternak.waktu_sembelih else False),
+                        role="button",
+                        href=f"/ternak/proses/edit/{ternak.id}",
+                    )[("Sudah disembelih" if ternak.waktu_sembelih else "Sembelih")],
+                )
+            ],
         ]
         for ternak in ternaks
     )
