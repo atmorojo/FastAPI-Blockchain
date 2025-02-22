@@ -79,8 +79,10 @@ def read_ternaks(skip: int = 0, limit: int = 100, db: Session = Depends(get_db))
 def read_ternaks_by_date(
     sejak=Form(...),
     sampai=Form(...),
+    db: Session = Depends(get_db),
 ):
-    ternaks = ternak_db.get_by_date("waktu_daftar", sejak, sampai)
+    ternak_repo = Ternak_Repo(db)
+    ternaks = ternak_repo.get_by_date("waktu_daftar", sejak, sampai)
     return str(ternak_view.ternaks_table(ternaks))
 
 
